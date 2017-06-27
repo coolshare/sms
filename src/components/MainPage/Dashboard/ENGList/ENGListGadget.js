@@ -2,29 +2,31 @@ import React from 'react';
 import {connect} from 'react-redux'
 import Dispatcher from '../../../../common/Dispatcher'
 import Gadget from '../../../../common/Gadget'
-//import cs from '../../services/CommunicationService'
+import cs from '../../../../services/CommunicationService'
 
 /**
 *
 */
-class _ENGList extends Gadget {
+class _ENGListGadget extends Gadget {
 	/**
     * render
     * @return {ReactElement} markup
     */
 	render(){
+		
+		let action = cs.routeData["ENGListDetails"];
 		return (
 			<div id="ENGList"style={{"height":"250px", "backgroundColor":"#58D3F7", "borderRadius":"10px", "margin":"9px", "padding":"9px"}}>		
-			<Dispatcher action={{"type":"addPath", "action":{"name":"ENGList", "url":"", "icon":""}}}>ENGList</Dispatcher>
+			<Dispatcher action={{"type":"pushPath", "action":action}}>{action.label}</Dispatcher>
       		</div>
 		)
 	}
 }
 
-const ENGList = connect(
+const ENGListGadget = connect(
 		  store => {
 			    return {
 			    };
 			  }
-			)(_ENGList);
-export default ENGList
+			)(_ENGListGadget);
+export default ENGListGadget

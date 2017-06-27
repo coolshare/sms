@@ -1,10 +1,32 @@
 import { browserHistory } from 'react-router';
 import {gm} from '../common/Common'
+import Login from '../components/Login'
+import TopContainer from '../components/TopContainer'
+import MainRouteContainer from '../components/MainRouteContainer'
+import StackViewContainer from '../components/StackViewContainer'
+import ENGListDetails from '../components/MainPage/Dashboard/ENGList/ENGListDetails'
+import ENGAlertsDetails from '../components/MainPage/Dashboard/ENGAlerts/ENGAlertsDetails'
+import ResouceUsageDetails from '../components/MainPage/Dashboard/ResouceUsage/ResouceUsageDetails'
+
+
+const routeData = {
+		"Login":{"label":"Login", "component":Login, "icon":"", "link":"Login"},
+		"Home":{"label":"Home", "component":MainRouteContainer, "icon":"", "link":"/"},
+		"TopContainer":{"label":"TopContainer", "component":TopContainer, "icon":"", "link":"/"},	
+		"MainRouteContainer":{"label":"MainRouteContainer", "component":MainRouteContainer, "icon":"", "link":"/"},	
+		"StackViewContainer":{"label":"StackViewContainer", "component":StackViewContainer, "icon":"", "link":"StackViewContainer"},
+		"Login":{"label":"Login", "component":MainRouteContainer, "icon":"", "link":"/Login"},
+		"ENGListDetails":{"label":"ENGListDetails", "component":ENGListDetails, "link":"ENGListDetails"},
+		"ENGAlertsDetails":{"label":"ENGAlertsDetails", "component":ENGAlertsDetails, "icon":"", "link":"ENGAlertsDetails"},
+		"ResouceUsageDetails":{"label":"ResouceUsageDetails", "component":ResouceUsageDetails, "icon":"", "link":"ResouceUsageDetails"}
+}
+
 
 class CommunicationService {
 	constructor() {
 		this.stack = [];
 		this.subscribeMap = {};
+		this.routeData = routeData;
 	}
 	
 	init(store) {	

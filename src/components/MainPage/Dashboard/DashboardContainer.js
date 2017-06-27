@@ -1,9 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux'
 import { Grid, Row, Col } from 'react-bootstrap';
-import ResouceUsageContainer from './ResouceUsage/ResouceUsageContainer'
-import ENGListContainer from './ENGList/ENGListContainer'
-import ENGAlertsContainer from './ENGAlerts/ENGAlertsContainer'
+import ResouceUsageGadget from './ResouceUsage/ResouceUsageGadget'
+import ENGListGadget from './ENGList/ENGListGadget'
+import ENGAlertsGadget from './ENGAlerts/ENGAlertsGadget'
 //import cs from '../../services/CommunicationService'
 
 /**
@@ -20,15 +20,15 @@ class _DashboardContainer extends React.Component{
 			<Grid bsClass="gridContainer">
 				<Row className="show-grid">
 			      <Col xs={6} md={6}>
-			      	<ResouceUsageContainer/>
+			      	<ResouceUsageGadget/>
 			      </Col>
 			      <Col xs={6} md={6}>
-			      	<ENGListContainer/>
+			      	<ENGListGadget/>
 			      </Col>
 			    </Row>
 			    <Row className="show-grid">
 			      <Col xs={6} md={6}>
-			      	<ENGAlertsContainer/>
+			      	<ENGAlertsGadget/>
 			      </Col>
 
 			    </Row>

@@ -1,7 +1,8 @@
 import React from 'react'
 import { Grid, Row, Col } from 'react-bootstrap';
 import {connect} from 'react-redux'
-//import cs from '../services/CommunicationService'
+import cs from '../../services/CommunicationService'
+
 //import { browserHistory } from 'react-router';
 /**
 *
@@ -9,8 +10,19 @@ import {connect} from 'react-redux'
 class _Header extends React.Component{
 
 	componentDidMount() {
-		//debugger
-		//cs.store.dispatch({'type':'switchTopLink', 'pageId':'main'});
+		var url = window.location.href;
+		var list = url.split("//")
+		list = list[1].split("/")
+		var path = [];
+		path.push(cs.routeData["Home"]);
+		for (var i=1; i<list.length; i++) {
+			var p = cs.routeData[list[i]];
+			if (p===undefined) {
+				break;
+			}
+			path.push(p)
+		}
+		cs.store.dispatch({'type':'setPath', 'path':path});
 	}
 	/**
     * render
@@ -23,9 +35,10 @@ class _Header extends React.Component{
 				dd = ">"
 			}
 			return (
-					<span key={idx}><span>{dd}</span> <span>{p.name}</span></span>
+					<span key={idx}><span>{dd}</span><span onClick={()=>cs.dispatch({'type':'goPath', 'target':p.label})} style={{"cursor":"pointer","color":"blue"}}>{p.label}</span></span>
 			)
 		})
+		
 		return (
 			
 			<div id="header"   style={{'height':'70px', 'margin':'5px', 'border':'1px solid #e1e1e1'}}>
