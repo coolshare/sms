@@ -32,7 +32,7 @@ import cs from '../services/CommunicationService'
 class Dispatcher extends React.Component {
   constructor(props) {
     super(props);
-    
+    this.props = props;
     if (props.classes) {
     	var cn = [];
     	for (var c in props.classes) {
@@ -44,10 +44,10 @@ class Dispatcher extends React.Component {
     if (props.event) {
     	this.event = props.event;
     }
-    
+    this.dispatch = this.dispatch.bind(this)
   }
   
-  dispatch = (e) => {
+  dispatch (e) {
 	  if (e.target.nodeName!=="BUTTON") {
 		  this.props.action.data = e.target.value;
 	  }

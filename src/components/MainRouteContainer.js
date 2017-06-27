@@ -1,6 +1,6 @@
 import React from 'react';
 import MainContainer from './MainPage/MainContainer'
-import Header from './Header'
+import Header from './Header/Header'
 
 /**
 *

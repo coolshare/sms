@@ -7,7 +7,6 @@ import {logger, currentAction, asyncDispatchMiddleware, callbackMiddleware} from
 import cs from './services/CommunicationService'
 import TopContainer from './components/TopContainer'
 import MainRouteContainer from './components/MainRouteContainer'
-import PatternsRouteContainer from './components/PatternsRouteContainer'
 import Login from './components/Login'
 import StackViewContainer from './components/StackViewContainer'
 
@@ -24,14 +23,12 @@ render(
 	  <Router history={browserHistory }>
 		<Route path='/' component={TopContainer}>
 			<IndexRoute component={Login} />
-			<Route path='main' component={MainRouteContainer} />	
-			<Route path='Patterns' component={PatternsRouteContainer} />	
+			<Route path='main' component={MainRouteContainer} />		
 			<Route path='popup' component={StackViewContainer} />	
 		</Route>
 		<Route path='/ReactReduxPattern/' component={TopContainer}>
 			<IndexRoute component={Login} />
-			<Route path='main' component={MainRouteContainer} />	
-			<Route path='Patterns' component={PatternsRouteContainer} />	
+			<Route path='main' component={MainRouteContainer} />		
 			<Route path='popup' component={StackViewContainer} />	
 		</Route>
 	</Router>
