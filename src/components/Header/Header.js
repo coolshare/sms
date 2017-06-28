@@ -34,9 +34,16 @@ class _Header extends React.Component{
 			if (idx>0) {
 				dd = ">"
 			}
-			return (
-					<span key={idx}><span>{dd}</span><span onClick={()=>cs.dispatch({'type':'goPath', 'target':p.label})} style={{"cursor":"pointer","color":"blue"}}>{p.label}</span></span>
-			)
+			if (idx>this.props.path.length-2) {
+				return (
+						<span key={idx}><span style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span style={{"cursor":"default","color":"#00"}}>{p.label}</span></span>
+				)
+			} else {
+				return (
+						<span key={idx}><span style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span onClick={()=>cs.dispatch({'type':'goPath', 'target':p.label})} style={{"cursor":"pointer","color":"blue"}}>{p.label}</span></span>
+				)
+			}
+			
 		})
 		
 		return (

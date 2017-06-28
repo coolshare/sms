@@ -10,7 +10,7 @@ const HeaderReducer = (state = {'path':[cs.routeData["Home"]]}, action) => {
     case 'pushPath':
     	var p = Object.assign([], state.path);
     	p.push(action.action)
-    	action.asyncDispatch({'type':'pushBrowserHistory', 'url':action.action.link}); 
+    	action.asyncDispatch({'type':'pushBrowserHistory', 'url':action.action.path}); 
         return Object.assign({}, state, {
       	  path: p
         })

@@ -10,15 +10,15 @@ import ResouceUsageDetails from '../components/MainPage/Dashboard/ResouceUsage/R
 
 
 const routeData = {
-		"Login":{"label":"Login", "component":Login, "icon":"", "link":"Login"},
-		"Home":{"label":"Home", "component":MainRouteContainer, "icon":"", "link":"/"},
-		"TopContainer":{"label":"TopContainer", "component":TopContainer, "icon":"", "link":"/"},	
-		"MainRouteContainer":{"label":"MainRouteContainer", "component":MainRouteContainer, "icon":"", "link":"/"},	
-		"StackViewContainer":{"label":"StackViewContainer", "component":StackViewContainer, "icon":"", "link":"StackViewContainer"},
-		"Login":{"label":"Login", "component":MainRouteContainer, "icon":"", "link":"/Login"},
-		"ENGListDetails":{"label":"ENGListDetails", "component":ENGListDetails, "link":"ENGListDetails"},
-		"ENGAlertsDetails":{"label":"ENGAlertsDetails", "component":ENGAlertsDetails, "icon":"", "link":"ENGAlertsDetails"},
-		"ResouceUsageDetails":{"label":"ResouceUsageDetails", "component":ResouceUsageDetails, "icon":"", "link":"ResouceUsageDetails"}
+		"Login":{"label":"Login", "component":Login, "icon":"", "path":"Login"},
+		"Home":{"label":"Home", "component":MainRouteContainer, "icon":"", "path":"/"},
+		"TopContainer":{"label":"TopContainer", "component":TopContainer, "icon":"", "path":"/"},	
+		"MainRouteContainer":{"label":"MainRouteContainer", "component":MainRouteContainer, "icon":"", "path":"/"},	
+		"StackViewContainer":{"label":"StackViewContainer", "component":StackViewContainer, "icon":"", "path":"StackViewContainer"},
+		"Login":{"label":"Login", "component":MainRouteContainer, "icon":"", "path":"/Login"},
+		"ENGListDetails":{"label":"ENGListDetails", "component":ENGListDetails, "path":"ENGListDetails"},
+		"ENGAlertsDetails":{"label":"ENGAlertsDetails", "component":ENGAlertsDetails, "icon":"", "path":"ENGAlertsDetails"},
+		"ResouceUsageDetails":{"label":"ResouceUsageDetails", "component":ResouceUsageDetails, "icon":"", "path":"ResouceUsageDetails"}
 }
 
 
