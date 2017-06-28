@@ -1,7 +1,7 @@
 import cs from '../../services/CommunicationService'
 import { browserHistory } from 'react-router';
 
-const HeaderReducer = (state = {'path':[cs.routeData["Home"]]}, action) => {
+const HeaderReducer = (state = {'path':[]}, action) => {
   switch (action.type) {
     case 'setPath':
       return Object.assign({}, state, {

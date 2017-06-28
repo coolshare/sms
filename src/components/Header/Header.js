@@ -10,19 +10,19 @@ import cs from '../../services/CommunicationService'
 class _Header extends React.Component{
 
 	componentDidMount() {
-		var url = window.location.href;
+		/*var url = window.location.href;
 		var list = url.split("//")
 		list = list[1].split("/")
 		var path = [];
-		path.push(cs.routeData["Home"]);
+		//path.push(cs.routeData["Home"]);
 		for (var i=1; i<list.length; i++) {
 			var p = cs.routeData[list[i]];
 			if (p===undefined) {
 				break;
 			}
 			path.push(p)
-		}
-		cs.store.dispatch({'type':'setPath', 'path':path});
+		}*/
+		cs.store.dispatch({'type':'setPath', 'path':this.props.path});
 	}
 	/**
     * render

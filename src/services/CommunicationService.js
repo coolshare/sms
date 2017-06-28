@@ -11,11 +11,10 @@ import ResouceUsageDetails from '../components/MainPage/Dashboard/ResouceUsage/R
 
 const routeData = {
 		"Login":{"label":"Login", "component":Login, "icon":"", "path":"Login"},
-		"Home":{"label":"Home", "component":MainRouteContainer, "icon":"", "path":"/"},
-		"TopContainer":{"label":"TopContainer", "component":TopContainer, "icon":"", "path":"/"},	
-		"MainRouteContainer":{"label":"MainRouteContainer", "component":MainRouteContainer, "icon":"", "path":"/"},	
+		"Home":{"label":"Home", "component":MainRouteContainer, "icon":"", "path":"Home"},
+		"TopContainer":{"label":"TopContainer", "component":TopContainer, "icon":"", "path":"Home"},	
+		"MainRouteContainer":{"label":"MainRouteContainer", "component":MainRouteContainer, "icon":"", "path":"Home"},	
 		"StackViewContainer":{"label":"StackViewContainer", "component":StackViewContainer, "icon":"", "path":"StackViewContainer"},
-		"Login":{"label":"Login", "component":MainRouteContainer, "icon":"", "path":"/Login"},
 		"ENGListDetails":{"label":"ENGListDetails", "component":ENGListDetails, "path":"ENGListDetails"},
 		"ENGAlertsDetails":{"label":"ENGAlertsDetails", "component":ENGAlertsDetails, "icon":"", "path":"ENGAlertsDetails"},
 		"ResouceUsageDetails":{"label":"ResouceUsageDetails", "component":ResouceUsageDetails, "icon":"", "path":"ResouceUsageDetails"}

@@ -19,9 +19,9 @@ cs.init(store);
 
 render(
   <Provider store={store}>
-	  <Router history={browserHistory }>
+	  <Router history={browserHistory }>	  	
 		<Route path='/' component={cs.routeData["TopContainer"].component}>
-		<IndexRoute component={cs.routeData["Login"].component} />
+			<IndexRoute component={cs.routeData["Login"].component} />
 			{
 				Object.keys(cs.routeData).map((key, idx) => {
 					let r = cs.routeData[key]
