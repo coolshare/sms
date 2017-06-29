@@ -1,6 +1,6 @@
 import React from 'react'
-import { Link } from 'react-router'
-
+import Dispatcher from '../common/Dispatcher'
+import cm from '../services/CommunicationService'
 /**
 * LoginForm
 **/
@@ -22,7 +22,8 @@ export default class  Login extends React.Component{
     					<input name="password" type="password" tabIndex="2" placeholder="Password"/>
 		            </div>
 		            
-					<Link to="/Home" className="login_btn btn-default"   style={{margin:'10px'}}><button>Log In</button></Link>
+    				<Dispatcher action={{"type":"pushPath", "action":cm.routeData["Home"]}}><button>Log In</button></Dispatcher>
+    				
 					<div>This page is only a place holder for a login screen:</div>
 					<p>Just click at "Log in" button to continue</p>
     			</form>
