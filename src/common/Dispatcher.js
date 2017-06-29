@@ -27,7 +27,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 import React from 'react';
-import cs from '../services/CommunicationService'
+import cs from '../common/CommunicationManager'
 
 class Dispatcher extends React.Component {
   constructor(props) {

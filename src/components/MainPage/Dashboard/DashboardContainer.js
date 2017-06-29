@@ -4,7 +4,7 @@ import { Grid, Row, Col } from 'react-bootstrap';
 import ResouceUsageGadget from './ResouceUsage/ResouceUsageGadget'
 import ENGListGadget from './ENGList/ENGListGadget'
 import ENGAlertsGadget from './ENGAlerts/ENGAlertsGadget'
-//import cs from '../../services/CommunicationService'
+//import cs from '../../common/CommunicationManager'
 
 /**
 *

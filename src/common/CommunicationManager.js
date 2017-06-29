@@ -21,7 +21,7 @@ const routeData = {
 }
 
 
-class CommunicationService {
+class CommunicationManager {
 	constructor() {
 		this.stack = [];
 		this.subscribeMap = {};
@@ -131,5 +131,5 @@ class CommunicationService {
 	}
 }
 
-const cs = new CommunicationService();
-export default cs;
+const cm = new CommunicationManager();
+export default cm;

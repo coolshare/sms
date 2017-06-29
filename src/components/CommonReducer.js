@@ -1,4 +1,4 @@
-import cs from '../services/CommunicationService'
+import cs from '../common/CommunicationManager'
 
 const CommonReducer = (state = {'appLoaded':false}, action) => {
   switch (action.type) {

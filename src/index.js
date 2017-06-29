@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
 import ReducerManager from './components/ReducerManager'
 import {logger, currentAction, asyncDispatchMiddleware, callbackMiddleware} from './components/CommonMiddleware'
-import cs from './services/CommunicationService'
+import cs from './common/CommunicationManager'
 
 
 

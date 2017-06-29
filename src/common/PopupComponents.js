@@ -1,5 +1,5 @@
 import React from 'react'
-import cs from '../services/CommunicationService'
+import cs from '../common/CommunicationManager'
 
 export class PopupCloseBox extends React.Component {
 	

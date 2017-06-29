@@ -1,6 +1,6 @@
 import React from 'react'
 import Dispatcher from '../common/Dispatcher'
-import cm from '../services/CommunicationService'
+import cm from '../common/CommunicationManager'
 /**
 * LoginForm
 **/

@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux'
 import Dispatcher from '../../../../common/Dispatcher'
 import Gadget from '../../../../common/Gadget'
-import cs from '../../../../services/CommunicationService'
+import cs from '../../../../common/CommunicationManager'
 
 /**
 *

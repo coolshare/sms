@@ -1,5 +1,5 @@
 import axios from 'axios'
-import cs from './CommunicationService'
+import cs from './CommunicationManager'
 
 function _RemoteService(){
 	this.fatchThroughProxy = (url, options, key, result, requests, len) => {

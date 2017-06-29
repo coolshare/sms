@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import {connect} from 'react-redux'
-import cs from '../services/CommunicationService'
+import cs from '../common/CommunicationManager'
 import Header from './Header/Header'
 import Utils from '../common/Utils'
 import { browserHistory } from 'react-router';

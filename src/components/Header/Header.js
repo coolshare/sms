@@ -1,7 +1,7 @@
 import React from 'react'
 import { Grid, Row, Col } from 'react-bootstrap';
 import {connect} from 'react-redux'
-import cs from '../../services/CommunicationService'
+import cs from '../../common/CommunicationManager'
 
 //import { browserHistory } from 'react-router';
 /**
@@ -10,25 +10,37 @@ import cs from '../../services/CommunicationService'
 class _Header extends React.Component{
 
 	componentDidMount() {
-		/*var url = window.location.href;
+		let path = this.props.path;
+		if (path.length===0) {
+			path = this.reconstructPath();
+		}
+		cs.store.dispatch({'type':'setPath', 'path':path});
+	}
+	
+	reconstructPath() {
+		var url = window.location.href;
 		var list = url.split("//")
 		list = list[1].split("/")
 		var path = [];
-		//path.push(cs.routeData["Home"]);
+		path.push(cs.routeData["Home"]);
 		for (var i=1; i<list.length; i++) {
 			var p = cs.routeData[list[i]];
+			if (list[i]=="Home") {
+				continue;
+			}
 			if (p===undefined) {
 				break;
 			}
 			path.push(p)
-		}*/
-		cs.store.dispatch({'type':'setPath', 'path':this.props.path});
+		}
+		return path;
 	}
 	/**
     * render
     * @return {ReactElement} markup
     */
 	render(){
+
 		let pathElem = this.props.path.map((p, idx)=> {
 			let dd = "";
 			if (idx>0) {

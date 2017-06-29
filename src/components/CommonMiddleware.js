@@ -1,4 +1,4 @@
-import cs from '../services/CommunicationService'
+import cs from '../common/CommunicationManager'
 
 export const logger = store => next => action => {
   console.log('dispatching', action)

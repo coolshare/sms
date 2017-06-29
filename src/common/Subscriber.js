@@ -28,7 +28,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 import React from 'react';
 import ReactDOM from 'react-dom'
-import cs from '../services/CommunicationService'
+import cs from '../common/CommunicationManager'
 
 class Subscriber extends React.Component {
   constructor(props) {
