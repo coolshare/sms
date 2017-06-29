@@ -17,7 +17,7 @@ class _ENGListDetails extends React.Component{
 			<div>	
 				<Header/>
 				<div>
-				ENGListDetails
+				<Dispatcher action={{"type":"/RemoteService/fatchThroughProxy"}}>ENGListDetails</Dispatcher>
 				</div>
       		</div>
 		)

@@ -2,7 +2,7 @@ import React from 'react'
 import { Grid, Row, Col } from 'react-bootstrap';
 import {connect} from 'react-redux'
 import cs from '../../common/CommunicationManager'
-
+import sm from '../../common/ServiceManager';
 //import { browserHistory } from 'react-router';
 /**
 *
