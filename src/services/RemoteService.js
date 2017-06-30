@@ -10,10 +10,19 @@ class _RemoteService extends Service {
 		super(name, APIs);
 	}
 	fatchThroughProxy = (url, options, key, result, requests, len) => {
+		if (url.data) {
+			this.action = url;
+			url = this.action.data.url;
+		}
 		this.fetch("http://73.71.159.185:8888?url="+url, options, key, result, requests, len)
 	};
 	fetch = (url, options, key, result, requests, len) => {
+		options = options||{};
 		let self = this;
+		if (url.data) {
+			this.action = url;
+			url = this.action.data.url;
+		}
 		return axios.get(url).then(res=>{
 			  if (res.status >= 400) {
 		          throw new Error("Bad response from server");
@@ -45,14 +54,16 @@ class _RemoteService extends Service {
 				  }
 				   
 		      } else {
-		    	  if (options.actionType!=undefined||options.stateField!==undefined) {
-					  cm.dispatch({"type":"RemoteService", "options":{"options":options, "data":res.data}});
+		    	  if (self.action.actionType!=undefined||self.action.stateField!==undefined) {
+					  cm.dispatch({"type":"RemoteService", "options":{"action":self.action, "data":res.data}});
 				  }
-				  if (options.callback) {
-					  options.callback(res.data);
+				  if (self.action.callback) {
+					  self.action.callback(res.data);
 				  }
 		      }
-			  
+			  if (self.action!==undefined) {
+				  cm.dispatch({"type":self.action.type+"/done", "data":res.data})
+			  }
 		      
 			  return res;
 		  })/*.catch(function (error) {

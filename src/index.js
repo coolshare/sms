@@ -8,7 +8,6 @@ import {logger, currentAction, asyncDispatchMiddleware, callbackMiddleware} from
 import cs from './common/CommunicationManager'
 
 
-
 import { Router, Route, IndexRoute, useRouterHistory, browserHistory  } from 'react-router'
 import { createHashHistory } from 'history'
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
@@ -17,6 +16,9 @@ const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
 let store = createStore(ReducerManager, applyMiddleware(logger, currentAction, asyncDispatchMiddleware, callbackMiddleware));
 cs.init(store);
+
+let sm = require("./common/ServiceManager").default
+sm.init();
 
 
 render(

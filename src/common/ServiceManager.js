@@ -1,9 +1,6 @@
 
 
-export default class ServiceManager {
-	constructor() {
-		
-	}
+class ServiceManager {
 	init=()=>{
 		this.services = [
 			require("../services/RemoteService").default
@@ -11,3 +8,6 @@ export default class ServiceManager {
 	}
 	
 }
+
+let sm = new ServiceManager();
+export default sm;

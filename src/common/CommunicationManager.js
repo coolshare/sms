@@ -47,11 +47,11 @@ class CommunicationManager {
 		//tracking subscribed type		 		
 		this.subscribeMap[type] = this.store.subscribe(()=>{
 			//We filter by type so that we won't call the handle when type is not match
-			if (cs.currentAction.type===type) {
+			if (self.currentAction.type===type) {
 				if (owner){
-					listener.apply(owner, [cs.currentAction]);
+					listener.apply(owner, [self.currentAction]);
 				} else {
-					listener(cs.currentAction);
+					listener(self.currentAction);
 				}
 					
 			}
