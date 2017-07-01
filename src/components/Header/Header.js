@@ -48,11 +48,11 @@ class _Header extends React.Component{
 			}
 			if (idx>this.props.path.length-2) {
 				return (
-						<span key={idx}><span style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span style={{"cursor":"default","color":"#00"}}>{p.label}</span></span>
+						<span key={idx} class="headerPathElem"><span class="headerPathElemDivider" style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span style={{"cursor":"default","color":"#00"}}>{p.label}</span></span>
 				)
 			} else {
 				return (
-						<span key={idx}><span style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span onClick={()=>cs.dispatch({'type':'goPath', 'target':p.label})} style={{"cursor":"pointer","color":"blue"}}>{p.label}</span></span>
+						<span key={idx} class="headerPathElem"><span class="headerPathElemDivider" style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span onClick={()=>cs.dispatch({'type':'goPath', 'target':p.label})} style={{"cursor":"pointer","color":"blue"}}>{p.label}</span></span>
 				)
 			}
 			
@@ -62,7 +62,7 @@ class _Header extends React.Component{
 			
 			<div id="header"   style={{'height':'70px', 'margin':'5px', 'border':'1px solid #e1e1e1'}}>
 				<div style={{'height':'50px', 'backgroundColor':'#1b83b1'}}></div>
-				<div style={{'height':'20px', 'backgroundColor':'#e6eaec'}}>
+				<div class="headerPathContainer" style={{'height':'20px', 'backgroundColor':'#e6eaec'}}>
 					{pathElem}
 				</div>
       		</div>
