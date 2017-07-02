@@ -12,14 +12,21 @@ class _Header extends React.Component{
 	componentDidMount() {
 		let path = this.props.path;
 		if (path.length===0) {
-			path = this.reconstructPath();
+			var p = this.reconstructPath();
+			if (p!==null) {
+				path = p;
+			}
 		}
 		cs.store.dispatch({'type':'setPath', 'path':path});
 	}
 	
 	reconstructPath() {
 		var url = window.location.href;
+		//console.log("url="+url)
 		var list = url.split("//")
+		if (list[1]===undefined) {
+			return null;
+		}
 		list = list[1].split("/")
 		var path = [];
 		path.push(cs.routeData["Home"]);
@@ -48,11 +55,11 @@ class _Header extends React.Component{
 			}
 			if (idx>this.props.path.length-2) {
 				return (
-						<span key={idx} class="headerPathElem"><span class="headerPathElemDivider" style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span style={{"cursor":"default","color":"#00"}}>{p.label}</span></span>
+						<span key={idx} className="headerPathElem"><span className="headerPathElemDivider" style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span className="pathElemSpan" style={{"cursor":"default","color":"#000"}}>{p.label}</span></span>
 				)
 			} else {
 				return (
-						<span key={idx} class="headerPathElem"><span class="headerPathElemDivider" style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span onClick={()=>cs.dispatch({'type':'goPath', 'target':p.label})} style={{"cursor":"pointer","color":"blue"}}>{p.label}</span></span>
+						<span key={idx} className="headerPathElem"><span className="headerPathElemDivider" style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span className="pathElemSpan" onClick={()=>cs.dispatch({'type':'goPath', 'target':p.label})} style={{"cursor":"pointer","color":"blue"}}>{p.label}</span></span>
 				)
 			}
 			
@@ -62,7 +69,7 @@ class _Header extends React.Component{
 			
 			<div id="header"   style={{'height':'70px', 'margin':'5px', 'border':'1px solid #e1e1e1'}}>
 				<div style={{'height':'50px', 'backgroundColor':'#1b83b1'}}></div>
-				<div class="headerPathContainer" style={{'height':'20px', 'backgroundColor':'#e6eaec'}}>
+				<div className="headerPathContainer" style={{'height':'20px', 'backgroundColor':'#e6eaec'}}>
 					{pathElem}
 				</div>
       		</div>
