@@ -1,4 +1,4 @@
-import cs from '../../common/CommunicationManager'
+import cm from '../../common/CommunicationManager'
 import { browserHistory } from 'react-router';
 
 const HeaderReducer = (state = {'path':[]}, action) => {

@@ -1,4 +1,4 @@
-import cs from '../common/CommunicationManager'
+import cm from '../common/CommunicationManager'
 
 export const logger = store => next => action => {
   console.log('dispatching', action)
@@ -45,7 +45,7 @@ export const callbackMiddleware = store => next => action => {
 	    return next(action);
 	}
 export const currentAction = store => next => action => {
-    	cs.currentAction = action;
+    	cm.currentAction = action;
     	
     return next(action);
 }

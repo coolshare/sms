@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux'
-//import cs from '../../common/CommunicationManager'
+//import cm from '../../common/CommunicationManager'
 
 /**
 *

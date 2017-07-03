@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import {connect} from 'react-redux'
-import cs from '../common/CommunicationManager'
+import cm from '../common/CommunicationManager'
 import Header from './Header/Header'
 import Utils from '../common/Utils'
 import { browserHistory } from 'react-router';
@@ -18,7 +18,7 @@ import { browserHistory } from 'react-router';
 			
 			push = (cc) => {
 				var c = cc[0];
-				cs.dispatch({"type":"BeforePopupPush", "data":cc[1]})
+				cm.dispatch({"type":"BeforePopupPush", "data":cc[1]})
 				let id = cc[1]+"_"+Utils.getId()
 				for (let i=0; i<this.idList.length; i++) {
 					let cc = document.getElementById(this.idList[i]);
@@ -26,7 +26,7 @@ import { browserHistory } from 'react-router';
 				}
 				this.idList.push(id);
 				var comList = [...this.state.componentList];
-				comList.push(<Provider key={id} store={cs.store}>
+				comList.push(<Provider key={id} store={cm.store}>
 				<div id={id}>{React.createElement(c)}</div>
 			    </Provider>)
 			    this.setState({"componentList":comList, selected:id})			   
@@ -38,43 +38,43 @@ import { browserHistory } from 'react-router';
 				
 
 		        if (this.idList.length===0) {
-						cs.selectedPopup = null;
+						cm.selectedPopup = null;
 						this.setState({"componentList":comList, selected:null})	
-						console.log("==========>>"+cs.popupBase)
-						browserHistory.replace(cs.popupBase)
-						//cs.goBack()
+						console.log("==========>>"+cm.popupBase)
+						browserHistory.replace(cm.popupBase)
+						//cm.goBack()
 				} else {
 					let id = this.idList[this.idList.length-1];
 					let cc = document.getElementById(id);
 					cc.style.display = "block"
 					this.setState({"componentList":comList, selected:id})		
 				}
-		        cs.dispatch({"type":"AfterPopupPop", "data":poppedComponentId.split("_")[0]})
+		        cm.dispatch({"type":"AfterPopupPop", "data":poppedComponentId.split("_")[0]})
 			}
 			componentDidMount() {
 				let self = this;
-				cs.subscribe( "ClosePopup", ()=>{				
+				cm.subscribe( "ClosePopup", ()=>{				
 					self.pop();
-					cs.popStack()
-					if (cs.isStackEmpty()) {
-						cs.selectedPopup = null;
+					cm.popStack()
+					if (cm.isStackEmpty()) {
+						cm.selectedPopup = null;
 						
-						browserHistory.replace(cs.popupBase)
-						//cs.goBack()
+						browserHistory.replace(cm.popupBase)
+						//cm.goBack()
 					}
 				}, this)
-				cs.subscribe("pushPopup", ()=>{		
-					if (cs.selectedPopup) {
-						this.push(cs.selectedPopup)
+				cm.subscribe("pushPopup", ()=>{		
+					if (cm.selectedPopup) {
+						this.push(cm.selectedPopup)
 					}
 				}, this)
-				if (cs.selectedPopup) {
-					this.push(cs.selectedPopup)
+				if (cm.selectedPopup) {
+					this.push(cm.selectedPopup)
 				}
 			}
 			componentWillUnmount() {
-				cs.unsubscribe("ClosePopup");
-				cs.unsubscribe("pushPopup");
+				cm.unsubscribe("ClosePopup");
+				cm.unsubscribe("pushPopup");
 			}
 			
 

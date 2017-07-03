@@ -1,4 +1,4 @@
-import cs from '../common/CommunicationManager'
+import cm from '../common/CommunicationManager'
 
 const Utils = {
 	getId: ()=>"id_"+new Date().valueOf(),  

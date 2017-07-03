@@ -1,14 +1,14 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom'
-import cs from '../common/CommunicationManager'
+import cm from '../common/CommunicationManager'
 
 class Subscriber extends React.Component {
   constructor(props) {
     super(props);
     this.refList = [];
     var self = this;
-    cs.subscribe(this.props.ActionType, function(options) {
+    cm.subscribe(this.props.ActionType, function(options) {
     	
     	for (var i=0; i<self.refList.length; i++){
     		var elem = ReactDOM.findDOMNode(self.refs[self.refList[i]]);

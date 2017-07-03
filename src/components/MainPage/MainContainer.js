@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux'
 import DashboardContainer from './Dashboard/DashboardContainer'
-//import cs from '../../common/CommunicationManager'
+//import cm from '../../common/CommunicationManager'
 
 /**
 *

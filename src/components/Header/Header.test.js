@@ -5,12 +5,12 @@ import { Provider } from 'react-redux'
 import Header from './Header';
 import { createStore, applyMiddleware } from 'redux'
 import ReducerManager from '../ReducerManager'
-import cs from '../../common/CommunicationManager'
+import cm from '../../common/CommunicationManager'
 import {logger, currentAction, asyncDispatchMiddleware, callbackMiddleware} from '../CommonMiddleware'
 import { shallow } from 'enzyme';
 
 let store = createStore(ReducerManager, applyMiddleware(logger, currentAction, asyncDispatchMiddleware, callbackMiddleware));
-cs.init(store);
+cm.init(store);
 
 let sm = require("../../common/ServiceManager").default
 sm.init();
@@ -20,7 +20,7 @@ describe("Header", () => {
   var self;
   beforeEach(function() {
 	self = this;
-    this.path = cs.routeData["Home"];
+    this.path = cm.routeData["Home"];
 
     this.TestUtils = TestUtils;
     

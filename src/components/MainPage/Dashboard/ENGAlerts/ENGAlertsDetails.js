@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import Dispatcher from '../../../../common/Dispatcher'
 import Gadget from '../../../../common/Gadget'
 import Header from '../../../Header/Header'
-import cs from '../../../../common/CommunicationManager'
+import cm from '../../../../common/CommunicationManager'
 
 /**
 *

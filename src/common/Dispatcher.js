@@ -1,5 +1,5 @@
 import React from 'react';
-import cs from '../common/CommunicationManager'
+import cm from '../common/CommunicationManager'
 
 class Dispatcher extends React.Component {
   constructor(props) {
@@ -31,7 +31,7 @@ class Dispatcher extends React.Component {
 		  this.props.action._type = "setState";
 		  this.props.action._data = this.props.setState;
 	  }
-	  cs.dispatch(this.props.action);
+	  cm.dispatch(this.props.action);
   }
   
   render() {

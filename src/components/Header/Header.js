@@ -1,7 +1,7 @@
 import React from 'react'
 import { Grid, Row, Col } from 'react-bootstrap';
 import {connect} from 'react-redux'
-import cs from '../../common/CommunicationManager'
+import cm from '../../common/CommunicationManager'
 import sm from '../../common/ServiceManager';
 //import { browserHistory } from 'react-router';
 /**
@@ -17,7 +17,7 @@ class _Header extends React.Component{
 				path = p;
 			}
 		}
-		cs.store.dispatch({'type':'setPath', 'path':path});
+		cm.store.dispatch({'type':'setPath', 'path':path});
 	}
 	
 	reconstructPath() {
@@ -29,9 +29,9 @@ class _Header extends React.Component{
 		}
 		list = list[1].split("/")
 		var path = [];
-		path.push(cs.routeData["Home"]);
+		path.push(cm.routeData["Home"]);
 		for (var i=1; i<list.length; i++) {
-			var p = cs.routeData[list[i]];
+			var p = cm.routeData[list[i]];
 			if (list[i]=="Home") {
 				continue;
 			}
@@ -59,7 +59,7 @@ class _Header extends React.Component{
 				)
 			} else {
 				return (
-						<span key={idx} className="headerPathElem"><span className="headerPathElemDivider" style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span className="pathElemSpan" onClick={()=>cs.dispatch({'type':'goPath', 'target':p.label})} style={{"cursor":"pointer","color":"blue"}}>{p.label}</span></span>
+						<span key={idx} className="headerPathElem"><span className="headerPathElemDivider" style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span className="pathElemSpan" onClick={()=>cm.dispatch({'type':'goPath', 'target':p.label})} style={{"cursor":"pointer","color":"blue"}}>{p.label}</span></span>
 				)
 			}
 			
