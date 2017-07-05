@@ -59,6 +59,7 @@
     "react-bootstrap": "^0.30.8",
     "react-data-grid": "^2.0.30",
     "react-data-grid-addons": "^2.0.30",
+    "react-dazzle": "^1.2.5",
     "react-dom": "^15.5.4",
     "react-fontawesome": "^1.6.1",
     "react-image-gallery": "^0.7.15",

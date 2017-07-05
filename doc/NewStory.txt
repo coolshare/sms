@@ -1,0 +1,76 @@
+As an admin,
+
+Login screen
+============
+I want to create an account
+I want to recover my password
+I want to login
+I want to be hide or show my pw
+
+Header Area
+===========
+I want to see netElastic logo
+I want to access Dashboard
+I want to access Overview
+I want to access Orchestration
+I want to access Administration
+I want to see logged-in user details
+
+Dashboard (default screen after loggin in)
+==========================================
+I want to view the dashboard to see what is going on in the area I am managing
+I want to see Resource Usage
+I want to see Max Latency image
+I want to see Error Rate History
+I want to see Request information
+I want to be able to customize my dashboard by add/remove gadgets
+
+Orchestration Area
+==================
+I want to see a graph where all the stores, ENGs and relation are displayed. The graph 
+  should also present the status (such as latency, error and resource usage)of each 
+  store using colored link or node/icon.
+
+  I should be able to drill down to a particular ENG and store.
+
+  I should be able to make adjustment like rearrange resources on the graph such as 
+  right click at a node(store or ENG) and then select an action
+
+Map Area
+==================
+I want to see a map view as an alternative to the graph where all the stores, ENGs 
+  and relation are displayed. The map should also present the status (such as latency, 
+  error and resource usage)of each store using colored link or node/icon.
+
+  I should be able to drill down to a particular ENG and store.
+
+  I should be able to make adjustment like rearrange resources on the graph such as 
+  right click at a node(store or ENG) and then select an action
+
+Administration Area
+===================
+
+I want to be able to add an user
+I want to be able to remove an user
+I want to be able to add a group
+I want to be able to remove a group
+I want to be able to add an user to a group
+I want to be able to remove an user from a group
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

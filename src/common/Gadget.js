@@ -10,8 +10,8 @@ export default class Gadget extends React.Component{
 	constructor(name) {
 		super();
 		this.name = name;
-		this.w = 300;
-		this.h = 250;
+		this.w = 500;
+		this.h = 350;
 		this.gadgetState = {"name":this.name, "elem":this, "state":"normal"};
 		
 		cm.dispatch({"type":"registerGadget", "data":this.gadgetState})
@@ -51,7 +51,7 @@ export default class Gadget extends React.Component{
 		let h = this.gadgetState.state==="max"?mainContainerSize[1]:this.h;
 		
 		return (
-			<div style={{"width":w+"px", "height":h+"px", "backgroundColor":"#58D3F7", "borderRadius":"10px", "margin":"9px", "padding":"9px"}}>
+			<div style={{"float":"left", "width":w+"px", "height":h+"px", "backgroundColor":"#58D3F7", "borderRadius":"10px", "margin":"9px", "padding":"9px"}}>
 				{this.renderHeader()}
 				{this.renderMe()}
 			</div>
