@@ -10,8 +10,8 @@ export default class Gadget extends React.Component{
 	constructor(name) {
 		super();
 		this.name = name;
-		this.w = 500;
-		this.h = 350;
+		this.w = 300;
+		this.h = 250;
 		this.gadgetState = {"name":this.name, "elem":this, "state":"normal"};
 		
 		cm.dispatch({"type":"registerGadget", "data":this.gadgetState})

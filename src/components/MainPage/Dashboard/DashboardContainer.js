@@ -8,6 +8,38 @@ import ENGAlertsGadget from './ENGAlerts/ENGAlertsGadget'
 const numCol = 2;
 
 class _DashboardContainer extends React.Component{
+	
+	dragStart = (event) => {
+console.log("dragStart")
+	    var data = {
+	      name: 'foobar',
+	      age: 15 
+	    };
+
+	    event.dataTransfer.setData('text', JSON.stringify(data)); 
+
+	  }
+	drop = (event) => {
+		console.log("drop")
+	    event.preventDefault();
+
+	    var data;
+
+	    try {
+	      data = JSON.parse(event.dataTransfer.getData('text'));
+	    } catch (e) {
+	      // If the text data isn't parsable we'll just ignore it.
+	      return;
+	    }
+
+	    // Do something with the data
+	    console.log(data);
+
+	  }
+	dragOver(event) {
+		event.preventDefault();
+		console.log("dragOver")
+	}
 	/**
     * render
     * @return {ReactElement} markup
@@ -24,11 +56,11 @@ class _DashboardContainer extends React.Component{
 			}
 		}
 		return (
-			<div>
-				{gadgets==null || ((maxElem===null||maxElem===gadgets["ResouceUsageGadget"])&& gadgets["ResouceUsageGadget"].state!=="min" && gadgets["ResouceUsageGadget"].state!=="close")?<ResouceUsageGadget gadgets={this.props.gadgets}/>:null}
-				{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGAlertsGadget"])&&gadgets["ENGAlertsGadget"].state!=="min" && gadgets["ENGAlertsGadget"].state!=="close")?<ENGAlertsGadget gadgets={this.props.gadgets}/>:null}
-				{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGListGadget"])&&gadgets["ENGListGadget"].state!=="min" && gadgets["ENGListGadget"].state!=="close")?<ENGListGadget gadgets={this.props.gadgets}/>:null}
-			</div>						
+				<div onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop}>
+					{gadgets==null || ((maxElem===null||maxElem===gadgets["ResouceUsageGadget"])&& gadgets["ResouceUsageGadget"].state!=="min" && gadgets["ResouceUsageGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ResouceUsageGadget gadgets={this.props.gadgets}/></div>:null}
+					{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGAlertsGadget"])&&gadgets["ENGAlertsGadget"].state!=="min" && gadgets["ENGAlertsGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ENGAlertsGadget gadgets={this.props.gadgets}/></div>:null}
+					{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGListGadget"])&&gadgets["ENGListGadget"].state!=="min" && gadgets["ENGListGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ENGListGadget gadgets={this.props.gadgets}/></div>:null}
+				</div>
 		)
 		//} else {
 		//	return null;
