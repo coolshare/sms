@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM, {findDOMNode} from "react-dom";
 import TestUtils from "react-dom/test-utils";
 import { Provider } from 'react-redux'
 import Header from './Header';
@@ -8,6 +8,7 @@ import ReducerManager from '../ReducerManager'
 import cm from '../../common/CommunicationManager'
 import {logger, currentAction, asyncDispatchMiddleware, callbackMiddleware} from '../CommonMiddleware'
 import { shallow } from 'enzyme';
+import {expect} from 'chai';
 
 let store = createStore(ReducerManager, applyMiddleware(logger, currentAction, asyncDispatchMiddleware, callbackMiddleware));
 cm.init(store);
@@ -41,11 +42,10 @@ describe("Header", () => {
 	  //expect(pathElemSpan).to.have.length.of(1);
 	  console.log("in it pathElemSpan="+pathElemSpan+"**")
     //expect(pathElemDivider.length).toEqual(0);
+	  const title = findDOMNode(self.component.refs.pathElemSpan);
+	  console.log("title="+title)
+	  expect(title).to.be.ok;
+      expect(title.textContent).to.contain('Home');
   }); 
-  it ("shadow test", function() {
-	  const p = shallow(<Provider store={store}><Header className="header" path={self.path} /></Provider>)
-	  let header = self.TestUtils.scryRenderedDOMComponentsWithClass(p, "header");
-	  // Using prop to retrieve the columns property
-	  expect(header.prop('path')).to.eql(self.path);
-  })
+  
 });

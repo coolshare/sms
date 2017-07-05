@@ -21,6 +21,11 @@ module.exports = {
       loaders: ['react-hot', 'babel'],
       include: path.join(__dirname, 'src')
     },
-    { test: /\.css$/, loader: "style-loader!css-loader" }]
+    { test: /\.css$/, loader: "style-loader!css-loader" },
+    {
+        test: /\.(woff2?|ttf|svg|eot)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'file-loader',
+    }
+    ]
   }
 };

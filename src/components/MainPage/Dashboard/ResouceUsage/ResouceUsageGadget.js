@@ -8,15 +8,21 @@ import cm from '../../../../common/CommunicationManager'
 *
 */
 class _ResouceUsageGadget extends Gadget{
+	constructor() {
+		super("ResouceUsageGadget")
+	}
 	/**
     * render
     * @return {ReactElement} markup
     */
-	render(){
-		
+	renderMe(){
+		if (this.props.gadget===undefined) {
+			return null;
+		}
+		this.gadgetState = this.props.gadget;
 		let action = cm.routeData["ResouceUsageDetails"]
 		return (
-			<div id="ResouceUsage" style={{"height":"250px", "backgroundColor":"#58D3F7", "borderRadius":"10px", "margin":"9px", "padding":"9px"}}>		
+			<div id="ResouceUsage" style={{"padding":"9px"}}>	
 				<Dispatcher action={{"type":"pushPath", "action":action}}>{action.label}</Dispatcher>
       		</div>
 		)
@@ -26,6 +32,7 @@ class _ResouceUsageGadget extends Gadget{
 const ResouceUsageGadget = connect(
 		  store => {
 			    return {
+			    	gadget: store.DashboardReducer.gadgets["ResouceUsageGadget"]
 			    };
 			  }
 			)(_ResouceUsageGadget);

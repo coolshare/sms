@@ -55,7 +55,7 @@ class _Header extends React.Component{
 			}
 			if (idx>this.props.path.length-2) {
 				return (
-						<span key={idx} className="headerPathElem"><span className="headerPathElemDivider" style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span className="pathElemSpan" style={{"cursor":"default","color":"#000"}}>{p.label}</span></span>
+						<span key={idx} className="headerPathElem"><span className="headerPathElemDivider" style={{"color":"#000", "marginLeft":"5px", "marginRight":"5px"}}>{dd}</span><span ref="pathElemSpan" className="pathElemSpan" style={{"cursor":"default","color":"#000"}}>{p.label}</span></span>
 				)
 			} else {
 				return (
