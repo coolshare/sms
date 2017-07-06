@@ -1,5 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux'
+import ReactDOM, {findDOMNode} from "react-dom";
 import ResouceUsageGadget from './ResouceUsage/ResouceUsageGadget'
 import ENGListGadget from './ENGList/ENGListGadget'
 import ENGAlertsGadget from './ENGAlerts/ENGAlertsGadget'
@@ -8,21 +9,41 @@ import cm from '../../../common/CommunicationManager'
 const numCol = 2;
 
 class _DashboardContainer extends React.Component{
-	
+	constructor() {
+		super();
+		this.drop = this.drop.bind(this);
+		this.dragStart = this.dragStart.bind(this);
+		this.dragOver = this.dragOver.bind(this);
+		cm.gadgetStateMap = {
+				"ResouceUsageGadget":{"name":"ResouceUsageGadget", "type":ResouceUsageGadget, "state":"normal"},
+				"ENGAlertsGadget":{"name":"ENGAlertsGadget", "type":ENGAlertsGadget, "state":"normal"},
+				"ENGListGadget":{"name":"ENGListGadget", "type":ENGListGadget, "state":"normal"}
+			};
+		for (let k in cm.gadgetStateMap) {
+			cm.dispatch({"type":"registerGadget", "data":cm.gadgetStateMap[k]})
+		}
+		
+	}
+	adjustPosition = ()=> {
+		
+	}
 	dragStart = (event) => {
-console.log("dragStart")
+		this.dragTarget = event.currentTarget;
+		this.container = findDOMNode(this.refs.dropContainer);
+		this.container.style.cursor = "pointer"
 	    var data = {
 	      name: 'foobar',
 	      age: 15 
 	    };
-
+		
 	    event.dataTransfer.setData('text', JSON.stringify(data)); 
-
+	    console.log("dragStart:"+this.container.style.cursor)
 	  }
 	drop = (event) => {
-		console.log("drop")
+		console.log("drop: x="+event.clientX+" y="+event.clientY)
 	    event.preventDefault();
-
+		this.adjustPosition();
+		this.container.style.cursor = "default"
 	    var data;
 
 	    try {
@@ -37,8 +58,10 @@ console.log("dragStart")
 
 	  }
 	dragOver(event) {
+		 console.log("dragOver:"+this.container.style.cursor)
 		event.preventDefault();
-		console.log("dragOver")
+		//console.log("dragOver")
+		this.container.style.cursor = "pointer"
 	}
 	/**
     * render
@@ -47,6 +70,11 @@ console.log("dragStart")
 	render(){
 		var selt = this;
 		var gadgets = Object.keys(this.props.gadgets).length>0?this.props.gadgets:null;
+		
+
+		if (gadgets===null || this.props.mainContainerSize===undefined) {
+			return null;
+		}
 		var maxElem = null;
 		for (let k in gadgets) {
 			let elem = gadgets[k];
@@ -55,14 +83,10 @@ console.log("dragStart")
 				break;
 			}
 		}
-		var mainContainerSize = cm.mainContainerSize;
-		if (mainContainerSize===undefined) {
-			return null;
-		}
-		
+		let aa = gadgets["ResouceUsageGadget"].type
 		return (
-				<div id="dropContainer" onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop} style={{"width":mainContainerSize[0], "height":mainContainerSize[1]}}>
-					{gadgets==null || ((maxElem===null||maxElem===gadgets["ResouceUsageGadget"])&& gadgets["ResouceUsageGadget"].state!=="min" && gadgets["ResouceUsageGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ResouceUsageGadget gadgets={this.props.gadgets}/></div>:null}
+				<div ref="dropContainer" onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop} style={{"width":this.props.mainContainerSize.w, "height":this.props.mainContainerSize.h}}>
+					{gadgets==null || ((maxElem===null||maxElem===gadgets["ResouceUsageGadget"])&& gadgets["ResouceUsageGadget"].state!=="min" && gadgets["ResouceUsageGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><aa gadgets={this.props.gadgets}/></div>:null}
 					{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGAlertsGadget"])&&gadgets["ENGAlertsGadget"].state!=="min" && gadgets["ENGAlertsGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ENGAlertsGadget gadgets={this.props.gadgets}/></div>:null}
 					{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGListGadget"])&&gadgets["ENGListGadget"].state!=="min" && gadgets["ENGListGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ENGListGadget gadgets={this.props.gadgets}/></div>:null}
 				</div>
@@ -116,7 +140,8 @@ console.log("dragStart")
 const DashboardContainer = connect(
 		  store => {
 			    return {
-			    	gadgets: store.DashboardReducer.gadgets
+			    	gadgets: store.DashboardReducer.gadgets,
+			    	mainContainerSize: store.MainContainerReducer.mainContainerSize
 			    };
 			  }
 			)(_DashboardContainer);

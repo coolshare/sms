@@ -9,6 +9,7 @@ import cm from '../../common/CommunicationManager'
 import {logger, currentAction, asyncDispatchMiddleware, callbackMiddleware} from '../CommonMiddleware'
 import { shallow } from 'enzyme';
 import {expect} from 'chai';
+import { mount } from 'enzyme'
 
 let store = createStore(ReducerManager, applyMiddleware(logger, currentAction, asyncDispatchMiddleware, callbackMiddleware));
 cm.init(store);
@@ -42,10 +43,18 @@ describe("Header", () => {
 	  //expect(pathElemSpan).to.have.length.of(1);
 	  console.log("in it pathElemSpan="+pathElemSpan+"**")
     //expect(pathElemDivider.length).toEqual(0);
-	  const title = findDOMNode(self.component.refs.pathElemSpan);
+	  /*const title = findDOMNode(self.component.refs.pathElemSpan);
 	  console.log("title="+title)
 	  expect(title).to.be.ok;
       expect(title.textContent).to.contain('Home');
+      */
+	  
+	  	const wrapper = mount(<Provider store={store}><Header path='foo' /></Provider>)
+		const header = wrapper.find(Header).first()
+		console.log("path="+header.prop('path'))
+		//expect(header.exists()).toBe(true)
+		// you can even check out the props
+		expect(header.prop('path')).to.be.equal('foo')
   }); 
   
 });

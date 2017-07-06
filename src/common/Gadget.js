@@ -12,9 +12,9 @@ export default class Gadget extends React.Component{
 		this.name = name;
 		this.w = 300;
 		this.h = 250;
-		this.gadgetState = {"name":this.name, "elem":this, "state":"normal"};
+		this.gadgetState = cm.gadgetStateMap[name];
 		
-		cm.dispatch({"type":"registerGadget", "data":this.gadgetState})
+		
 	}
 	handleMin = () => {
 		cm.dispatch({"type":"GadgetMin", "data":this.gadgetState.name})
@@ -46,9 +46,13 @@ export default class Gadget extends React.Component{
 		return null;
 	}
 	render() {
+		
+		if (this.gadgetState===undefined) {
+			return null;
+		}
 		let mainContainerSize = cm.mainContainerSize;
-		let w = this.gadgetState.state==="max"?mainContainerSize[0]:this.w;
-		let h = this.gadgetState.state==="max"?mainContainerSize[1]:this.h;
+		let w = this.gadgetState.state==="max"?mainContainerSize.w:this.w;
+		let h = this.gadgetState.state==="max"?mainContainerSize.h:this.h;
 		
 		return (
 			<div style={{"float":"left", "width":w+"px", "height":h+"px", "backgroundColor":"#58D3F7", "borderRadius":"10px", "margin":"9px", "padding":"9px"}}>

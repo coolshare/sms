@@ -8,7 +8,7 @@ import cm from '../../common/CommunicationManager'
 */
 class _MainContainer extends React.Component{
 	componentDidMount() {
-		cm.dispatch({"type":"updateMainContainerSize", "data":[this.mainContainer.clientWidth, this.mainContainer.clientHeight]})
+		cm.dispatch({"type":"updateMainContainerSize", "data":{"w":this.mainContainer.clientWidth, "h":this.mainContainer.clientHeight}})
 	}
 	/**
     * render
