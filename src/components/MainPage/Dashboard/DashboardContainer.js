@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import ResouceUsageGadget from './ResouceUsage/ResouceUsageGadget'
 import ENGListGadget from './ENGList/ENGListGadget'
 import ENGAlertsGadget from './ENGAlerts/ENGAlertsGadget'
-//import cm from '../../common/CommunicationManager'
+import cm from '../../../common/CommunicationManager'
 
 const numCol = 2;
 
@@ -55,8 +55,13 @@ console.log("dragStart")
 				break;
 			}
 		}
+		var mainContainerSize = cm.mainContainerSize;
+		if (mainContainerSize===undefined) {
+			return null;
+		}
+		
 		return (
-				<div onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop}>
+				<div id="dropContainer" onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop} style={{"width":mainContainerSize[0], "height":mainContainerSize[1]}}>
 					{gadgets==null || ((maxElem===null||maxElem===gadgets["ResouceUsageGadget"])&& gadgets["ResouceUsageGadget"].state!=="min" && gadgets["ResouceUsageGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ResouceUsageGadget gadgets={this.props.gadgets}/></div>:null}
 					{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGAlertsGadget"])&&gadgets["ENGAlertsGadget"].state!=="min" && gadgets["ENGAlertsGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ENGAlertsGadget gadgets={this.props.gadgets}/></div>:null}
 					{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGListGadget"])&&gadgets["ENGListGadget"].state!=="min" && gadgets["ENGListGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ENGListGadget gadgets={this.props.gadgets}/></div>:null}
