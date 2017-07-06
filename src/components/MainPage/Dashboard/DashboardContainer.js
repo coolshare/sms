@@ -86,7 +86,7 @@ class _DashboardContainer extends React.Component{
 		let aa = gadgets["ResouceUsageGadget"].type
 		return (
 				<div ref="dropContainer" onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop} style={{"width":this.props.mainContainerSize.w, "height":this.props.mainContainerSize.h}}>
-					{gadgets==null || ((maxElem===null||maxElem===gadgets["ResouceUsageGadget"])&& gadgets["ResouceUsageGadget"].state!=="min" && gadgets["ResouceUsageGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><aa gadgets={this.props.gadgets}/></div>:null}
+					{gadgets==null || ((maxElem===null||maxElem===gadgets["ResouceUsageGadget"])&& gadgets["ResouceUsageGadget"].state!=="min" && gadgets["ResouceUsageGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}>{aa}}/></div>:null}
 					{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGAlertsGadget"])&&gadgets["ENGAlertsGadget"].state!=="min" && gadgets["ENGAlertsGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ENGAlertsGadget gadgets={this.props.gadgets}/></div>:null}
 					{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGListGadget"])&&gadgets["ENGListGadget"].state!=="min" && gadgets["ENGListGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ENGListGadget gadgets={this.props.gadgets}/></div>:null}
 				</div>

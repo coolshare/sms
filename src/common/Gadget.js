@@ -50,6 +50,7 @@ export default class Gadget extends React.Component{
 		if (this.gadgetState===undefined) {
 			return null;
 		}
+		debugger
 		let mainContainerSize = cm.mainContainerSize;
 		let w = this.gadgetState.state==="max"?mainContainerSize.w:this.w;
 		let h = this.gadgetState.state==="max"?mainContainerSize.h:this.h;

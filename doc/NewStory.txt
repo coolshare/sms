@@ -1,4 +1,4 @@
-As an admin,
+As an provider admin,
 
 Login screen
 ============

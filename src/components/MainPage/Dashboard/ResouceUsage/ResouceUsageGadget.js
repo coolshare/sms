@@ -31,6 +31,7 @@ class _ResouceUsageGadget extends Gadget{
 
 const ResouceUsageGadget = connect(
 		  store => {
+			  debugger
 			    return {
 			    	gadget: store.DashboardReducer.gadgets["ResouceUsageGadget"]
 			    };

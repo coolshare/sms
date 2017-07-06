@@ -1,5 +1,10 @@
 const DashboardReducer = (state = {'gadgets':{}}, action) => {
   switch (action.type) {
+    case 'setGadget':
+
+      return Object.assign({}, state, {
+    	  gadget: action.data
+      })
   	case 'registerGadget':
   	  var gadgets = Object.assign({}, state.gadgets)
   	  gadgets[action.data.name] = action.data;
