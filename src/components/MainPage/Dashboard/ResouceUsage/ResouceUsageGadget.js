@@ -7,19 +7,20 @@ import cm from '../../../../common/CommunicationManager'
 /**
 *
 */
-class _ResouceUsageGadget extends Gadget{
+export default class ResouceUsageGadget extends Gadget{
 	constructor() {
 		super("ResouceUsageGadget")
+		debugger
 	}
 	/**
     * render
     * @return {ReactElement} markup
     */
 	renderMe(){
-		if (this.props.gadget===undefined) {
+		if (this.props.gadgets===undefined) {
 			return null;
 		}
-		this.gadgetState = this.props.gadget;
+		let gadget = this.props.gadgets[this.name];
 		let action = cm.routeData["ResouceUsageDetails"]
 		return (
 			<div id="ResouceUsage" style={{"padding":"9px"}}>	
@@ -28,13 +29,3 @@ class _ResouceUsageGadget extends Gadget{
 		)
 	}
 }
-
-const ResouceUsageGadget = connect(
-		  store => {
-			  debugger
-			    return {
-			    	gadget: store.DashboardReducer.gadgets["ResouceUsageGadget"]
-			    };
-			  }
-			)(_ResouceUsageGadget);
-export default ResouceUsageGadget
