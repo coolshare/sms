@@ -7,7 +7,7 @@ import cm from '../../../../common/CommunicationManager'
 /**
 *
 */
-class _ENGListGadget extends Gadget {
+export default class ENGListGadget extends Gadget {
 	constructor() {
 		super("ENGListGadget")
 	}
@@ -16,11 +16,12 @@ class _ENGListGadget extends Gadget {
     * @return {ReactElement} markup
     */
 	renderMe(){
-		if (this.props.gadget===undefined) {
+
+		let gadget = this.props.gadget;
+		if (gadget===undefined) {
 			return null;
 		}
-		this.gadgetState = this.props.gadget;
-		let action = cm.routeData["ENGListDetails"];
+		let action = cm.routeData["ENGListDetails"]
 		return (
 			<div id="ENGList" style={{"padding":"9px"}}>	
 			<Dispatcher action={{"type":"pushPath", "action":action}}>{action.label}</Dispatcher>
@@ -28,12 +29,3 @@ class _ENGListGadget extends Gadget {
 		)
 	}
 }
-
-const ENGListGadget = connect(
-		  store => {
-			    return {
-			    	gadget: store.DashboardReducer.gadgets["ENGListGadget"]
-			    };
-			  }
-			)(_ENGListGadget);
-export default ENGListGadget

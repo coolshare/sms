@@ -12,27 +12,31 @@ export default class Gadget extends React.Component{
 		this.name = name;
 		this.w = 300;
 		this.h = 250;
-debugger
+		this.handleMin = this.handleMin.bind(this)
+		this.handleMax = this.handleMax.bind(this)
+		this.handleRestore = this.handleRestore.bind(this)
+		this.handleClose = this.handleClose.bind(this)
+		this.renderHeader = this.renderHeader.bind(this)
 	}
 	handleMin = () => {
-		cm.dispatch({"type":"GadgetMin", "data":gadget.name})
+		cm.dispatch({"type":"GadgetMin", "data":this.name})
 	}
 	handleMax = () => {
-		cm.dispatch({"type":"GadgetMax", "data":gadget.name})
+		cm.dispatch({"type":"GadgetMax", "data":this.name})
 	}
 	handleRestore = () => {
-		cm.dispatch({"type":"GadgetRestore", "data":gadget.name})
+		cm.dispatch({"type":"GadgetRestore", "data":this.name})
 	}
 	handleClose = () => {
-		cm.dispatch({"type":"GadgetClose", "data":gadget.name})
+		cm.dispatch({"type":"GadgetClose", "data":this.name})
 	}
 	renderHeader() {
+		let gadget = this.props.gadget;
 	
-	
-		if (this.props.gadgets===undefined) {
+		if (gadget===undefined) {
 			return null;
 		}
-		let gadget = this.props.gadgets[this.name]
+
 		console.log("state="+gadget.state)
 		return (
 			<div>
@@ -47,11 +51,10 @@ debugger
 		return null;
 	}
 	render() {
-		
-		if (this.props.gadgets===undefined) {
+		let gadget = this.props.gadget;
+		if (gadget===undefined) {
 			return null;
 		}
-		let gadget = this.props.gadgets[this.name]
 		let mainContainerSize = cm.mainContainerSize;
 		let w = gadget.state==="max"?mainContainerSize.w:this.w;
 		let h = gadget.state==="max"?mainContainerSize.h:this.h;

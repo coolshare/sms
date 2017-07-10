@@ -16,7 +16,7 @@ class _MainContainer extends React.Component{
     */
 	render(){
 		return (
-			<div ref = {(input) => { this.mainContainer = input; }}>	
+			<div id="mainContainer" ref = {(input) => { this.mainContainer = input; }} style={{"width":"100%", "height":"100%"}}>	
 				<DashboardContainer/>
       		</div>
 		)

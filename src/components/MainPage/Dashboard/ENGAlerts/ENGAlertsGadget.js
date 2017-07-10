@@ -7,7 +7,7 @@ import cm from '../../../../common/CommunicationManager'
 /**
 *
 */
-class _ENGAlertsGadget extends Gadget{
+export default class ENGAlertsGadget extends Gadget{
 	constructor() {
 		super("ENGAlertsGadget")
 	}
@@ -16,10 +16,10 @@ class _ENGAlertsGadget extends Gadget{
     * @return {ReactElement} markup
     */
 	renderMe(){
-		if (this.props.gadget===undefined) {
+		let gadget = this.props.gadget;
+		if (gadget===undefined) {
 			return null;
 		}
-		this.gadgetState = this.props.gadget;
 		let action = cm.routeData["ENGAlertsDetails"]
 		return (
 			<div id="ENGAlerts" style={{"padding":"9px"}}>	
@@ -29,11 +29,3 @@ class _ENGAlertsGadget extends Gadget{
 	}
 }
 
-const ENGAlertsGadget = connect(
-		  store => {
-			    return {
-			    	gadget: store.DashboardReducer.gadgets["ENGAlertsGadget"]
-			    };
-			  }
-			)(_ENGAlertsGadget);
-export default ENGAlertsGadget

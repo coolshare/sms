@@ -10,17 +10,18 @@ import cm from '../../../../common/CommunicationManager'
 export default class ResouceUsageGadget extends Gadget{
 	constructor() {
 		super("ResouceUsageGadget")
-		debugger
+		
 	}
 	/**
     * render
     * @return {ReactElement} markup
     */
-	renderMe(){
-		if (this.props.gadgets===undefined) {
+	renderMe(){		
+		
+		let gadget = this.props.gadget;
+		if (gadget===undefined) {
 			return null;
 		}
-		let gadget = this.props.gadgets[this.name];
 		let action = cm.routeData["ResouceUsageDetails"]
 		return (
 			<div id="ResouceUsage" style={{"padding":"9px"}}>	
