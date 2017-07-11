@@ -58,7 +58,7 @@ class _DashboardContainer2 extends React.Component{
 
 	  }
 	dragOver(event) {
-		 console.log("dragOver:"+this.container.style.cursor)
+		 //console.log("dragOver:"+this.container.style.cursor)
 		event.preventDefault();
 		//console.log("dragOver")
 		this.container.style.cursor = "pointer"
@@ -68,7 +68,7 @@ class _DashboardContainer2 extends React.Component{
     * @return {ReactElement} markup
     */
 	render(){
-		var selt = this;
+		var self = this;
 		var gadgets = Object.keys(this.props.gadgets).length>0?this.props.gadgets:null;
 		
 
@@ -86,13 +86,13 @@ class _DashboardContainer2 extends React.Component{
 		let elems = Object.keys(gadgets).map((k, idx)=>{
 			let gadget = gadgets[k];
 			if (gadgets==null || ((maxElem===null||maxElem===gadgets[k])&& gadget.state!=="min" && gadget.state!=="close")) {
-				return (React.cloneElement(gadget.elem, {"key":idx, "gadget":gadget}))
+				return (<div key={idx} draggable='true' onDragStart={self.dragStart}>{React.cloneElement(gadget.elem, {"gadget":gadget})}</div>)
 			} else {
 				return null;
 			}			
 		})
 		return (
-				<div ref="dropContainer" onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop} style={{"width":this.props.mainContainerSize.w, "height":this.props.mainContainerSize.h}}>
+				<div id="dropContainer" ref="dropContainer" onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop} style={{"width":this.props.mainContainerSize.w, "height":this.props.mainContainerSize.h}}>
 				{elems}
 				</div>
 		)
