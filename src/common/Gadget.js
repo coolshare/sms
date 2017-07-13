@@ -56,13 +56,19 @@ export default class Gadget extends React.Component{
 			return null;
 		}
 		let mainContainerSize = cm.mainContainerSize;
-		let w = gadget.state==="max"?mainContainerSize.w:this.w;
-		let h = gadget.state==="max"?mainContainerSize.h:this.h;
-		
+		let w = this.w;
+		let h = this.h;
+		if (gadget.state==="max") {
+			w = mainContainerSize.w;
+			h = mainContainerSize.h;
+		} else if (gadget.state==="min") {
+			w = 200;
+			h = 25;
+		}
 		return (
 			<div style={{"float":"left", "width":w+"px", "height":h+"px", "backgroundColor":"#58D3F7", "borderRadius":"10px", "margin":"9px", "padding":"9px"}}>
 				{this.renderHeader()}
-				{this.renderMe()}
+				{(gadget.state!=="min" && gadget.state!=="close")&& this.renderMe()}
 			</div>
 		)
 	}

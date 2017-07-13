@@ -1,8 +1,12 @@
 import cm from '../../common/CommunicationManager'
 import { browserHistory } from 'react-router';
 
-const HeaderReducer = (state = {'path':[]}, action) => {
+const HeaderReducer = (state = {'user':{}, 'path':[]}, action) => {
   switch (action.type) {
+    case 'setUser':
+    	return Object.assign({}, state, {
+    		user: action.data
+        })
     case 'setPath':
       return Object.assign({}, state, {
     	  path: action.path

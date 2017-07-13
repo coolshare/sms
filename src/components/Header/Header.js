@@ -68,7 +68,7 @@ class _Header extends React.Component{
 		return (
 			
 			<div id="header"   style={{'height':'70px', 'margin':'5px', 'border':'1px solid #e1e1e1'}}>
-				<div style={{'height':'50px', 'backgroundColor':'#1b83b1'}}></div>
+				<div style={{'height':'50px', 'backgroundColor':'#1b83b1'}}><span style={{"marginLeft":"20px", "fontSize":"200%", "color":"#FFF"}}>netElastic</span><span style={{"color":"#EEE", "float":"right", "marginRight":"10px", "marginTop":"7px"}}>{this.props.user.user}</span></div>
 				<div className="headerPathContainer" style={{'height':'20px', 'backgroundColor':'#e6eaec'}}>
 					{pathElem}
 				</div>
@@ -79,7 +79,8 @@ class _Header extends React.Component{
 const Header = connect(
 		  store => {
 			    return {
-			    	path:store.HeaderReducer.path
+			    	path:store.HeaderReducer.path,
+			    	user:store.HeaderReducer.user
 			    };
 			  }
 			)(_Header);

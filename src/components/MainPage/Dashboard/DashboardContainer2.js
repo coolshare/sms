@@ -12,9 +12,10 @@ class _DashboardContainer2 extends React.Component{
 		this.dragStart = this.dragStart.bind(this);
 		this.dragOver = this.dragOver.bind(this);
 		cm.gadgetStateMap = {
-				"ResouceUsageGadget":{"name":"ResouceUsageGadget", "path":"./ResouceUsage/ResouceUsageGadget", "state":"normal"},
-				"ENGAlertsGadget":{"name":"ENGAlertsGadget", "path":"./ENGAlerts/ENGAlertsGadget", "state":"normal"},
-				"ENGListGadget":{"name":"ENGListGadget", "path":"./ENGList/ENGListGadget", "state":"normal"}
+				"OrchestrationGadget":{"name":"OrchestrationGadget", "path":"./Orchestration/OrchestrationGadget", "state":"max"},
+				"ResouceUsageGadget":{"name":"ResouceUsageGadget", "path":"./ResouceUsage/ResouceUsageGadget", "state":"min"},
+				"ENGAlertsGadget":{"name":"ENGAlertsGadget", "path":"./ENGAlerts/ENGAlertsGadget", "state":"min"},
+				"ENGListGadget":{"name":"ENGListGadget", "path":"./ENGList/ENGListGadget", "state":"min"}
 			};
 		
 		for (let k in cm.gadgetStateMap) {
@@ -85,7 +86,17 @@ class _DashboardContainer2 extends React.Component{
 		}
 		let elems = Object.keys(gadgets).map((k, idx)=>{
 			let gadget = gadgets[k];
-			if (gadgets==null || ((maxElem===null||maxElem===gadgets[k])&& gadget.state!=="min" && gadget.state!=="close")) {
+			if (gadgets==null || ((maxElem===null||maxElem===gadgets[k]) && gadget.state!=="min" && gadget.state!=="close")) {
+				return (<div key={idx} draggable='true' onDragStart={self.dragStart}>{React.cloneElement(gadget.elem, {"gadget":gadget})}</div>)
+			} else if (gadget.state!=="min"){
+				return (<div key={idx} draggable='true' onDragStart={self.dragStart}>{React.cloneElement(gadget.elem, {"gadget":gadget})}</div>)
+			} else {
+				return null;
+			}			
+		})
+		let minElems = Object.keys(gadgets).map((k, idx)=>{
+			let gadget = gadgets[k];
+			if (gadget.state==="min"){
 				return (<div key={idx} draggable='true' onDragStart={self.dragStart}>{React.cloneElement(gadget.elem, {"gadget":gadget})}</div>)
 			} else {
 				return null;
@@ -93,7 +104,8 @@ class _DashboardContainer2 extends React.Component{
 		})
 		return (
 				<div id="dropContainer" ref="dropContainer" onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop} style={{"width":this.props.mainContainerSize.w, "height":this.props.mainContainerSize.h}}>
-				{elems}
+				<div style={{"height":"90%"}}>{elems}</div>
+				{maxElem===null && <div id="minContainer" style={{"width":"100%", "height":"10%"}}>{minElems}</div>}
 				</div>
 		)
 	

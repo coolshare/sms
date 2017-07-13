@@ -1,9 +1,10 @@
 import { browserHistory } from 'react-router';
 import {gm} from '../common/Common'
-import Login from '../components/Login'
+import Login from '../components/Login/Login'
 import TopContainer from '../components/TopContainer'
 import MainRouteContainer from '../components/MainRouteContainer'
 import StackViewContainer from '../components/StackViewContainer'
+import OrchestrationDetails from '../components/MainPage/Dashboard/Orchestration/OrchestrationDetails'
 import ENGListDetails from '../components/MainPage/Dashboard/ENGList/ENGListDetails'
 import ENGAlertsDetails from '../components/MainPage/Dashboard/ENGAlerts/ENGAlertsDetails'
 import ResouceUsageDetails from '../components/MainPage/Dashboard/ResouceUsage/ResouceUsageDetails'
@@ -15,6 +16,7 @@ const routeData = {
 		"TopContainer":{"label":"TopContainer", "component":TopContainer, "icon":"", "path":"Home"},	
 		"MainRouteContainer":{"label":"MainRouteContainer", "component":MainRouteContainer, "icon":"", "path":"Home"},	
 		"StackViewContainer":{"label":"StackViewContainer", "component":StackViewContainer, "icon":"", "path":"StackViewContainer"},
+		"OrchestrationDetails":{"label":"OrchestrationDetails", "component":OrchestrationDetails, "path":"OrchestrationDetails"},
 		"ENGListDetails":{"label":"ENGListDetails", "component":ENGListDetails, "path":"ENGListDetails"},
 		"ENGAlertsDetails":{"label":"ENGAlertsDetails", "component":ENGAlertsDetails, "icon":"", "path":"ENGAlertsDetails"},
 		"ResouceUsageDetails":{"label":"ResouceUsageDetails", "component":ResouceUsageDetails, "icon":"", "path":"ResouceUsageDetails"}
@@ -33,14 +35,24 @@ class CommunicationManager {
 	}
 	
 	dispatch(action, callback) {
-		this.currentAction = action;
-		action.options = action.options||{}
-		if (callback!==undefined) {
-			action.options.type = "CALLBACK";
-			action.options.callback = callback;
+		var actions;
+		if (action instanceof Array) {
+			actions = action;
+		} else {
+			actions = [action];
+		}
+		for (var i=0; i<actions.length; i++) {
+			var a = actions[i];
+			this.currentAction = a;
+			a.options = a.options||{}
+			if (callback!==undefined) {
+				a.options.type = "CALLBACK";
+				a.options.callback = callback;
+			}
+			
+			this.store.dispatch(a);
 		}
 		
-		this.store.dispatch(action);
 	}
 	subscribe(type, listener, owner) {
 		var self = this;
