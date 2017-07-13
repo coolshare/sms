@@ -1,9 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux'
 import ReactDOM, {findDOMNode} from "react-dom";
-import ResouceUsageGadget from './ResouceUsage/ResouceUsageGadget'
-import ENGListGadget from './ENGList/ENGListGadget'
-import ENGAlertsGadget from './ENGAlerts/ENGAlertsGadget'
 import cm from '../../../common/CommunicationManager'
 
 const numCol = 2;
@@ -15,14 +12,18 @@ class _DashboardContainer extends React.Component{
 		this.dragStart = this.dragStart.bind(this);
 		this.dragOver = this.dragOver.bind(this);
 		cm.gadgetStateMap = {
-				"ResouceUsageGadget":{"name":"ResouceUsageGadget", "type":ResouceUsageGadget, "state":"normal"},
-				"ENGAlertsGadget":{"name":"ENGAlertsGadget", "type":ENGAlertsGadget, "state":"normal"},
-				"ENGListGadget":{"name":"ENGListGadget", "type":ENGListGadget, "state":"normal"}
+				"OrchestrationGadget":{"name":"OrchestrationGadget", "path":"./Orchestration/OrchestrationGadget", "state":"max"},
+				"ResouceUsageGadget":{"name":"ResouceUsageGadget", "path":"./ResouceUsage/ResouceUsageGadget", "state":"min"},
+				"ENGAlertsGadget":{"name":"ENGAlertsGadget", "path":"./ENGAlerts/ENGAlertsGadget", "state":"min"},
+				"ENGListGadget":{"name":"ENGListGadget", "path":"./ENGList/ENGListGadget", "state":"min"}
 			};
-		for (let k in cm.gadgetStateMap) {
-			cm.dispatch({"type":"registerGadget", "data":cm.gadgetStateMap[k]})
-		}
 		
+		for (let k in cm.gadgetStateMap) {
+			let g = cm.gadgetStateMap[k];
+			let type = require(g.path).default;
+			g.elem = React.createElement(type)
+		}
+		cm.dispatch({"type":"setGadgets", "data":cm.gadgetStateMap})
 	}
 	adjustPosition = ()=> {
 		
@@ -58,7 +59,7 @@ class _DashboardContainer extends React.Component{
 
 	  }
 	dragOver(event) {
-		 console.log("dragOver:"+this.container.style.cursor)
+		 //console.log("dragOver:"+this.container.style.cursor)
 		event.preventDefault();
 		//console.log("dragOver")
 		this.container.style.cursor = "pointer"
@@ -68,7 +69,7 @@ class _DashboardContainer extends React.Component{
     * @return {ReactElement} markup
     */
 	render(){
-		var selt = this;
+		var self = this;
 		var gadgets = Object.keys(this.props.gadgets).length>0?this.props.gadgets:null;
 		
 
@@ -83,57 +84,31 @@ class _DashboardContainer extends React.Component{
 				break;
 			}
 		}
-		let aa = gadgets["ResouceUsageGadget"].type
+		let elems = Object.keys(gadgets).map((k, idx)=>{
+			let gadget = gadgets[k];
+			if (gadgets==null || ((maxElem===null||maxElem===gadgets[k]) && gadget.state!=="min" && gadget.state!=="close")) {
+				return (<div key={idx} draggable='true' onDragStart={self.dragStart}>{React.cloneElement(gadget.elem, {"gadget":gadget, "mainContainerSize":this.props.mainContainerSize})}</div>)
+			} else if (gadget.state!=="min" && maxElem===null){
+				return (<div key={idx} draggable='true' onDragStart={self.dragStart}>{React.cloneElement(gadget.elem, {"gadget":gadget, "mainContainerSize":this.props.mainContainerSize})}</div>)
+			} else {
+				return null;
+			}			
+		})
+		let minElems = Object.keys(gadgets).map((k, idx)=>{
+			let gadget = gadgets[k];
+			if (gadget.state==="min"){
+				return (<div key={idx} draggable='true' onDragStart={self.dragStart}>{React.cloneElement(gadget.elem, {"gadget":gadget, "mainContainerSize":this.props.mainContainerSize})}</div>)
+			} else {
+				return null;
+			}			
+		})
 		return (
-				<div ref="dropContainer" onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop} style={{"width":this.props.mainContainerSize.w, "height":this.props.mainContainerSize.h}}>
-					{gadgets==null || ((maxElem===null||maxElem===gadgets["ResouceUsageGadget"])&& gadgets["ResouceUsageGadget"].state!=="min" && gadgets["ResouceUsageGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}>{aa}}/></div>:null}
-					{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGAlertsGadget"])&&gadgets["ENGAlertsGadget"].state!=="min" && gadgets["ENGAlertsGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ENGAlertsGadget gadgets={this.props.gadgets}/></div>:null}
-					{gadgets==null || ((maxElem===null||maxElem===gadgets["ENGListGadget"])&&gadgets["ENGListGadget"].state!=="min" && gadgets["ENGListGadget"].state!=="close")?<div  draggable='true' onDragStart={this.dragStart}><ENGListGadget gadgets={this.props.gadgets}/></div>:null}
+				<div id="dropContainer" ref="dropContainer" onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop} style={{"width":this.props.mainContainerSize.w, "height":this.props.mainContainerSize.h}}>
+				<div style={{"height":"90%"}}>{elems}</div>
+				{maxElem===null && <div id="minContainer" style={{"width":"100%", "height":"10%"}}>{minElems}</div>}
 				</div>
 		)
-		//} else {
-		//	return null;
-		//}
-		/*
-		self.count = 0;
-		var rowList = [];
-		var r = -1;
-		for (let k in this.props.gadgets) {
-			let state = this.props.gadgets[k];
-			if (self.count===0) {
-				rowList[++r] = [];
-				rowList[r].push(state);
-			} else if (self.count===numCol) {
-				self.count = 1;
-				rowList[++r] = [];
-				rowList[r].push(state);
-			} else {
-				rowList[r].push(state);
-			}
-			self.count++;
-		}
-		let rows = rowList.map((row, idx)=>{
-			return (
-				<Row className="show-grid">
-					{
-						row.map((state, idx2)=>{
-							return (
-								<Col xs={6} md={6}>{state.elem}</Col>
-							)	
-						})
-					}
-				</Row>
-			)			
-		})
-		
-		
-		return (
-			<div id="DashboardContainer">	
-				<Grid bsClass="gridContainer">
-					{rows}
-				</Grid>
-      		</div>
-		)*/
+	
 	}
 }
 
@@ -146,3 +121,4 @@ const DashboardContainer = connect(
 			  }
 			)(_DashboardContainer);
 export default DashboardContainer
+

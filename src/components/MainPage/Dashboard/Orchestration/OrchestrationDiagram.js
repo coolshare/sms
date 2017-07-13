@@ -14,6 +14,31 @@ export default class OrchestrationDiagram extends Gadget {
 		super("OrchestrationDiagram")
 	}
 	componentDidMount() {
+		var self = this;
+		cm.subscribe("refreshOrchestration", ()=>{
+			self.buildGraph();
+		})
+		this.buildGraph();
+	}
+	
+	buildGraph = () => {
+		
+		let gadget = this.props.gadget;
+		 var w = gadget.state==="max"?this.props.mainContainerSize.w:this.w;
+		 var h = gadget.state==="max"?this.props.mainContainerSize.h:this.h-50;
+		 var margin = {top: 20, right: 20, bottom: 20, left: 20},
+		    width = w - margin.left - margin.right,
+		    height = h - margin.top - margin.bottom;
+		 
+		if (this.svg!==undefined) {
+			this.svg.selectAll("*").remove();
+			this.svg.attr("width", width + margin.left + margin.right)
+		      .attr("height", height + margin.top + margin.bottom);
+		} else {
+			this.svg = d3.select("#orchestrationCanvas").append("svg")
+		      .attr("width", w + margin.left + margin.right)
+		      .attr("height", h + margin.top + margin.bottom);
+		}
 		var treeData =
 		  {
 		    "name": "Att",
@@ -49,11 +74,10 @@ export default class OrchestrationDiagram extends Gadget {
 		      }
 		    ]
 		  };
+		
 
 		// set the dimensions and margins of the diagram
-		var margin = {top: 20, right: 90, bottom: 30, left: 90},
-		    width = 660 - margin.left - margin.right,
-		    height = 500 - margin.top - margin.bottom;
+		
 
 		// declares a tree layout and assigns the size
 		var treemap = d3.tree()
@@ -70,10 +94,8 @@ export default class OrchestrationDiagram extends Gadget {
 		// append the svg object to the body of the page
 		// appends a 'group' element to 'svg'
 		// moves the 'group' element to the top left margin
-		var svg = d3.select("#orchestrationCanvas").append("svg")
-		      .attr("width", width + margin.left + margin.right)
-		      .attr("height", height + margin.top + margin.bottom),
-		    g = svg.append("g")
+		
+		    var g = this.svg.append("g")
 		      .attr("transform",
 		            "translate(" + margin.left + "," + margin.top + ")");
 
@@ -124,27 +146,26 @@ export default class OrchestrationDiagram extends Gadget {
     * @return {ReactElement} markup
     */
 	render(){
-
+		
 		let gadget = this.props.gadget;
 		if (gadget===undefined) {
 			return null;
 		}
 		let action = cm.routeData["OrchestrationDetails"]
+		
 		return (
 				<div>
 					<div>
 						<div style={{"width":"100%", "height":"50px", "backgroundColor":"#D1D1D1"}}>
-							<a style={{"marginLeft":"5px"}} onClick={this.handleAddTenant.bind(this)}>Add Tenant</a>
+							<a style={{"marginLeft":"5px", "cursor":"pointer"}} onClick={this.handleAddTenant.bind(this)}>Add Tenant</a>
 						</div>
 						
-						<div id="orchestrationCanvas">
-						
-						</div>
+						<div id="orchestrationCanvas"/>
 					</div>
-					<div id="orchestTooltip" class="hidden">
+					<div id="orchestTooltip" className="hidden">
 						<p><span id="value"></span></p>
 					</div>
-					<div id="detailPane" style={{"width":"300px", "height":"500px", "position":"absolute", "top":"55px", "left":"2000px", "zindex":"999","backgroundColor":"#D1D1D1"}}>
+					<div id="detailPane" style={{"width":"300px", "height":"500px", "position":"absolute", "top":"55px", "left":"2000px", "zIndex":"999","backgroundColor":"#D1D1D1"}}>
 						<center><h4 id="detailTitle"></h4></center>
 					</div>
 
@@ -152,3 +173,6 @@ export default class OrchestrationDiagram extends Gadget {
 		)
 	}
 }
+
+	
+	

@@ -27,7 +27,7 @@ export default class OrchestrationGadget extends Gadget {
 		let action = cm.routeData["OrchestrationDetails"]
 		return (
 				<div id="orchestrationCanvas">
-				<OrchestrationDiagram/>
+				<OrchestrationDiagram mainContainerSize={this.props.mainContainerSize} gadget={this.props.gadget}/>
 				</div>
 		)
 	}

@@ -20,12 +20,21 @@ export default class Gadget extends React.Component{
 	}
 	handleMin = () => {
 		cm.dispatch({"type":"GadgetMin", "data":this.name})
+		if (this.name==="OrchestrationGadget") {
+			cm.dispatch({"type":"refreshOrchestration", "data":{}})
+		}
 	}
 	handleMax = () => {
 		cm.dispatch({"type":"GadgetMax", "data":this.name})
+		if (this.name==="OrchestrationGadget") {
+			cm.dispatch({"type":"refreshOrchestration", "data":{}})
+		}
 	}
 	handleRestore = () => {
 		cm.dispatch({"type":"GadgetRestore", "data":this.name})
+		if (this.name==="OrchestrationGadget") {
+			cm.dispatch({"type":"refreshOrchestration", "data":{}})
+		}
 	}
 	handleClose = () => {
 		cm.dispatch({"type":"GadgetClose", "data":this.name})
