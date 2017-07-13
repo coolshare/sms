@@ -8,7 +8,7 @@ import style2 from './Login.css'
 export default class  Login extends React.Component{
 
 	handleLogin= () => {
-		cm.dispatch([{"type":"pushPath", "action":cm.routeData["Home"]}, {"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value}}]);
+		cm.dispatch([{"type":"pushPath", "action":cm.routeData["Orchestration"]}, {"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value}}]);
 	}
 	/**
 	* render

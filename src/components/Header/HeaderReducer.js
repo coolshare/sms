@@ -1,8 +1,13 @@
 import cm from '../../common/CommunicationManager'
 import { browserHistory } from 'react-router';
 
-const HeaderReducer = (state = {'user':{}, 'path':[]}, action) => {
+const HeaderReducer = (state = {'currentLink':'Orchestration', 'user':{}, 'path':[]}, action) => {
   switch (action.type) {
+  	case 'switchTopLink':
+      return Object.assign({}, state, {
+    	  currentLink: action.id
+      })
+  
     case 'setUser':
     	return Object.assign({}, state, {
     		user: action.data

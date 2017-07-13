@@ -8,6 +8,7 @@ import OrchestrationDetails from '../components/MainPage/Dashboard/Orchestration
 import ENGListDetails from '../components/MainPage/Dashboard/ENGList/ENGListDetails'
 import ENGAlertsDetails from '../components/MainPage/Dashboard/ENGAlerts/ENGAlertsDetails'
 import ResouceUsageDetails from '../components/MainPage/Dashboard/ResouceUsage/ResouceUsageDetails'
+import Orchestration from '../components/MainPage/Orchestration/OrchestrationNetUser'
 
 
 const routeData = {
@@ -19,7 +20,8 @@ const routeData = {
 		"OrchestrationDetails":{"label":"OrchestrationDetails", "component":OrchestrationDetails, "path":"OrchestrationDetails"},
 		"ENGListDetails":{"label":"ENGListDetails", "component":ENGListDetails, "path":"ENGListDetails"},
 		"ENGAlertsDetails":{"label":"ENGAlertsDetails", "component":ENGAlertsDetails, "icon":"", "path":"ENGAlertsDetails"},
-		"ResouceUsageDetails":{"label":"ResouceUsageDetails", "component":ResouceUsageDetails, "icon":"", "path":"ResouceUsageDetails"}
+		"ResouceUsageDetails":{"label":"ResouceUsageDetails", "component":ResouceUsageDetails, "icon":"", "path":"ResouceUsageDetails"},
+		"Orchestration":{"label":"Orchestration", "component":Orchestration, "icon":"", "path":"Orchestration"}
 }
 
 

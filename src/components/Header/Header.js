@@ -1,14 +1,21 @@
 import React from 'react'
 import { Grid, Row, Col } from 'react-bootstrap';
 import {connect} from 'react-redux'
+import { browserHistory } from 'react-router';
 import cm from '../../common/CommunicationManager'
 import sm from '../../common/ServiceManager';
+import style from './Header.css'
 //import { browserHistory } from 'react-router';
 /**
 *
 */
 class _Header extends React.Component{
-
+	handleLink = (id, e)=> {
+		e.preventDefault();
+		//browserHistory.push('/ReactReduxStarterKit/'+id);
+		cm.store.dispatch({'type':'switchTopLink', 'id':id});
+		
+	}
 	componentDidMount() {
 		let path = this.props.path;
 		if (path.length===0) {
@@ -67,9 +74,14 @@ class _Header extends React.Component{
 		
 		return (
 			
-			<div id="header"   style={{'height':'70px', 'margin':'5px', 'border':'1px solid #e1e1e1'}}>
-				<div style={{'height':'50px', 'backgroundColor':'#1b83b1'}}><span style={{"marginLeft":"20px", "fontSize":"200%", "color":"#FFF"}}>netElastic</span><span style={{"color":"#EEE", "float":"right", "marginRight":"10px", "marginTop":"7px"}}>{this.props.user.user}</span></div>
-				<div className="headerPathContainer" style={{'height':'20px', 'backgroundColor':'#e6eaec'}}>
+			<div id="header"   style={{'height':'70px', 'margin':'5px', 'border':'1px solid #e1e1e1', "backgroundColor":"#1b83b1"}}>
+				<div style={{"width":"50%", "height":"50px", "float":"left"}}><span style={{"marginLeft":"20px", "fontSize":"200%", "color":"#FFF"}}>netElastic</span></div>
+				<div style={{"width":"50%", "height":"50px", "float":"left"}}>
+		      		<span><a href="#" style={{"textCecoration": "none"}} onClick={(evt) => this.handleLink("MainRouteContainer", evt)} className={this.props.currentLink=="MainRouteContainer"?"selectedTopLink":"unselectedTopLink"}>Dashboard</a></span>
+		      		<span style={{"marginLeft":"40px"}}><a href="#" style={{"textDecoration": "none"}} onClick={(evt) => this.handleLink("Orchestration", evt)} className={this.props.currentLink=="Orchestration"?"selectedTopLink":"unselectedTopLink"}>Orchestration</a></span>
+		      	</div>
+		      	<br style={{"clear":"both"}}/>
+				<div className="headerPathContainer" style={{"height":"20px", "backgroundColor":"#e6eaec"}}>
 					{pathElem}
 				</div>
       		</div>
@@ -80,7 +92,8 @@ const Header = connect(
 		  store => {
 			    return {
 			    	path:store.HeaderReducer.path,
-			    	user:store.HeaderReducer.user
+			    	user:store.HeaderReducer.user,
+			    	currentLink: store.HeaderReducer.currentLink
 			    };
 			  }
 			)(_Header);
