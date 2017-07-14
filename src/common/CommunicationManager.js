@@ -16,7 +16,7 @@ const routeData = {
 		"Login":{"label":"Login", "component":Login, "icon":"", "path":"Login"},
 		"Home":{"label":"Home", "component":MainRouteContainer, "icon":"", "path":"Home"},
 		"TopContainer":{"label":"TopContainer", "component":TopContainer, "icon":"", "path":"Home"},	
-		"MainRouteContainer":{"label":"MainRouteContainer", "component":MainRouteContainer, "icon":"", "path":"Home"},	
+		"MainRouteContainer":{"label":"MainRouteContainer", "component":MainRouteContainer, "icon":"", "path":"MainRouteContainer"},	
 		"StackViewContainer":{"label":"StackViewContainer", "component":StackViewContainer, "icon":"", "path":"StackViewContainer"},
 		"OrchestrationDetails":{"label":"OrchestrationDetails", "component":OrchestrationDetails, "path":"OrchestrationDetails"},
 		"ENGListDetails":{"label":"ENGListDetails", "component":ENGListDetails, "path":"ENGListDetails"},

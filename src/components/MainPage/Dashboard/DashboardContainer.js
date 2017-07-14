@@ -11,11 +11,10 @@ class _DashboardContainer extends React.Component{
 		this.drop = this.drop.bind(this);
 		this.dragStart = this.dragStart.bind(this);
 		this.dragOver = this.dragOver.bind(this);
-		cm.gadgetStateMap = {
-				"OrchestrationGadget":{"name":"OrchestrationGadget", "path":"./Orchestration/OrchestrationGadget", "state":"max"},
-				"ResouceUsageGadget":{"name":"ResouceUsageGadget", "path":"./ResouceUsage/ResouceUsageGadget", "state":"min"},
-				"ENGAlertsGadget":{"name":"ENGAlertsGadget", "path":"./ENGAlerts/ENGAlertsGadget", "state":"min"},
-				"ENGListGadget":{"name":"ENGListGadget", "path":"./ENGList/ENGListGadget", "state":"min"}
+		cm.gadgetStateMap = {				
+				"ResouceUsageGadget":{"name":"ResouceUsageGadget", "path":"./ResouceUsage/ResouceUsageGadget", "state":"normal"},
+				"ENGAlertsGadget":{"name":"ENGAlertsGadget", "path":"./ENGAlerts/ENGAlertsGadget", "state":"normal"},
+				"ENGListGadget":{"name":"ENGListGadget", "path":"./ENGList/ENGListGadget", "state":"normal"}
 			};
 		
 		for (let k in cm.gadgetStateMap) {

@@ -5,14 +5,13 @@ import { browserHistory } from 'react-router';
 import cm from '../../common/CommunicationManager'
 import sm from '../../common/ServiceManager';
 import style from './Header.css'
-//import { browserHistory } from 'react-router';
 /**
 *
 */
 class _Header extends React.Component{
 	handleLink = (id, e)=> {
 		e.preventDefault();
-		//browserHistory.push('/ReactReduxStarterKit/'+id);
+		browserHistory.push('/'+id);
 		cm.store.dispatch({'type':'switchTopLink', 'id':id});
 		
 	}
