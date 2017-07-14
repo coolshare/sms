@@ -9,7 +9,8 @@ import ENGListDetails from '../components/MainPage/Dashboard/ENGList/ENGListDeta
 import ENGAlertsDetails from '../components/MainPage/Dashboard/ENGAlerts/ENGAlertsDetails'
 import ResouceUsageDetails from '../components/MainPage/Dashboard/ResouceUsage/ResouceUsageDetails'
 import Orchestration from '../components/MainPage/Orchestration/OrchestrationNetUser'
-
+import AddEnterprise from '../components/MainPage/Orchestration/AddEnterprise'
+import AddBranch from '../components/MainPage/Orchestration/AddBranch'
 
 const routeData = {
 		"Login":{"label":"Login", "component":Login, "icon":"", "path":"Login"},
@@ -21,7 +22,9 @@ const routeData = {
 		"ENGListDetails":{"label":"ENGListDetails", "component":ENGListDetails, "path":"ENGListDetails"},
 		"ENGAlertsDetails":{"label":"ENGAlertsDetails", "component":ENGAlertsDetails, "icon":"", "path":"ENGAlertsDetails"},
 		"ResouceUsageDetails":{"label":"ResouceUsageDetails", "component":ResouceUsageDetails, "icon":"", "path":"ResouceUsageDetails"},
-		"Orchestration":{"label":"Orchestration", "component":Orchestration, "icon":"", "path":"Orchestration"}
+		"Orchestration":{"label":"Orchestration", "component":Orchestration, "icon":"", "path":"Orchestration"},
+		"AddEnterprise":{"label":"AddEnterprise", "component":AddEnterprise, "icon":"", "path":"AddEnterprise"},
+		"AddBranch":{"label":"AddBranch", "component":AddBranch, "icon":"", "path":"AddBranch"}
 }
 
 
@@ -58,19 +61,34 @@ class CommunicationManager {
 	}
 	subscribe(type, listener, owner) {
 		var self = this;
-		//tracking subscribed type		 		
-		this.subscribeMap[type] = this.store.subscribe(()=>{
-			//We filter by type so that we won't call the handle when type is not match
-			if (self.currentAction.type===type) {
-				if (owner){
-					listener.apply(owner, [self.currentAction]);
-				} else {
-					listener(self.currentAction);
+		var types;
+		if (type instanceof Array) {
+			types = type;
+		} else {
+			types = [type];
+		}
+		var res = [];
+		for (var i=0; i<types.length; i++) {
+			var t = types[i];
+			//tracking subscribed type		 		
+			this.subscribeMap[t] = this.store.subscribe(((tt)=>{
+				return ()=>{
+					//We filter by type so that we won't call the handle when type is not match
+					if (self.currentAction.type===tt) {
+						if (owner){
+							listener.apply(owner, [self.currentAction]);
+						} else {
+							listener(self.currentAction);
+						}
+							
+					}
 				}
-					
-			}
-		});
-		return this.subscribeMap[type];
+				
+			})(t));
+			res.push(this.subscribeMap[t])
+		}
+		
+		return res;
 	}
 	unsubscribe(type) {
 		if (this.subscribeMap[type]===undefined) {
@@ -100,7 +118,7 @@ class CommunicationManager {
 		}
 		
 		if (isEmpty) {
-			this.go('popup');
+			this.go('StackViewContainer');
 		} else {
 			this.dispatch({"type":"pushPopup", "data":[c, id]})
 		}

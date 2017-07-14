@@ -9,7 +9,7 @@ import { browserHistory } from 'react-router';
 /**
 *
 */
-		class _MyStackViewContainer extends React.Component{
+		class _StackViewContainer extends React.Component{
 			constructor(props) {
 				super(props);
 				this.state = {componentList: [], selected:null};
@@ -26,6 +26,7 @@ import { browserHistory } from 'react-router';
 				}
 				this.idList.push(id);
 				var comList = [...this.state.componentList];
+				
 				comList.push(<Provider key={id} store={cm.store}>
 				<div id={id}>{React.createElement(c)}</div>
 			    </Provider>)
@@ -95,5 +96,5 @@ import { browserHistory } from 'react-router';
 					    	
 					    };
 					  }
-					)(_MyStackViewContainer);
+					)(_StackViewContainer);
 		export default StackViewContainer;

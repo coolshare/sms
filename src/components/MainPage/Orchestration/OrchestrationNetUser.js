@@ -5,8 +5,8 @@ import cm from '../../../common/CommunicationManager'
 import OrchestrationNetUserDetail from './OrchestrationDetail'
 import OrchestrationNetUserHeader from './OrchestrationHeader'
 import OrchestrationFloatMenu from './OrchestrationFloatMenu'
-
-
+import Enterprise from '../../../common/models/Enterprise'
+import Branch from '../../../common/models/Branch'
 import {PopupCloseBox} from '../../../common/PopupComponents'
 import Utils from '../../../common/Utils'
 import {InternetNode, HostNode, PodNode} from './DiagramElements'
@@ -35,57 +35,64 @@ class _OrchestrationNetUser extends React.Component {
 		this.isInit = false;
 		this.zoomFactor = this.initZoom
 		this.collectNodes = {"Container":this.handleProvider, "Enterprise":this.handleEnterprise};
+		this.enterpriseX = 0;
+		this.enterpriseY = 0;
 	}
 	componentDidMount() {
 		let self = this;
-		cm.subscribe("setSelectedTab", (action)=>{
-			var tab = action.data;
+		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setTabData"], (action)=>{
+			var tab = cm.getStoreValue("OrchestrationReducer", "selectedTab");
 			var data = cm.getStoreValue("OrchestrationReducer","tabData")
 			if (tab==="Provider") {
 				self.buildDiagram(data.Provider, tab)
 			} else if (tab==="Enterprise") {
 				if (self.props.selectedEnterprise!==null) {
 					self.buildDiagram(data.Enterprise[self.props.selectedEnterprise], tab)
+				}				
+			}
+		})
+		if (Object.keys(this.props.tabData).length===0) {
+			var dummyEnterprises = [{"BusinessName":"Welmart", "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+			                            {"BusinessName":"Target", "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+			                            {"BusinessName":"BurgerKing", "ContactName":"BurgerKing Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"phone", "Address":"555 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+			                            {"BusinessName":"Frys", "ContactName":"Frys Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"166623 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+			                            {"BusinessName":"BestBuy", "ContactName":"BestBuy Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"17723 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"}];
+			
+			var data = {
+					"Provider":{
+						"nodes":[],
+						"links":[] 
+					},
+					"Enterprise":{}			
+			}
+			for (var i=0; i<dummyEnterprises.length; i++) {
+				dummyEnterprises[i].id = new Date().valueOf()+i
+			}
+			for (var i=0; i<dummyEnterprises.length; i++) {
+				var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, 0, "#E1E1E1", -8, -8, 16, 16);
+				data.Provider.nodes.push(enterprise);
+			}
+			cm.dispatch({"type":"setCounter", "data":[i, cm.getStoreValue("OrchestrationReducer", "counter")[1]]})
+			for (var i=0; i<data.Provider.nodes.length; i++) {
+				var n = data.Provider.nodes[i];
+			
+				data.Enterprise[n.data.id] = {"nodes":[], "links":[]};
+				var list = data.Enterprise[n.data.id].nodes;
+				var max = 3;//+Math.floor(Math.random()*5);
+				for (var j=0; j<max; j++) {
+					var data2 = {"BranchName":n.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
+					list.push(new Branch(data2, 20, 100, 100+60*j, 35, 0, "#E1E1E1", -8, -8, 16, 16));
 				}
 				
 			}
+			cm.dispatch({"type":"setCounter", "data":[cm.getStoreValue("OrchestrationReducer", "counter")[0], j]})
+			//for (var i=1; i<data.nodes.length; i++) {
+			//	data["Enterprise"].links.push({ source: data["Enterprise"].nodes[0], target:data.nodes[i] });
+			//}
 		
-			
-		})
-		var data = {
-				"Provider":{
-					"nodes":[
-						{ "id":"Welmart", "type":"Enterprise", "label":"Welmart", "r": 20, "xx":100, "yy":100 , "image":"gcp", "fontDy":35, "state":0, "innerColor":"#E1E1E1", "iconX":0, "iconY":0, "iconW":16, "iconH":16},
-					    { "id":"Target", "type":"Enterprise", "label":"Target", "r": 20, "xx":200, "yy":100 , "image":"gcp", "fontDy":35, "state":0, "innerColor":"#E1E1E1", "iconX":0, "iconY":0, "iconW":16, "iconH":16},
-					    { "id":"BurgerKing", "type":"Enterprise", "label":"BurgerKing", "r": 20, "xx":300, "yy":100 , "image":"gcp", "fontDy":35, "state":0, "innerColor":"#E1E1E1", "iconX":0, "iconY":0, "iconW":16, "iconH":16},
-					    { "id":"Frys", "type":"Enterprise", "label":"Frys", "r": 20, "xx":400, "yy":100 , "image":"gcp", "fontDy":35, "state":0, "innerColor":"#E1E1E1", "iconX":0, "iconY":0, "iconW":16, "iconH":16},
-					    { "id":"BestBuy", "type":"Enterprise", "label":"BestBuy", "r": 20, "xx":500, "yy":100 , "image":"gcp", "fontDy":35, "state":0, "innerColor":"#E1E1E1", "iconX":0, "iconY":0, "iconW":16, "iconH":16}
-
-					],"links": [
-					]
-				},
-				"Enterprise":{}			
-		}
-		for (var i=0; i<data.Provider.nodes.length; i++) {
-			var id = data.Provider.nodes[i].id;
-		
-			data.Enterprise[id] = {"nodes":[], "links":[]};
-			var list = data.Enterprise[id].nodes;
-			var max = 3;//+Math.floor(Math.random()*5);
-			for (var j=0; j<max; j++) {
-				list.push({ "id":id+j, "type":"Branch", "label":id+" branch "+j, "r": 20, "xx":100, "yy":50+80*j , "image":"gcp", "fontDy":35, "state":0, "innerColor":"#E1E1E1", "iconX":0, "iconY":0, "iconW":16, "iconH":16});
-			}
-			
-		}
-		
-		//for (var i=1; i<data.nodes.length; i++) {
-		//	data["Enterprise"].links.push({ source: data["Enterprise"].nodes[0], target:data.nodes[i] });
-		//}
-	    cm.dispatch({"type":"setTabData", "data":data})
-		
-	    if (data.Provider && Object.keys(data.Provider.nodes).length>0) {	    	
-	    	this.buildDiagram(data.Provider, this.props.selectedTab)
-	    }
+			cm.dispatch({"type":"setTabData", "data":data})
+			this.buildDiagram(data.Provider, this.props.selectedTab)
+		} 
 		
 		
 	}
@@ -203,7 +210,8 @@ class _OrchestrationNetUser extends React.Component {
 		);*/
 		
 		node.append("svg:image").attr("xlink:href", function(d) {
-		return "http://www.coolshare.com/temp/"+d.image+".png"
+
+		return d.icon;
 		} ).attr("x", function(d) {return d.iconX})
 			.attr("y", function(d) {return d.iconY}).attr("width", function(d) {return d.iconW}).attr("height",  function(d) {return d.iconH})  
 			.style("cursor", "pointer")

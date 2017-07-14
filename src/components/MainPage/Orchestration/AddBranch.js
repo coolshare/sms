@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import cm from '../../../common/CommunicationManager'
 import {PopupCloseBox} from '../../../common/PopupComponents'
 import Utils from '../../../common/Utils'
-import Enterprise from '../../../common/models/Enterprise'
+import Branch from '../../../common/models/Branch'
 
-export default class AddEnterprise extends React.Component {
+export default class AddBranch extends React.Component {
 	constructor() {
 		super();
 		this.fields = {};
@@ -24,7 +24,7 @@ export default class AddEnterprise extends React.Component {
 		data.id = new Date().valueOf();
 		cm.dispatch({"type":"ClosePopup"})
 		setTimeout(function() {
-			cm.dispatch({"type":"addEnterprise", "data":new Enterprise(data, 20, 100+60*cm.getStoreValue("OrchestrationReducer", "counter")[0], 100 , 35, 0, "#E1E1E1", -8, -8, 16, 16)})
+			cm.dispatch({"type":"addBranch", "data":new Branch(data, 20, 100, 100+60*cm.getStoreValue("OrchestrationReducer", "counter")[1] , 35, 0, "#E1E1E1", -8, -8, 16, 16)})
 		}, 100)
 		
 		
@@ -39,10 +39,10 @@ export default class AddEnterprise extends React.Component {
 			<div style={{"minHeight":Utils.screenH+"px"}}>
 	    		{cm.isStackEmpty()?null:<div className="PopupHeader"><PopupCloseBox/></div>}
 		    	<div>
-		    		<div style={{"height":"50px", "fontSize":"200%"}}>Add Enterprise</div>
-		      		<form onSubmit={ (e) => this.handleOK(e) } ref="AddEnterpriseForm">
+		    		<div style={{"height":"50px", "fontSize":"200%"}}>Add Branch</div>
+		      		<form onSubmit={ (e) => this.handleOK(e) } ref="AddBranchForm">
 			      		<div className="field"  style={{'margin':'20px','width':'450px', 'paddingTop':'40px'}}>
-							<input name="BusinessName" ref={(input)=>{this.fields["BusinessName"] = input}}  type="text" tabIndex="1" placeholder="Business Name" style={{"width":"400px"}} />
+							<input name="BranchName" ref={(input)=>{this.fields["BranchName"] = input}}  type="text" tabIndex="1" placeholder="Branch Name" style={{"width":"400px"}} />
 			            </div>
 			            <div className="field"   style={{'margin':'20px','width':'450px'}}>
 							<input name="ContactName" ref={(input)=>{this.fields["ContactName"] = input}} type="text" tabIndex="2" placeholder="Contact Name" style={{"width":"400px"}} />

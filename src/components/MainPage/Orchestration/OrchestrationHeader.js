@@ -17,7 +17,12 @@ class _OrchestrationHeader extends React.Component {
 	}
 	
 	handleAdd() {
-		cm.dispatch({"type":"_popup_", "data":"add"+this.props.selectedTab})
+		
+		var name = this.props.selectedTab==="Provider"?"AddEnterprise":this.props.selectedTab==="Enterprise"?"AddBranch":null;
+		if (name!==null) {
+			cm.dispatch({"type":"_POPUP_", "c":cm.routeData[name].component, "name":name})
+		}
+		
 	}
 	handleRemove() {
 		alert("handleRemove")
