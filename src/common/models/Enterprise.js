@@ -6,5 +6,8 @@ export default class Enterprise extends Node{
 		this.id = data.id;
 		this.type = "Enterprise";
 		this.data = data;
+		this.branchMap = {};
+		this.nodes = [];
+		this.links = [];
 	}
 }

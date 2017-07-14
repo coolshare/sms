@@ -1,13 +1,13 @@
 import Utils from '../../../common/Utils'
-const OrchestrationReducer = (state = {'counter':[0, 0], 'selectedEnterprise':null, 'tabData':{},'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
+const OrchestrationReducer = (state = {'counter':[0, 0], 'selectedEnterprise':null, 'provider':null,'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
   switch (action.type) {
   	case 'setCounter':
       return Object.assign({}, state, {
     	  counter: action.data
       })
-  	case 'setTabData':
+  	case 'setProvider':
       return Object.assign({}, state, {
-    	  tabData: action.data
+    	  provider: action.data
       })
   	case 'setSelectedTab':
         return Object.assign({}, state, {
@@ -18,18 +18,34 @@ const OrchestrationReducer = (state = {'counter':[0, 0], 'selectedEnterprise':nu
         	selectedEnterprise: action.data
         })
   	case 'addEnterprise':
-  		var data = Object.assign({}, state.tabData);
+  		var data = Object.assign({}, state.provider);
   		var d = action.data;
   		data.Provider.nodes.push(d);
         return Object.assign({}, state, {
-        	tabData: data
+        	provider: data
         })
   	case 'addBranch':
-  		var data = Object.assign({}, state.tabData);
+  		var provider = Object.assign({}, state.provider);
+  		var d = action.data;
+  		provider.Enterprise[state.selectedEnterprise].nodes.push(d);
+        return Object.assign({}, state, {
+        	provider: provider
+        })
+  	case 'addEnterpriseLink':
+  		var provider = Object.assign({}, state.provider);
+  		var src = provider.enterpriseMap[action.data.source];
+  		var tar = provider.enterpriseMap[action.data.target];
+  		provider.links.push({"source":src, "target":tar})
+        return Object.assign({}, state, {
+        	provider: provider
+        })
+  	case 'addBranchLink':
+  		var provider = Object.assign({}, state.provider);
+  		if (action.tab)
   		var d = action.data;
   		data.Enterprise[state.selectedEnterprise].nodes.push(d);
         return Object.assign({}, state, {
-        	tabData: data
+        	provider: data
         })
     default:
       return state

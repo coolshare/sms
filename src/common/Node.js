@@ -11,6 +11,6 @@ export default class Node {
 		this.iconX = iconX;
 		this.iconY = iconY;
 		this.iconW = iconW;
-		this.iconH = iconH;		
+		this.iconH = iconH;
 	}
 }

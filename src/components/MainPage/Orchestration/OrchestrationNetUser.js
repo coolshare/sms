@@ -11,6 +11,7 @@ import {PopupCloseBox} from '../../../common/PopupComponents'
 import Utils from '../../../common/Utils'
 import {InternetNode, HostNode, PodNode} from './DiagramElements'
 import Header from '../../../components/Header/Header'
+import Provider from '../../../common/models/Provider'
 
 const stateColors = ["green", "yellow", "orange", "pink", "red"]
 
@@ -37,51 +38,73 @@ class _OrchestrationNetUser extends React.Component {
 		this.collectNodes = {"Container":this.handleProvider, "Enterprise":this.handleEnterprise};
 		this.enterpriseX = 0;
 		this.enterpriseY = 0;
+		this.provider = new Provider();
 	}
 	componentDidMount() {
 		let self = this;
-		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setTabData"], (action)=>{
+		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink"], (action)=>{
 			var tab = cm.getStoreValue("OrchestrationReducer", "selectedTab");
-			var data = cm.getStoreValue("OrchestrationReducer","tabData")
+			var data = cm.getStoreValue("OrchestrationReducer","provider")
 			if (tab==="Provider") {
-				self.buildDiagram(data.Provider, tab)
+				self.buildProviderDiagram()
 			} else if (tab==="Enterprise") {
 				if (self.props.selectedEnterprise!==null) {
-					self.buildDiagram(data.Enterprise[self.props.selectedEnterprise], tab)
+					self.buildEnterpriseDiagram()
 				}				
 			}
 		})
-		if (Object.keys(this.props.tabData).length===0) {
+		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
+		if (this.props.provider===null) {
 			var dummyEnterprises = [{"BusinessName":"Welmart", "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"Target", "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"BurgerKing", "ContactName":"BurgerKing Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"phone", "Address":"555 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"Frys", "ContactName":"Frys Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"166623 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"BestBuy", "ContactName":"BestBuy Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"17723 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"}];
 			
-			var data = {
-					"Provider":{
-						"nodes":[],
-						"links":[] 
-					},
-					"Enterprise":{}			
-			}
+
 			for (var i=0; i<dummyEnterprises.length; i++) {
 				dummyEnterprises[i].id = new Date().valueOf()+i
 			}
+			
+			internetNode.id = new Date().valueOf()+9999;
+			var internetForProvider = new Enterprise( internetNode, 5, 50, 50 , 35, 0, "#E1E1E1", -24, -24, 48, 48);
+			this.provider.nodes.push(internetForProvider)
+			this.provider.enterpriseMap[internetForProvider.id] = internetForProvider;
 			for (var i=0; i<dummyEnterprises.length; i++) {
 				var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, 0, "#E1E1E1", -8, -8, 16, 16);
-				data.Provider.nodes.push(enterprise);
+				this.provider.nodes.push(enterprise);
+				this.provider.enterpriseMap[enterprise.id] = enterprise;
 			}
-			cm.dispatch({"type":"setCounter", "data":[i, cm.getStoreValue("OrchestrationReducer", "counter")[1]]})
-			for (var i=0; i<data.Provider.nodes.length; i++) {
-				var n = data.Provider.nodes[i];
 			
-				data.Enterprise[n.data.id] = {"nodes":[], "links":[]};
-				var list = data.Enterprise[n.data.id].nodes;
+			
+			cm.dispatch({"type":"setCounter", "data":[i, cm.getStoreValue("OrchestrationReducer", "counter")[1]]})
+			
+			
+			
+			
+			for (var e in this.provider.enterpriseMap) {
+				var enterprise = this.provider.enterpriseMap[e];
+				if (internetForProvider.id===enterprise.id) {
+					continue;
+				}
+				this.provider.links.push({"source":internetForProvider, "target":enterprise});
+
+				internetNode.id = new Date().valueOf()+9999;
+				var internetForEnterprise = new Enterprise( internetNode, 5, 50, 50 , 35, 0, "#E1E1E1", -24, -24, 48, 48);
+				
+				enterprise.nodes.push(internetForEnterprise)
+				
+				//var n = this.provider.nodes[i];
+				
+				//var list = enterprise.nodes;
 				var max = 3;//+Math.floor(Math.random()*5);
 				for (var j=0; j<max; j++) {
-					var data2 = {"BranchName":n.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
-					list.push(new Branch(data2, 20, 100, 100+60*j, 35, 0, "#E1E1E1", -8, -8, 16, 16));
+					var data2 = {"BranchName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
+					var branch = new Branch(data2, 20, 100, 100+60*j, 35, 0, "#E1E1E1", -8, -8, 16, 16);
+					enterprise.nodes.push(branch);
+					
+					enterprise.branchMap[branch.id] = branch;
+					enterprise.links.push({"source":internetForEnterprise, "target":branch});
 				}
 				
 			}
@@ -90,8 +113,8 @@ class _OrchestrationNetUser extends React.Component {
 			//	data["Enterprise"].links.push({ source: data["Enterprise"].nodes[0], target:data.nodes[i] });
 			//}
 		
-			cm.dispatch({"type":"setTabData", "data":data})
-			this.buildDiagram(data.Provider, this.props.selectedTab)
+			cm.dispatch({"type":"setProvider", "data":this.provider})
+			this.buildProviderDiagram()
 		} 
 		
 		
@@ -99,7 +122,7 @@ class _OrchestrationNetUser extends React.Component {
 	
 	handleNodeClick(d) {	
 	
-		if (d.type==="Enterprise") {
+		if (d.type==="Enterprise" && d.label.length>0) {
 			cm.dispatch({"type":"setSelectedEnterprise", "data":d.id})
 			cm.dispatch({"type":"setSelectedTab", "data":"Enterprise"})
 			
@@ -107,32 +130,18 @@ class _OrchestrationNetUser extends React.Component {
 		}
 	}
 
-	handleProvider(data) {
-		return [];
-	}
-	handleEnterprise(data) {
-	  let cloudeProviders = data;
-	  var res = [];
-	  for (var c in cloudeProviders) {
-		let cloudeProvider = cloudeProviders[c];
-		if (cloudeProvider.Instances===undefined) {
-			continue;
-		}
-
-		for (var m in cloudeProvider.Children) {
-			let instance = cloudeProvider.Children[m];
-			if (instance.Children!==undefined) {
-				for (var n=0; n<instance.Children.length;n++) {
-					let pod = instance.Children[n];
-					res.push(new PodNode(this, {"Type":"Pod", "id":pod.id, "Name":pod.Name, "CloudProvider":pod.CloudProvider, "Parent":undefined}, 0))
-				}
-			}
-		}
-	  }
-	  return res; 
-	}	
 	
-	buildDiagram(data, selectedTab) {
+	buildEnterpriseDiagram(id) {
+		id = id||this.props.selectedEnterprise;
+		var enterprise = this.provider.enterpriseMap[id] 
+		this.drawDiagram(enterprise.nodes, enterprise.links);
+	}
+	
+	buildProviderDiagram() {
+		this.drawDiagram(this.provider.nodes, this.provider.links);
+	}
+	
+	drawDiagram(nodes, links) {
 		var self = this;
 		
 		if (this.state.diagram===undefined) {
@@ -148,13 +157,28 @@ class _OrchestrationNetUser extends React.Component {
 			  .attr("width", this.diagramW+"px")
 		      .attr("height", this.diagramH+"px").attr("x", this.canvasX).attr("y", this.canvasY)
 		      .attr("transform", "translate(" + 0 + "," + 0 + ")")
+		      .on("mousemove", function() {
+		    	  if (self.dragLine!==undefined) {
+		    		  var e = d3.event;
+		    		  
+		    		  self.dragLine.attr("x1",self.dragX)
+		                 .attr("y1",self.dragY)
+		                 .attr("x2",e.clientX)
+		                 .attr("y2",e.clientY-120);
+		    		  //console.log("x="+e.clientX+" y="+e.clientY)
+		    		  //self.dragLine.attr("transform", "translate(" + e.clientX + "," + e.clientY + ")")
+		    	  }
+		      })
+		      .on("mouseup", (d)=>{
+					self.handleMouseUp(d);
+				})
 		} else {
 			this.state.diagram.selectAll("*").remove();
 		 }     
 		      
 			  
-		var nodes = data.nodes
-		var links = data.links;
+		//var nodes = data.nodes
+		//var links = data.links;
 		var collide = [60, 300, 50];
 		if (links.length===0) {
 			collide = [10, 200, 20];
@@ -184,10 +208,10 @@ class _OrchestrationNetUser extends React.Component {
 		node = node.enter()
 		  .append("g")
 		  .attr("class", "node")
-		  .call(d3.drag()
+		  /*.call(d3.drag()
 		    .on("start", dragstarted)
 		    .on("drag", dragged)
-		    .on("end", dragended));
+		    .on("end", dragended));*/
 		node.append("circle")
 		.attr("r", function(d){return d.r;})
 		.style("stroke-width", 1)    // set the stroke width
@@ -197,6 +221,17 @@ class _OrchestrationNetUser extends React.Component {
 		.on("click", (d)=>{
 			self.handleNodeClick(d)
 		})
+		.on("mousedown", (d)=>{
+			
+			self.handleMouseDown(d)
+		})
+		.on("mouseup", (d)=>{
+			self.handleMouseUp()
+		})
+		.on("mouseover", (d)=>{
+			self.handleMouseOver(d);
+		});
+		
 		node.append("circle")
 		.attr("r", function(d){return d.r-5;})
 		.style("fill", function(d) {return d.innerColor})  
@@ -204,6 +239,15 @@ class _OrchestrationNetUser extends React.Component {
 		.on("click", (d)=>{
 			self.handleNodeClick(d)
 		})
+		.on("mousedown", (d)=>{
+			self.handleMouseDown(d)
+		})
+		.on("mouseup", (d)=>{
+			self.handleMouseUp()
+		})
+		.on("mouseover", (d)=>{
+			self.handleMouseOver(d);
+		});
 		/*.on('contextmenu', function(d) {
 	    		d.createMenu();
 	    	}
@@ -218,7 +262,15 @@ class _OrchestrationNetUser extends React.Component {
 			.on("click", (d)=>{
 				self.handleNodeClick(d)
 			})
-				
+			.on("mousedown", (d)=>{
+				self.handleMouseDown(d)
+			})
+			.on("mouseup", (d)=>{
+				self.handleMouseUp()
+			})
+			.on("mouseover", (d)=>{
+				self.handleMouseOver(d);
+			});	
 		node.append("text").text(function(d) {
 			return d.label.length<22?d.label:d.label.substring(0, 21)+"...";
 			} )
@@ -258,28 +310,50 @@ class _OrchestrationNetUser extends React.Component {
 
 
 		function ticked() {
+			
 		  link
 		    .attr("x1", function(d) {
+		    	if(isNaN(d.source.x)) {
+		  			  debugger
+		  		  }
 		      return d.source.x;
 		    })
 		    .attr("y1", function(d) {
+		    	if(isNaN(d.source.y)) {
+		  			  debugger
+		  		  }
 		      return d.source.y;
 		    })
 		    .attr("x2", function(d) {
+		    	if(isNaN(d.target.x)) {
+		  			  debugger
+		  		  }
 		      return d.target.x;
 		    })
 		    .attr("y2", function(d) {
+		    	if(isNaN(d.target.y)) {
+		  			  debugger
+		  		  }
 		      return d.target.y;
 		    });
 
-		  node
-		    .attr("transform", function(d) {
-		      return "translate(" + d.xx + ", " + d.yy + ")";
-		    })
+		  
+		  	if (links.length===0) {
+		  		node.attr("transform", function(d) {
+				      return "translate(" + d.xx + ", " + d.yy + ")";
+				    })
+		  	} else {
+		  		node.attr("transform", function(d) {
+				      return "translate(" + d.x + ", " + d.y + ")";
+				    })
+		  	}
+		    
 		}
 
+		
 		function dragstarted(d) {
 		  if (!d3.event.active) simulation.alphaTarget(0.5).restart()
+			
 		}
 
 		function dragged(d) {
@@ -294,7 +368,56 @@ class _OrchestrationNetUser extends React.Component {
 		}
 	
 	}
-	  
+	handleMouseOver(d) {
+		if (this.dragLine!==undefined) {
+			this.dndTar = d;
+		}
+	}
+	handleMouseDown = (d) => {
+		var self = this;
+		this.dragTimer = setTimeout(()=> {
+			console.log("start drag")
+			self.startDrag(d)
+		}, 400)
+	}
+	
+	handleMouseUp = (d) => {
+		if (self.dragTimer) {
+			console.log("end drag")
+			clearTimeout(self.dragTimer);
+		}
+
+		
+		
+		if (this.dragLine!==undefined) {
+			if (this.props.selectedTab==="Provider") {
+				this.addEnterpriseLink();
+			} else if (this.props.selectedTab==="Provider") {
+				this.addBranchLink();
+			}
+		}
+		
+		
+		d3.select("#dragLine").remove();
+		self.dragLine = undefined;
+	}
+	
+	addEnterpriseLink = () => {		
+		cm.dispatch({"type":"addEnterpriseLink", "data":{"source":this.dndSrc.id, "target":this.dndTar.id, "tab":this.props.selectedTab}})
+	}
+	addBranchLink = () => {		
+		cm.dispatch({"type":"addBranchLink", "data":{"source":this.dndSrc.id, "target":this.dndTar.id, "tab":this.props.selectedTab}})
+	}
+	
+	startDrag = (d) => {
+		this.dragX = d.x;
+		this.dragY = d.y
+		
+		this.dragLine = this.state.diagram.append("line").attr("x1", d.x).attr("y1", d.y).attr("x2", d.x).attr("y2", d.y)
+			.attr("stroke", "#000").attr("id", "dragLine")
+		this.dndSrc = d;
+		//console.log("this.dragLine="+this.dragLine)
+	}  
 	render() {
 	    return (
 	    	<div>
@@ -321,7 +444,7 @@ const OrchestrationNetUser = connect(
 			    return {
 			    	selectedTab: store.OrchestrationReducer.selectedTab,
 			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise,
-			    	tabData: store.OrchestrationReducer.tabData
+			    	provider: store.OrchestrationReducer.provider
 			    };
 			  }
 			)(_OrchestrationNetUser);
