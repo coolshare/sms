@@ -149,53 +149,61 @@ class _Orchestration3 extends React.Component {
 	drawDiagram(nodes2, links2) {
 		var self = this;
 		if (self.svg!==undefined) {
-			//d3.select("#svg").innerHTML = "";
-
-
 			d3.selectAll('#svg svg').remove();
-
-
 		}
-			var nodeSvg, linkSvg, simulation, nodeEnter, linkEnter ;
-			var width = 700, height = 700;
-			var svg = self.svg = d3.select("#svg").append("svg")
-			    .attr("width", width)
-			    .attr("height", height)
-			    .on("mousemove", function() {
-			    	  if (self.dragLine!==undefined) {
-			    		  var e = d3.event;
-			    		  
-			    		  self.dragLine.attr("x1",self.dragX)
-			                 .attr("y1",self.dragY)
-			                 .attr("x2",e.clientX)
-			                 .attr("y2",e.clientY-100);
-			    		  //console.log("x="+e.clientX+" y="+e.clientY)
-			    		  //self.dragLine.attr("transform", "translate(" + e.clientX + "," + e.clientY + ")")
-			    	  }
-			      })
-			      .on("mouseup", (d)=>{
-						self.handleMouseUp(d);
-					})
-	
-			  var collide = [60, 300, 50];
-				if (links2.length===0) {
-					collide = [10, 200, 20];
-				}
-			self.simulation = simulation = d3.forceSimulation()
-			  .force("link", d3.forceLink().id(function(d) {
-			    return d.id;
-			  }).distance(collide[2]))
-			  .force("collide", d3.forceCollide(collide[0]))
-			  .force("charge", d3.forceManyBody())
-			  .force("center", d3.forceCenter(collide[1], collide[1]))
-			  .on("tick", ticked);
-			self.simulation.stop();	
-			update(nodes2, links2);
-			self.simulation.restart();	
-		/*} else {
-			update(nodes2, links2);
-		    self.simulation.restart();	
-		}*/
+		
+		if (links2.length==0) {
+			
+			var radius = 100;
+			var width = (radius * 2) + 50;
+            var height = (radius * 2) + 50;
+			
+			for (var i=0; i<nodes2.length; i++) {
+				var angle = (i / (nodes2.length/2)) * Math.PI; // Calculate the angle at which the element will be placed.
+	                                                // For a semicircle, we would use (i / numNodes) * Math.PI.
+				var x = (radius * Math.cos(angle)) + (width/2); // Calculate the x position of the element.
+				var y = (radius * Math.sin(angle)) + (width/2); // Calculate the y position of the element.
+				nodes2[i].xx = x;
+				nodes2[i].yy = y;
+			}
+		}
+		var nodeSvg, linkSvg, simulation, nodeEnter, linkEnter ;
+		var width = 700, height = 700;
+		var svg = self.svg = d3.select("#svg").append("svg")
+		    .attr("width", width)
+		    .attr("height", height)
+		    .on("mousemove", function() {
+		    	  if (self.dragLine!==undefined) {
+		    		  var e = d3.event;
+		    		  
+		    		  self.dragLine.attr("x1",self.dragX)
+		                 .attr("y1",self.dragY)
+		                 .attr("x2",e.clientX)
+		                 .attr("y2",e.clientY-110);
+		    		  //console.log("x="+e.clientX+" y="+e.clientY)
+		    		  //self.dragLine.attr("transform", "translate(" + e.clientX + "," + e.clientY + ")")
+		    	  }
+		      })
+		      .on("mouseup", (d)=>{
+					self.handleMouseUp(d);
+				})
+
+		  var collide = [60, 300, 50];
+			if (links2.length===0) {
+				collide = [10, 200, 20];
+			}
+		self.simulation = simulation = d3.forceSimulation()
+		  .force("link", d3.forceLink().id(function(d) {
+		    return d.id;
+		  }).distance(collide[2]))
+		  .force("collide", d3.forceCollide(collide[0]))
+		  .force("charge", d3.forceManyBody())
+		  .force("center", d3.forceCenter(collide[1], collide[1]))
+		  .on("tick", ticked);
+		self.simulation.stop();	
+		update(nodes2, links2);
+		self.simulation.restart();	
+
 		
 		function update(nodes2, links2) {
 		  
@@ -293,16 +301,23 @@ class _Orchestration3 extends React.Component {
 		}
 
 		function ticked() {
-		  linkSvg
+			
+		  	linkSvg
 		      .attr("x1", function(d) {
 		    	  
 		    	  return d.source.x; })
 		      .attr("y1", function(d) { return d.source.y; })
 		      .attr("x2", function(d) { return d.target.x; })
 		      .attr("y2", function(d) { return d.target.y; });
-
-		  nodeSvg
-		      .attr("transform", function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
+		  	if (links2.length>0) {
+		  		nodeSvg
+			      .attr("transform", function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
+			} else {
+				nodeSvg
+			      .attr("transform", function(d) { return "translate(" + d.xx + ", " + d.yy + ")"; });
+			}
+		
+		  
 		}
 
 		function click (d) {
