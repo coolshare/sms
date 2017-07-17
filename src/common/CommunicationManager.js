@@ -92,11 +92,22 @@ class CommunicationManager {
 		return res;
 	}
 	unsubscribe(type) {
-		if (this.subscribeMap[type]===undefined) {
-			return;
+		var types;
+		if (type instanceof Array) {
+			types = type;
+		} else {
+			types = [type];
 		}
-		this.subscribeMap[type]();
-		delete this.subscribeMap[type];
+
+		for (var i=0; i<types.length; i++) {
+			var t = types[i];
+			if (this.subscribeMap[t]===undefined) {
+				return;
+			}
+			this.subscribeMap[t]();
+			delete this.subscribeMap[t];
+		}
+		
 	}
 	registerGlobal(key, obj) {
 		window[key] = obj;

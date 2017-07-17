@@ -83,6 +83,9 @@ rect:hover {
 .selectedTab:hover {
 	color: #000099
 }
+.disabled {
+	color: "#EEE"
+}
 
 .headLink {
 	color: #668cff;

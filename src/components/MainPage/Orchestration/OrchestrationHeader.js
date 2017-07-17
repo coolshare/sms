@@ -4,7 +4,8 @@ import {connect} from 'react-redux'
 import cm from '../../../common/CommunicationManager'
 import Utils from '../../../common/Utils'
 import style from './Orchestration.css'
-
+import ReactConfirmAlert, { confirmAlert } from 'react-confirm-alert'; // Import 
+import 'react-confirm-alert/src/react-confirm-alert.css' // Import css 
 	
 class _OrchestrationHeader extends React.Component {
 	handleProvider() {
@@ -25,18 +26,45 @@ class _OrchestrationHeader extends React.Component {
 		
 	}
 	handleRemove() {
-		alert("handleRemove")
+		confirmAlert({
+		      title: 'Confirm to delete',                        // Title dialog 
+		      message: 'Do you want to delete the selected item?',               // Message dialog        // Custom UI or Component 
+		      confirmLabel: 'Confirm',                           // Text button confirm 
+		      cancelLabel: 'Cancel',                             // Text button cancel 
+		      onConfirm: () => {
+		    	  	if (this.props.selectedTab==="Provider") {
+			  			cm.dispatch({"type":"removeEnterprise"})
+			  		} else if (this.props.selectedTab==="Enterprise") {
+			  			cm.dispatch({"type":"removeBranch"})
+			  		}
+		      },    // Action after Confirm 
+		      onCancel: () => {}     // Action after Cancel 
+		    })
+		
+		
+	}
+	handleChange = (e) => {
+		cm.dispatch({"type":"setSearch", "data":e.target.value})
+
 	}
 	  render() {
 		var self = this;	
 		var selectedTab = this.props.selectedTab
+		var buttonName = [];
+		if (selectedTab==="Provider") {
+			buttonName = ["Add Provider", "Remove Provider"]
+		} else {
+			buttonName = ["Add Branch", "Remove Branch"]
+		}
+		
 		return (
 		    	<div style={{"margin":"8px"}}>
-			    	<form>
-			    		<input placeholder="Search"/><span className={selectedTab==="Provider"?"selectedTab":"unselectedTab"} style={{"marginLeft":"20px", "marginRight":"20px"}} onClick={this.handleProvider.bind(this)}>Provider</span>
-			    		<span className={selectedTab==="Enterprise"?"selectedTab":"unselectedTab"} style={{"marginRight":"20px"}} onClick={this.handleEnterprise.bind(this)}>Enterprise</span>
-			    		<span style={{"float":"right", "fontSize":"70%"}}><span className="headLink" style={{"marginRight":"20px"}} onClick={this.handleAdd.bind(this)}>Add {selectedTab==="Provider"?"Enterprise":selectedTab==="Enterprise"?"Branch":""}</span><span className="headLink" onClick={this.handleRemove.bind(this)}>Remove {selectedTab==="Provider"?"Enterprise":selectedTab==="Enterprise"?"Branch":""}</span></span>
-			    	</form>
+		    		<input placeholder="Search" ref={(input)=>this.searchField = input} onChange={(e)=>this.handleChange(e)}/><span className={selectedTab==="Provider"?"selectedTab":"unselectedTab"} style={{"marginLeft":"20px", "marginRight":"20px"}} onClick={this.handleProvider.bind(this)}>Provider</span>
+		    		{this.props.selectedEnterprise===null?<span className="disabled" style={{"marginRight":"20px"}}>Enterprise</span>:<span className={selectedTab==="Enterprise"?"selectedTab":"unselectedTab"} style={{"marginRight":"20px"}} onClick={this.handleEnterprise.bind(this)}>Enterprise</span>}
+		    		<span style={{"float":"right", "fontSize":"70%"}}>
+		    			<span className="headLink" style={{"marginRight":"20px"}} onClick={this.handleAdd.bind(this)}>{buttonName[0]}</span>
+		    			{this.props.selectedTab==="Provider" && this.props.selectedEnterprise!==null || this.props.selectedTab==="Enterprise" && this.props.selectedBranch!==null?<span className="headLink" onClick={this.handleRemove.bind(this)}>{buttonName[1]}</span>:<span className="disabled" >{buttonName[1]}</span>}
+		    		</span>
 			    </div>
 		    );
 		
@@ -48,7 +76,9 @@ class _OrchestrationHeader extends React.Component {
 const OrchestrationHeader = connect(
 		  store => {
 			    return {
-			    	selectedTab: store.OrchestrationReducer.selectedTab
+			    	selectedTab: store.OrchestrationReducer.selectedTab,
+			    	selectedBranch: store.OrchestrationReducer.selectedBranch,
+			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise
 			    };
 			  }
 			)(_OrchestrationHeader);

@@ -38,25 +38,38 @@ class _Orchestration3 extends React.Component {
 		this.collectNodes = {"Container":this.handleProvider, "Enterprise":this.handleEnterprise};
 		this.enterpriseX = 0;
 		this.enterpriseY = 0;
-		this.provider = new Provider();
+		this.provider = this.props.provider===null?new Provider():this.props.provider;
 		this.noDrag = false;
 	}
 	componentDidMount() {
 		let self = this;
-		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink"], (action)=>{
+		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink", "setSelectedEnterprise", "setSelectedBranch", "removeEnterprise", "removeBranch"], (action)=>{
+			if (cm.getStoreValue("HeaderReducer", "currentLink")!=="Orchestration") {
+				return;
+			}
+		
 			var tab = cm.getStoreValue("OrchestrationReducer", "selectedTab");
 			var data = cm.getStoreValue("OrchestrationReducer","provider")
+			var filter = cm.getStoreValue("OrchestrationReducer", "search");
+			filter = filter.trim()===""?undefined:filter.toLowerCase();
 			if (tab==="Provider") {
-				self.buildProviderDiagram()
+				self.buildProviderDiagram(filter)
 			} else if (tab==="Enterprise") {
 				if (self.props.selectedEnterprise!==null) {
-					self.buildEnterpriseDiagram()
+					self.buildEnterpriseDiagram(undefined, filter)
 				}				
 			}
 		})
+		/*
+		cm.subscribe("setSelectedEnterprise", (action)=>{
+			var selectedBranch = cm.getStoreValue("OrchestrationReducer", "selectedBranch");
+		});
+		cm.subscribe("setSelectedBranch", (action)=>{
+			var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "selectedEnterprise");
+		});*/
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
 		if (this.props.provider===null) {
-			var dummyEnterprises = [{"BusinessName":"Welmart", "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+			var dummyEnterprises = [{"BusinessName":"Walmart", "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"Target", "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"BurgerKing", "ContactName":"BurgerKing Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"phone", "Address":"555 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"Frys", "ContactName":"Frys Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"166623 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
@@ -68,9 +81,9 @@ class _Orchestration3 extends React.Component {
 			}
 			
 			internetNode.id = new Date().valueOf()+9999;
-			var internetForProvider = new Enterprise( internetNode, 5, 50, 50 , 35, 0, "#E1E1E1", -24, -24, 48, 48);
-			this.provider.nodes.push(internetForProvider)
-			this.provider.enterpriseMap[internetForProvider.id] = internetForProvider;
+			this.provider.internetForProvider = new Enterprise( internetNode, 5, 50, 50 , 35, 0, "#E1E1E1", -24, -24, 48, 48);
+			this.provider.nodes.push(this.provider.internetForProvider)
+			this.provider.enterpriseMap[this.provider.internetForProvider.id] = this.provider.internetForProvider;
 			for (var i=0; i<dummyEnterprises.length; i++) {
 				var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, 0, "#E1E1E1", -8, -8, 16, 16);
 				this.provider.nodes.push(enterprise);
@@ -85,27 +98,27 @@ class _Orchestration3 extends React.Component {
 			
 			for (var e in this.provider.enterpriseMap) {
 				var enterprise = this.provider.enterpriseMap[e];
-				if (internetForProvider.id===enterprise.id) {
+				if (this.provider.internetForProvider.id===enterprise.id) {
 					continue;
 				}
-				this.provider.links.push({"source":internetForProvider, "target":enterprise});
+				this.provider.links.push({"source":this.provider.internetForProvider, "target":enterprise});
 
 				internetNode.id = new Date().valueOf()+9999;
-				var internetForEnterprise = new Enterprise( internetNode, 5, 50, 50 , 35, 0, "#E1E1E1", -24, -24, 48, 48);
+				enterprise.internetForEnterprise = new Enterprise( internetNode, 5, 50, 50 , 35, 0, "#E1E1E1", -24, -24, 48, 48);
 				
-				enterprise.nodes.push(internetForEnterprise)
+				enterprise.nodes.push(enterprise.internetForEnterprise)
 				
 				//var n = this.provider.nodes[i];
 				
 				//var list = enterprise.nodes;
 				var max = 3;//+Math.floor(Math.random()*5);
 				for (var j=0; j<max; j++) {
-					var data2 = {"BranchName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
+					var data2 = {"id":new Date().valueOf()+j, "BranchName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
 					var branch = new Branch(data2, 20, 100, 100+60*j, 35, 0, "#E1E1E1", -8, -8, 16, 16);
 					enterprise.nodes.push(branch);
 					
 					enterprise.branchMap[branch.id] = branch;
-					enterprise.links.push({"source":internetForEnterprise, "target":branch});
+					enterprise.links.push({"source":enterprise.internetForEnterprise, "target":branch});
 				}
 				
 			}
@@ -121,8 +134,17 @@ class _Orchestration3 extends React.Component {
 		
 	}
 	
-	handleNodeClick(d) {	
+	componentWillUnmount() {
+		cm.unsubscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink", "setSelectedEnterprise", "setSelectedBranch", "removeEnterprise", "removeBranch"]);
+		cm.unsubscribe("setSelectedEnterprise");		
+		cm.unsubscribe("setSelectedBranch");
+	}
+	
+	handleNodeDBClick(d) {	
 		this.noDrag = true;
+		if (self.scTimer) {
+			clearTimeout(self.scTimer)
+		}
 		if (this.dragTimer) {
 			console.log("end drag")
 			clearTimeout(this.dragTimer);
@@ -134,24 +156,41 @@ class _Orchestration3 extends React.Component {
 			
 		}
 	}
-
+	handleNodeClick(d) {	
+		this.noDrag = true;
+		if (this.dragTimer) {
+			console.log("end drag")
+			clearTimeout(this.dragTimer);
+		}
+		self.scTimer = setTimeout(()=>{
+			if (d.type==="Enterprise") {
+				cm.dispatch({"type":"setSelectedEnterprise", "data":d.id})
+			} else if (d.type==="Branch") {
+				cm.dispatch({"type":"setSelectedBranch", "data":d.id})
+			}
+		
+		}, 500)
+		
+		
+	}
 	
-	buildEnterpriseDiagram(id) {
+	buildEnterpriseDiagram(id, filter) {
 		id = id||this.props.selectedEnterprise;
 		var enterprise = this.provider.enterpriseMap[id] 
-		this.drawDiagram(enterprise.nodes, enterprise.links);
+		this.drawDiagram(enterprise.nodes, enterprise.links, filter);
 	}
 	
-	buildProviderDiagram() {
-		this.drawDiagram(this.provider.nodes, this.provider.links);
+	buildProviderDiagram(filter) {
+		this.drawDiagram(this.provider.nodes, this.provider.links, filter);
 	}
 	
-	drawDiagram(nodes2, links2) {
+	drawDiagram(nodes2, links2, filter) {
 		var self = this;
 		if (self.svg!==undefined) {
+			//d3.selectAll("g > *").remove()
 			d3.selectAll('#svg svg').remove();
 		}
-		
+		self.c = 0
 		if (links2.length==0) {
 			
 			var radius = 100;
@@ -201,20 +240,35 @@ class _Orchestration3 extends React.Component {
 		  .force("center", d3.forceCenter(collide[1], collide[1]))
 		  .on("tick", ticked);
 		self.simulation.stop();	
-		update(nodes2, links2);
+		update(nodes2, links2, filter);
 		self.simulation.restart();	
 
 		
-		function update(nodes2, links2) {
+		function update(nodes2, links2, filter) {
 		  
-			  var nodes = [];
-			  var links = [];
-			  for (var i=0; i<nodes2.length; i++) {
-				  nodes.push(nodes2[i])
+		  var nodes = [];
+		  var links = [];
+		  var filteredMap = {};
+		  for (var i=0; i<nodes2.length; i++) {
+			  var n = nodes2[i];
+			  if (filter===undefined) {
+				  nodes.push(n)
+			  } else {
+				  if (n.label.toLowerCase().indexOf(filter)<0 && n.label!=="") {						  
+					  filteredMap[n.id] = n;
+					  continue;
+				  }
+				  nodes.push(n)
 			  }
-			  for (var i=0; i<links2.length; i++) {
-				  links.push(links2[i])
+			  
+		  }
+		  for (var i=0; i<links2.length; i++) {
+			  var link = links2[i];
+			  if (filteredMap[link.source.id]!==undefined || filteredMap[link.target.id]!==undefined) {
+				  continue;
 			  }
+			  links.push(link)
+		  }
 		  self.simulation
 		    .nodes(nodes)
 
@@ -247,6 +301,9 @@ class _Orchestration3 extends React.Component {
 			.on("click", (d)=>{
 				self.handleNodeClick(d)
 			})
+			.on("dblclick", (d)=>{
+				self.handleNodeDBClick(d)
+			})
 			.on("mousedown", (d)=>{
 				
 				self.handleMouseDown(d)
@@ -257,13 +314,24 @@ class _Orchestration3 extends React.Component {
 			.on("mouseover", (d)=>{
 				self.handleMouseOver(d);
 			});
-		  
+		  var color = null;
+		  if (self.props.selectedTab==="Provider" && self.props.selectedEnterprise!=null ||
+				  self.props.selectedTab==="Enterprise" && self.props.selectedBranch!=null) {
+			  color = "#1133E4";
+		  }
 		  nodeSvg.append("circle")
 			.attr("r", function(d){return d.r-5;})
-			.style("fill", function(d) {return d.innerColor})  
+			.style("fill", function(d) {
+				return (self.props.selectedTab==="Provider" && self.props.selectedEnterprise==d.id
+						|| self.props.selectedTab==="Enterprise" && self.props.selectedBranch==d.id)?
+				color:d.innerColor
+			})  
 			.style("cursor", "pointer")
 			.on("click", (d)=>{
 				self.handleNodeClick(d)
+			})
+			.on("dblclick", (d)=>{
+				self.handleNodeDBClick(d)
 			})
 			.on("mousedown", (d)=>{
 				self.handleMouseDown(d)
@@ -284,6 +352,9 @@ class _Orchestration3 extends React.Component {
 					.on("click", (d)=>{
 						self.handleNodeClick(d)
 					})
+					.on("dblclick", (d)=>{
+						self.handleNodeDBClick(d)
+					})
 					.on("mousedown", (d)=>{
 						self.handleMouseDown(d)
 					})
@@ -301,41 +372,47 @@ class _Orchestration3 extends React.Component {
 		}
 
 		function ticked() {
+			self.c++;
 			
 		  	linkSvg
 		      .attr("x1", function(d) {
 		    	  
-		    	  return d.source.x; })
-		      .attr("y1", function(d) { return d.source.y; })
-		      .attr("x2", function(d) { return d.target.x; })
-		      .attr("y2", function(d) { return d.target.y; });
+		    	  return d.source.xxx?d.source.xxx:d.source.x; })
+		      .attr("y1", function(d) { return d.source.yyy?d.source.yyy:d.source.y; })
+		      .attr("x2", function(d) { return d.target.xxx?d.target.xxx:d.target.x; })
+		      .attr("y2", function(d) { return d.target.yyy?d.target.yyy:d.target.y; });
+		  	
+		  	
+		  	
 		  	if (links2.length>0) {
-		  		nodeSvg
-			      .attr("transform", function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
+		  		if (self.c>1) {
+		  			nodeSvg
+				      .attr("transform", function(d) {
+				    	  if (self.c==20) {
+				    		  d.xxx = d.x;
+					  		  d.yyy = d.y;
+					  		  if (d.label=="Walmart") {
+					  			  console.log("self.c="+self.c+" d.xxx="+d.xxx)
+					  		  }
+				    	  }
+				    	  if (d.xxx) {
+					  		  return "translate(" + d.xxx + ", " + d.yyy + ")"; 
+				    	  } else {
+				    		  return "translate(" + d.x + ", " + d.y + ")"; 
+				    	  }  
+				    });
+				      
+		  		} else {
+		  			nodeSvg
+				      .attr("transform", function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
+		  		}
+		  	
+		  		
 			} else {
 				nodeSvg
 			      .attr("transform", function(d) { return "translate(" + d.xx + ", " + d.yy + ")"; });
 			}
-		
-		  
 		}
-
-		function click (d) {
-			if (d.children) {
-				d._children = d.children;
-				d.children = null;
-		    update();
-		    self.simulation.restart();
-			} else {
-				d.children = d._children;
-				d._children = null;
-		    update();
-		    self.simulation.restart();
-			}
-		}
-
-
-		
 	}	
 	
 
@@ -348,6 +425,10 @@ class _Orchestration3 extends React.Component {
 		}
 	}
 	handleMouseDown = (d) => {
+		
+		if (this.props.selectedTab!=="Enterprise") {
+			return;
+		}
 		var self = this;
 		d3.event.preventDefault();
 		this.noDrag = false;
@@ -358,6 +439,10 @@ class _Orchestration3 extends React.Component {
 	}
 	
 	handleMouseUp = (d) => {
+		if (this.props.selectedTab!=="Enterprise") {
+			return;
+		}
+	
 		var self = this;
 		this.noDrag = true;
 		if (self.dragTimer) {
@@ -369,9 +454,9 @@ class _Orchestration3 extends React.Component {
 		
 		if (this.dragLine!==undefined) {
 			if (this.props.selectedTab==="Provider") {
-				this.addEnterpriseLink();
 				
-			} else if (this.props.selectedTab==="Provider") {
+				
+			} else if (this.props.selectedTab==="Enterprise") {
 				this.addBranchLink();
 			}
 		}
@@ -383,6 +468,7 @@ class _Orchestration3 extends React.Component {
 	
 	addEnterpriseLink = () => {	
 		//this.simulation.stop();
+		
 		cm.dispatch({"type":"addEnterpriseLink", "data":{"source":this.dndSrc.id, "target":this.dndTar.id, "tab":this.props.selectedTab}})
 		var provider = this.props.provider;
 		var src = provider.enterpriseMap[this.dndSrc.id];
@@ -399,10 +485,10 @@ class _Orchestration3 extends React.Component {
 		if (this.noDrag) {
 			return;
 		}
-		this.dragX = d.x;
-		this.dragY = d.y
+		this.dragX = d.x+d.r;
+		this.dragY = d.y+d.r
 		
-		this.dragLine = this.svg.append("line").attr("x1", d.x).attr("y1", d.y).attr("x2", d.x).attr("y2", d.y)
+		this.dragLine = this.svg.append("line").attr("x1", this.dragX).attr("y1", this.dragY).attr("x2", this.dragX).attr("y2", this.dragY)
 			.attr("stroke", "#000").attr("id", "dragLine")
 		this.dndSrc = d;
 		//console.log("this.dragLine="+this.dragLine)
@@ -430,8 +516,10 @@ class _Orchestration3 extends React.Component {
 const Orchestration = connect(
 		  store => {
 			    return {
+			    	search: store.OrchestrationReducer.search,
 			    	selectedTab: store.OrchestrationReducer.selectedTab,
 			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise,
+			    	selectedBranch: store.OrchestrationReducer.selectedBranch,
 			    	provider: store.OrchestrationReducer.provider
 			    };
 			  }

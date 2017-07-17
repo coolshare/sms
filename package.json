@@ -58,6 +58,7 @@
     "prop-types": "^15.5.8",
     "react": "^15.6.1",
     "react-bootstrap": "^0.30.8",
+    "react-confirm-alert": "^1.0.7",
     "react-data-grid": "^2.0.30",
     "react-data-grid-addons": "^2.0.30",
     "react-dom": "^15.5.4",

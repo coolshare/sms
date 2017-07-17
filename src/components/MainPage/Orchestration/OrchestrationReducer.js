@@ -1,11 +1,15 @@
 import Utils from '../../../common/Utils'
-const OrchestrationReducer = (state = {'counter':[0, 0], 'selectedEnterprise':null, 'provider':null,'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
+const OrchestrationReducer = (state = {'search':'', 'counter':[0, 0], 'selectedBranch':null, 'selectedEnterprise':null, 'provider':null,'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
   switch (action.type) {
-  	case 'setCounter':
+  	case 'setSearch':
       return Object.assign({}, state, {
-    	  counter: action.data
+    	  search: action.data
       })
-  	case 'setProvider':
+  	case 'setCounter':
+        return Object.assign({}, state, {
+      	  counter: action.data
+        })
+    case 'setProvider':
       return Object.assign({}, state, {
     	  provider: action.data
       })
@@ -13,21 +17,94 @@ const OrchestrationReducer = (state = {'counter':[0, 0], 'selectedEnterprise':nu
         return Object.assign({}, state, {
       	  selectedTab: action.data
         })
+  	case 'setSelectedBranch':
+        return Object.assign({}, state, {
+        	selectedBranch: action.data
+        })
   	case 'setSelectedEnterprise':
         return Object.assign({}, state, {
         	selectedEnterprise: action.data
         })
   	case 'addEnterprise':
-  		var data = Object.assign({}, state.provider);
-  		var d = action.data;
-  		data.Provider.nodes.push(d);
+  		var provider = Object.assign({}, state.provider);
+  		var id = action.data.data.id;
+  		provider.enterpriseMap[id] = action.data;
+  		provider.nodes.push(action.data);
+  		provider.links.push({"source":provider.internetForProvider, "target":action.data})
         return Object.assign({}, state, {
-        	provider: data
+        	provider: provider
         })
   	case 'addBranch':
   		var provider = Object.assign({}, state.provider);
-  		var d = action.data;
-  		provider.Enterprise[state.selectedEnterprise].nodes.push(d);
+  		var enterprise = provider.enterpriseMap[state.selectedEnterprise];
+  		enterprise.branchMap[action.data.data.id] = action.data;
+  		enterprise.nodes.push(action.data);
+  		enterprise.links.push({"source":enterprise.internetForEnterprise, "target":action.data})
+        return Object.assign({}, state, {
+        	provider: provider
+        })
+  	case 'removeEnterprise':
+  		var provider = Object.assign({}, state.provider);
+  		var id = state.selectedEnterprise;
+  		delete provider.enterpriseMap[id];
+  		var foundIndex = -1;
+  		for (var i=0; i<provider.nodes.length; i++) {
+  			var enterprise = provider.nodes[i]
+  			if (enterprise.id === id) {
+  				foundIndex = i;
+  				break;
+  			}
+  		}
+  		if (foundIndex<0) {
+  			return state;
+  		}
+  		provider.nodes.splice(foundIndex, 1);
+  		
+  		var deleteList = []
+  		for (var i=0; i<provider.links.length; i++) {
+  			var link = provider.links[i];
+  			if (link.source.id===id || link.target.id===id) {
+  				deleteList.push(i);
+  			}
+  		}
+  		
+  		for (var i=deleteList.length-1; i>-1; i--) {
+  			provider.links.splice(deleteList[i], 1);
+  		}
+        return Object.assign({}, state, {
+        	provider: provider
+        })
+  	case 'removeBranch':
+  		var provider = Object.assign({}, state.provider);
+  		var enterprise = provider.enterpriseMap[state.selectedEnterprise];
+  		var id = state.selectedBranch;
+  		delete enterprise.branchMap[id];
+  		var foundIndex = -1;
+  		for (var i=0; i<enterprise.nodes.length; i++) {
+  			var branch = enterprise.nodes[i]
+  			if (branch.id === id) {
+  				foundIndex = i;
+  				break;
+  			}
+  		}
+  		if (foundIndex<0) {
+  			return state;
+  		}
+  		enterprise.nodes.splice(foundIndex, 1);
+  		
+  		
+  		var deleteList = []
+  		for (var i=0; i<enterprise.links.length; i++) {
+  			var link = enterprise.links[i];
+  			if (link.source.id===id || link.target.id===id) {
+  				deleteList.push(i);
+  			}
+  		}
+  		
+  		for (var i=deleteList.length-1; i>-1; i--) {
+  			enterprise.links.splice(deleteList[i], 1);
+  		}
+  		
         return Object.assign({}, state, {
         	provider: provider
         })
@@ -41,11 +118,12 @@ const OrchestrationReducer = (state = {'counter':[0, 0], 'selectedEnterprise':nu
         })
   	case 'addBranchLink':
   		var provider = Object.assign({}, state.provider);
-  		if (action.tab)
-  		var d = action.data;
-  		data.Enterprise[state.selectedEnterprise].nodes.push(d);
+  		var enterprise = provider.enterpriseMap[state.selectedEnterprise]
+  		var src = enterprise.branchMap[action.data.source];
+  		var tar = enterprise.branchMap[action.data.target];
+  		enterprise.links.push({"source":src, "target":tar})
         return Object.assign({}, state, {
-        	provider: data
+        	provider: provider
         })
     default:
       return state
