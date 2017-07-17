@@ -1,5 +1,5 @@
 import Utils from '../../../common/Utils'
-const OrchestrationReducer = (state = {'search':'', 'counter':[0, 0], 'selectedBranch':null, 'selectedEnterprise':null, 'provider':null,'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
+const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter':[0, 0], 'selectedBranch':null, 'selectedEnterprise':null, 'provider':null,'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
   switch (action.type) {
   	case 'setSearch':
       return Object.assign({}, state, {
@@ -124,6 +124,10 @@ const OrchestrationReducer = (state = {'search':'', 'counter':[0, 0], 'selectedB
   		enterprise.links.push({"source":src, "target":tar})
         return Object.assign({}, state, {
         	provider: provider
+        })
+  	case 'saveCurrentLink':
+        return Object.assign({}, state, {
+        	currentLink: [action.source, action.target]
         })
     default:
       return state

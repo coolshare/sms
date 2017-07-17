@@ -12,6 +12,7 @@ import ResouceUsageDetails from '../components/MainPage/Dashboard/ResouceUsage/R
 import Orchestration from '../components/MainPage/Orchestration/Orchestration3'
 import AddEnterprise from '../components/MainPage/Orchestration/AddEnterprise'
 import AddBranch from '../components/MainPage/Orchestration/AddBranch'
+import AddLink from '../components/MainPage/Orchestration/AddLink'
 
 const routeData = {
 		"Login":{"label":"Login", "component":Login, "icon":"", "path":"Login"},
@@ -25,7 +26,8 @@ const routeData = {
 		"ResouceUsageDetails":{"label":"ResouceUsageDetails", "component":ResouceUsageDetails, "icon":"", "path":"ResouceUsageDetails"},
 		"Orchestration":{"label":"Orchestration", "component":Orchestration, "icon":"", "path":"Orchestration"},
 		"AddEnterprise":{"label":"AddEnterprise", "component":AddEnterprise, "icon":"", "path":"AddEnterprise"},
-		"AddBranch":{"label":"AddBranch", "component":AddBranch, "icon":"", "path":"AddBranch"}
+		"AddBranch":{"label":"AddBranch", "component":AddBranch, "icon":"", "path":"AddBranch"},
+		"AddLink":{"label":"AddLink", "component":AddLink, "icon":"", "path":"AddLink"}
 }
 
 
@@ -121,7 +123,7 @@ class CommunicationManager {
 			return state[key];
 		}
 	}
-	popup(c, id) {
+	popup(c, id, action) {
 		let isEmpty = this.isStackEmpty();
 		this.stack.push(browserHistory.getCurrentLocation().pathname);
 		this.selectedPopup = [c, id];
@@ -132,7 +134,12 @@ class CommunicationManager {
 		if (isEmpty) {
 			this.go('StackViewContainer');
 		} else {
-			this.dispatch({"type":"pushPopup", "data":[c, id]})
+			if (action!==undefined) {
+				action.asyncDispatch({"type":"pushPopup", "data":[c, id]})
+			} else {
+				this.dispatch({"type":"pushPopup", "data":[c, id]})
+			}
+			
 		}
 		
 	}

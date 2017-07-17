@@ -67,12 +67,23 @@ class _Orchestration3 extends React.Component {
 			var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "selectedEnterprise");
 			for (var i in self.cMap) {
 				var c = self.cMap[i];
-				c.style.fill = self.innerColor
+				c[0].style.fill = self.innerColor
 			}
-			self.cMap[selectedEnterprise].style.fill= self.selInnerColor
+			if (self.cMap[selectedEnterprise]!==undefined) {
+				self.cMap[selectedEnterprise][0].style.fill= self.selInnerColor
+			}
+			
 		});
 		cm.subscribe("setSelectedBranch", (action)=>{
 			var selectedBranch = cm.getStoreValue("OrchestrationReducer", "selectedBranch");
+			for (var i in self.cMap) {
+				var c = self.cMap[i];
+				c[0].style.fill = self.innerColor
+			}
+			if (self.cMap[selectedBranch]!==undefined) {
+				self.cMap[selectedBranch][0].style.fill= self.selInnerColor
+			}
+			
 		});
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
 		if (this.props.provider===null) {
@@ -88,11 +99,11 @@ class _Orchestration3 extends React.Component {
 			}
 			
 			internetNode.id = new Date().valueOf()+9999;
-			this.provider.internetForProvider = new Enterprise( internetNode, 5, 50, 50 , 35, 0, self.innerColor, -24, -24, 48, 48);
+			this.provider.internetForProvider = new Enterprise( internetNode, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
 			this.provider.nodes.push(this.provider.internetForProvider)
 			this.provider.enterpriseMap[this.provider.internetForProvider.id] = this.provider.internetForProvider;
 			for (var i=0; i<dummyEnterprises.length; i++) {
-				var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, 0, self.innerColor, -8, -8, 16, 16);
+				var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
 				this.provider.nodes.push(enterprise);
 				this.provider.enterpriseMap[enterprise.id] = enterprise;
 			}
@@ -111,7 +122,7 @@ class _Orchestration3 extends React.Component {
 				this.provider.links.push({"source":this.provider.internetForProvider, "target":enterprise});
 
 				internetNode.id = new Date().valueOf()+9999;
-				enterprise.internetForEnterprise = new Enterprise( internetNode, 5, 50, 50 , 35, 0, self.innerColor, -24, -24, 48, 48);
+				enterprise.internetForEnterprise = new Enterprise( internetNode, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
 				
 				enterprise.nodes.push(enterprise.internetForEnterprise)
 				
@@ -121,7 +132,7 @@ class _Orchestration3 extends React.Component {
 				var max = 3;//+Math.floor(Math.random()*5);
 				for (var j=0; j<max; j++) {
 					var data2 = {"id":new Date().valueOf()+j, "BranchName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
-					var branch = new Branch(data2, 20, 100, 100+60*j, 35, 0, self.innerColor, -8, -8, 16, 16);
+					var branch = new Branch(data2, 20, 100, 100+60*j, 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
 					enterprise.nodes.push(branch);
 					
 					enterprise.branchMap[branch.id] = branch;
@@ -184,10 +195,13 @@ class _Orchestration3 extends React.Component {
 	buildEnterpriseDiagram(id, filter) {
 		id = id||this.props.selectedEnterprise;
 		var enterprise = this.provider.enterpriseMap[id] 
+		this.cMap = undefined;
 		this.drawDiagram(enterprise.nodes, enterprise.links, filter);
 	}
 	
 	buildProviderDiagram(filter) {
+		
+		this.cMap = undefined;
 		this.drawDiagram(this.provider.nodes, this.provider.links, filter);
 	}
 	
@@ -237,7 +251,7 @@ class _Orchestration3 extends React.Component {
 
 		  var collide = [60, 300, 50];
 			if (links2.length===0) {
-				collide = [10, 200, 20];
+				collide = [10, 50, 20];
 			}
 		self.simulation = simulation = d3.forceSimulation()
 		  .force("link", d3.forceLink().id(function(d) {
@@ -357,7 +371,7 @@ class _Orchestration3 extends React.Component {
 					for (var j=0; j<dd._groups[i].length; j++) {
 						var c = dd._groups[i][j];
 						var data = c.__data__;
-						self.cMap[data.id] = c;
+						self.cMap[data.id] = [c, data];
 					}
 				}
 			}
@@ -485,6 +499,7 @@ class _Orchestration3 extends React.Component {
 		
 		d3.select("#dragLine").remove();
 		self.dragLine = undefined;
+		d3.event.preventDefault();
 	}
 	
 	addEnterpriseLink = () => {	
@@ -498,8 +513,11 @@ class _Orchestration3 extends React.Component {
   		provider.links.push({"source":src, "target":tar})
   		//this.simulation.restart();
 	}
-	addBranchLink = () => {		
-		cm.dispatch({"type":"addBranchLink", "data":{"source":this.dndSrc.id, "target":this.dndTar.id, "tab":this.props.selectedTab}})
+	addBranchLink = () => {	
+		
+		cm.dispatch({"type":"saveCurrentLink", "source":this.dndSrc.id, "target":this.dndTar.id})
+		cm.dispatch({"type":"_POPUP_", "c":cm.routeData["AddLink"].component, "name":"AddLink"})
+		//cm.dispatch({"type":"addBranchLink", "data":{"source":this.dndSrc.id, "target":this.dndTar.id, "tab":this.props.selectedTab}})
 	}
 	
 	startDrag = (d) => {
