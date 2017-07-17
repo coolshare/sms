@@ -40,10 +40,12 @@ class _Orchestration3 extends React.Component {
 		this.enterpriseY = 0;
 		this.provider = this.props.provider===null?new Provider():this.props.provider;
 		this.noDrag = false;
+		this.innerColor = "#E1E1E1";
+		this.selInnerColor = "#1133E4";
 	}
 	componentDidMount() {
 		let self = this;
-		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink", "setSelectedEnterprise", "setSelectedBranch", "removeEnterprise", "removeBranch"], (action)=>{
+		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink",/* "setSelectedEnterprise", "setSelectedBranch", */"removeEnterprise", "removeBranch"], (action)=>{
 			if (cm.getStoreValue("HeaderReducer", "currentLink")!=="Orchestration") {
 				return;
 			}
@@ -60,13 +62,18 @@ class _Orchestration3 extends React.Component {
 				}				
 			}
 		})
-		/*
+		
 		cm.subscribe("setSelectedEnterprise", (action)=>{
-			var selectedBranch = cm.getStoreValue("OrchestrationReducer", "selectedBranch");
+			var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "selectedEnterprise");
+			for (var i in self.cMap) {
+				var c = self.cMap[i];
+				c.style.fill = self.innerColor
+			}
+			self.cMap[selectedEnterprise].style.fill= self.selInnerColor
 		});
 		cm.subscribe("setSelectedBranch", (action)=>{
-			var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "selectedEnterprise");
-		});*/
+			var selectedBranch = cm.getStoreValue("OrchestrationReducer", "selectedBranch");
+		});
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
 		if (this.props.provider===null) {
 			var dummyEnterprises = [{"BusinessName":"Walmart", "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
@@ -81,11 +88,11 @@ class _Orchestration3 extends React.Component {
 			}
 			
 			internetNode.id = new Date().valueOf()+9999;
-			this.provider.internetForProvider = new Enterprise( internetNode, 5, 50, 50 , 35, 0, "#E1E1E1", -24, -24, 48, 48);
+			this.provider.internetForProvider = new Enterprise( internetNode, 5, 50, 50 , 35, 0, self.innerColor, -24, -24, 48, 48);
 			this.provider.nodes.push(this.provider.internetForProvider)
 			this.provider.enterpriseMap[this.provider.internetForProvider.id] = this.provider.internetForProvider;
 			for (var i=0; i<dummyEnterprises.length; i++) {
-				var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, 0, "#E1E1E1", -8, -8, 16, 16);
+				var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, 0, self.innerColor, -8, -8, 16, 16);
 				this.provider.nodes.push(enterprise);
 				this.provider.enterpriseMap[enterprise.id] = enterprise;
 			}
@@ -104,7 +111,7 @@ class _Orchestration3 extends React.Component {
 				this.provider.links.push({"source":this.provider.internetForProvider, "target":enterprise});
 
 				internetNode.id = new Date().valueOf()+9999;
-				enterprise.internetForEnterprise = new Enterprise( internetNode, 5, 50, 50 , 35, 0, "#E1E1E1", -24, -24, 48, 48);
+				enterprise.internetForEnterprise = new Enterprise( internetNode, 5, 50, 50 , 35, 0, self.innerColor, -24, -24, 48, 48);
 				
 				enterprise.nodes.push(enterprise.internetForEnterprise)
 				
@@ -114,7 +121,7 @@ class _Orchestration3 extends React.Component {
 				var max = 3;//+Math.floor(Math.random()*5);
 				for (var j=0; j<max; j++) {
 					var data2 = {"id":new Date().valueOf()+j, "BranchName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
-					var branch = new Branch(data2, 20, 100, 100+60*j, 35, 0, "#E1E1E1", -8, -8, 16, 16);
+					var branch = new Branch(data2, 20, 100, 100+60*j, 35, 0, self.innerColor, -8, -8, 16, 16);
 					enterprise.nodes.push(branch);
 					
 					enterprise.branchMap[branch.id] = branch;
@@ -135,7 +142,7 @@ class _Orchestration3 extends React.Component {
 	}
 	
 	componentWillUnmount() {
-		cm.unsubscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink", "setSelectedEnterprise", "setSelectedBranch", "removeEnterprise", "removeBranch"]);
+		cm.unsubscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink", /*"setSelectedEnterprise", "setSelectedBranch", */"removeEnterprise", "removeBranch"]);
 		cm.unsubscribe("setSelectedEnterprise");		
 		cm.unsubscribe("setSelectedBranch");
 	}
@@ -189,6 +196,7 @@ class _Orchestration3 extends React.Component {
 		if (self.svg!==undefined) {
 			//d3.selectAll("g > *").remove()
 			d3.selectAll('#svg svg').remove();
+			self.gMap = undefined;
 		}
 		self.c = 0
 		if (links2.length==0) {
@@ -292,6 +300,7 @@ class _Orchestration3 extends React.Component {
 		  nodeSvg = nodeSvg.enter()
 		    .append("g")
 		      .attr("class", "node")
+		  
 		    nodeSvg.append("circle")
 			.attr("r", function(d){return d.r;})
 			.style("stroke-width", 1)    // set the stroke width
@@ -319,7 +328,7 @@ class _Orchestration3 extends React.Component {
 				  self.props.selectedTab==="Enterprise" && self.props.selectedBranch!=null) {
 			  color = "#1133E4";
 		  }
-		  nodeSvg.append("circle")
+		  var dd = nodeSvg.append("circle")
 			.attr("r", function(d){return d.r-5;})
 			.style("fill", function(d) {
 				return (self.props.selectedTab==="Provider" && self.props.selectedEnterprise==d.id
@@ -342,7 +351,16 @@ class _Orchestration3 extends React.Component {
 			.on("mouseover", (d)=>{
 				self.handleMouseOver(d);
 			});
-
+		  if (self.cMap===undefined) {
+				self.cMap = {};
+				for (var i=0; i<dd._groups.length;i++) {
+					for (var j=0; j<dd._groups[i].length; j++) {
+						var c = dd._groups[i][j];
+						var data = c.__data__;
+						self.cMap[data.id] = c;
+					}
+				}
+			}
 		    nodeSvg.append("svg:image").attr("xlink:href", function(d) {
 
 				return d.icon;
@@ -372,6 +390,9 @@ class _Orchestration3 extends React.Component {
 		}
 
 		function ticked() {
+			if (self.c>25) {
+				return 
+			}
 			self.c++;
 			
 		  	linkSvg
@@ -387,7 +408,7 @@ class _Orchestration3 extends React.Component {
 		  	if (links2.length>0) {
 		  		if (self.c>1) {
 		  			nodeSvg
-				      .attr("transform", function(d) {
+				      .attr("transform", function(d) {				      
 				    	  if (self.c==20) {
 				    		  d.xxx = d.x;
 					  		  d.yyy = d.y;
