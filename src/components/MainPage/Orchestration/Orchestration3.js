@@ -21,7 +21,7 @@ class _Orchestration3 extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			data:null
+			detailX:this.props.mainContainerSize.w+100
 		}
 		this.canvasX = 10;
 		this.canvasY = 15;
@@ -75,7 +75,8 @@ class _Orchestration3 extends React.Component {
 			if (self.cMap[selectedEnterprise]!==undefined) {
 				self.cMap[selectedEnterprise][0].style.fill= self.selInnerColor
 			}
-			self.refs.detailPane.style.left = (self.props.mainContainerSize.w-300)+"px";
+			this.animateDetails(true)
+			//self.refs.detailPane.style.left = (self.props.mainContainerSize.w-300)+"px";
 		});
 		cm.subscribe("setSelectedBranch", (action)=>{
 			var selectedBranch = cm.getStoreValue("OrchestrationReducer", "selectedBranch");
@@ -159,6 +160,37 @@ class _Orchestration3 extends React.Component {
 		cm.unsubscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink", /*"setSelectedEnterprise", "setSelectedBranch", */"removeEnterprise", "removeBranch"]);
 		cm.unsubscribe("setSelectedEnterprise");		
 		cm.unsubscribe("setSelectedBranch");
+	}
+	
+	animateDetails(isShow) {
+		if (isShow) {
+			this.dx = -10;
+			this.limit = this.props.mainContainerSize.w - 300;
+		} else {
+			this.dx = 10;
+			this.limit = this.props.mainContainerSize.w +100;
+		}
+		this.doAnimateDetails(isShow);
+	}
+	
+	doAnimateDetails(isShow) {
+		var self = this;
+		if (isShow) {
+			if (self.refs.detailPane.style.left<this.limit) {
+				return;
+			}
+			
+		} else {
+			if (self.refs.detailPane.style.left>this.limit) {
+				return;
+			}
+		}
+		self.setState({"detailX":this.state.detailX+self.dx})
+
+		setTimeout(()=>{
+			self.doAnimateDetails()
+		
+		}, 10)
 	}
 	
 	handleNodeDBClick(d) {	
@@ -549,7 +581,7 @@ class _Orchestration3 extends React.Component {
 			    		<div id="svg"/>
 				    	
 					</div>
-					<div ref="detailPane" style={{"position":"absolute","left":this.props.mainContainerSize.w+500, "top":"130px", "width":"300px", "height":this.props.mainContainerSize.h+"px", "border": "1px solid black"}}>
+					<div ref="detailPane" style={{"position":"absolute","left":self.state.detailX, "top":"130px", "width":"300px", "height":this.props.mainContainerSize.h+"px", "border": "1px solid black"}}>
 						{this.props.selectedTab==="Provider"?<OrchestrationEnterpriseDetail selectedEnterprise={self.props.selectedEnterprise}/>:
 						this.props.selectedTab==="Enterprise"?		
 						<OrchestrationBranchDetail selectedBranch={self.props.selectedBranch}/>:null}
