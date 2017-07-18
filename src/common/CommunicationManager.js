@@ -43,7 +43,6 @@ class CommunicationManager {
 	init(store) {	
 		this.store = store;
 	}
-	
 	dispatch(action, callback) {
 		var actions;
 		if (action instanceof Array) {
@@ -125,7 +124,7 @@ class CommunicationManager {
 			return state[key];
 		}
 	}
-	popup(c, id, action) {
+	popup(c, id) {
 		let isEmpty = this.isStackEmpty();
 		this.stack.push(browserHistory.getCurrentLocation().pathname);
 		this.selectedPopup = [c, id];
@@ -136,12 +135,7 @@ class CommunicationManager {
 		if (isEmpty) {
 			this.go('StackViewContainer');
 		} else {
-			if (action!==undefined) {
-				action.asyncDispatch({"type":"pushPopup", "data":[c, id]})
-			} else {
-				this.dispatch({"type":"pushPopup", "data":[c, id]})
-			}
-			
+			this.dispatch({"type":"pushPopup", "data":[c, id]})
 		}
 		
 	}

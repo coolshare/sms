@@ -2,9 +2,6 @@ import cm from '../common/CommunicationManager'
 
 const CommonReducer = (state = {'appLoaded':false}, action) => {
   switch (action.type) {
-    case '_POPUP_':
-    	cm.popup(action.c, action.name, action)
-		return state;
   	case '_CALLBACK_':
   		action.options.callback(action.options.action);
   		return state;

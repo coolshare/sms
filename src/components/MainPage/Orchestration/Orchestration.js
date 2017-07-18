@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux'
 import * as d3 from "d3";
 import cm from '../../../common/CommunicationManager'
-import Orchestration2Detail from './OrchestrationDetail'
-import Orchestration2Header from './OrchestrationHeader'
+import OrchestrationDetail from './OrchestrationDetail'
+import OrchestrationHeader from './OrchestrationHeader'
 import OrchestrationFloatMenu from './OrchestrationFloatMenu'
 import Enterprise from '../../../common/models/Enterprise'
 import Branch from '../../../common/models/Branch'
@@ -352,12 +352,12 @@ class _Orchestration2 extends React.Component {
 		    	<div style={{"minHeight":Utils.screenH+"px"}}>
 		    		{cm.isStackEmpty()?null:<div className="PopupHeader"><PopupCloseBox/></div>}
 		    		<div style={{"float":"left"}}>
-			    		<Orchestration2Header/>
+			    		<OrchestrationHeader/>
 			    		<div id="svg"/>
 				    	
 					</div>
 					<div style={{"float":"left","width":"25vw", "height":Utils.screenH+"px", "border": "1px solid black"}}>
-						<Orchestration2Detail selectedNode={this.props.selectedNode}/>
+						<OrchestrationDetail selectedNode={this.props.selectedNode}/>
 					</div>
 					<OrchestrationFloatMenu/>	
 				</div>

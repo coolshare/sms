@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux'
 import * as d3 from "d3";
 import cm from '../../../common/CommunicationManager'
-import Orchestration2Detail from './OrchestrationDetail'
-import Orchestration2Header from './OrchestrationHeader'
+import OrchestrationBranchDetail from './OrchestrationBranchDetail'
+import OrchestrationEnterpriseDetail from './OrchestrationEnterpriseDetail'
+import OrchestrationHeader from './OrchestrationHeader'
 import OrchestrationFloatMenu from './OrchestrationFloatMenu'
 import Enterprise from '../../../common/models/Enterprise'
 import Branch from '../../../common/models/Branch'
@@ -12,6 +13,7 @@ import Utils from '../../../common/Utils'
 import {InternetNode, HostNode, PodNode} from './DiagramElements'
 import Header from '../../../components/Header/Header'
 import Provider from '../../../common/models/Provider'
+
 
 const stateColors = ["green", "yellow", "orange", "pink", "red"]
 
@@ -45,6 +47,7 @@ class _Orchestration3 extends React.Component {
 	}
 	componentDidMount() {
 		let self = this;
+		cm.dispatch({"type":"updateMainContainerSize", "data":{"w":this.refs.orchestrationMain.clientWidth, "h":this.refs.orchestrationMain.clientHeight}})
 		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink",/* "setSelectedEnterprise", "setSelectedBranch", */"removeEnterprise", "removeBranch"], (action)=>{
 			if (cm.getStoreValue("HeaderReducer", "currentLink")!=="Orchestration") {
 				return;
@@ -72,7 +75,7 @@ class _Orchestration3 extends React.Component {
 			if (self.cMap[selectedEnterprise]!==undefined) {
 				self.cMap[selectedEnterprise][0].style.fill= self.selInnerColor
 			}
-			
+			self.refs.detailPane.style.left = (self.props.mainContainerSize.w-300)+"px";
 		});
 		cm.subscribe("setSelectedBranch", (action)=>{
 			var selectedBranch = cm.getStoreValue("OrchestrationReducer", "selectedBranch");
@@ -83,7 +86,7 @@ class _Orchestration3 extends React.Component {
 			if (self.cMap[selectedBranch]!==undefined) {
 				self.cMap[selectedBranch][0].style.fill= self.selInnerColor
 			}
-			
+			self.refs.detailPane.style.left = (self.props.mainContainerSize.w-300)+"px";
 		});
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
 		if (this.props.provider===null) {
@@ -247,6 +250,7 @@ class _Orchestration3 extends React.Component {
 		      })
 		      .on("mouseup", (d)=>{
 					self.handleMouseUp(d);
+					self.refs.detailPane.style.left = (self.props.mainContainerSize.w+300)+"px";
 				})
 
 		  var collide = [60, 300, 50];
@@ -516,7 +520,7 @@ class _Orchestration3 extends React.Component {
 	addBranchLink = () => {	
 		
 		cm.dispatch({"type":"saveCurrentLink", "source":this.dndSrc.id, "target":this.dndTar.id})
-		cm.dispatch({"type":"_POPUP_", "c":cm.routeData["AddLink"].component, "name":"AddLink"})
+		cm.popup(cm.routeData["AddLink"].component, "AddLink")
 		//cm.dispatch({"type":"addBranchLink", "data":{"source":this.dndSrc.id, "target":this.dndTar.id, "tab":this.props.selectedTab}})
 	}
 	
@@ -533,18 +537,22 @@ class _Orchestration3 extends React.Component {
 		//console.log("this.dragLine="+this.dragLine)
 	}  
 	render() {
+		
+		var self = this;
 	    return (
 	    	<div>
 	    		<Header/>
-		    	<div style={{"minHeight":Utils.screenH+"px"}}>
+		    	<div style={{"minHeight":this.props.mainContainerSize.h+"px"}} ref="orchestrationMain">
 		    		{cm.isStackEmpty()?null:<div className="PopupHeader"><PopupCloseBox/></div>}
-		    		<div style={{"float":"left"}}>
-			    		<Orchestration2Header/>
+		    		<div style={{"width":"100vw"}}>
+			    		<OrchestrationHeader/>
 			    		<div id="svg"/>
 				    	
 					</div>
-					<div style={{"float":"left","width":"25vw", "height":Utils.screenH+"px", "border": "1px solid black"}}>
-						<Orchestration2Detail selectedNode={this.props.selectedNode}/>
+					<div ref="detailPane" style={{"position":"absolute","left":this.props.mainContainerSize.w+500, "top":"130px", "width":"300px", "height":this.props.mainContainerSize.h+"px", "border": "1px solid black"}}>
+						{this.props.selectedTab==="Provider"?<OrchestrationEnterpriseDetail selectedEnterprise={self.props.selectedEnterprise}/>:
+						this.props.selectedTab==="Enterprise"?		
+						<OrchestrationBranchDetail selectedBranch={self.props.selectedBranch}/>:null}
 					</div>
 					<OrchestrationFloatMenu/>	
 				</div>
@@ -559,7 +567,8 @@ const Orchestration = connect(
 			    	selectedTab: store.OrchestrationReducer.selectedTab,
 			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise,
 			    	selectedBranch: store.OrchestrationReducer.selectedBranch,
-			    	provider: store.OrchestrationReducer.provider
+			    	provider: store.OrchestrationReducer.provider,
+			    	mainContainerSize: store.MainContainerReducer.mainContainerSize
 			    };
 			  }
 			)(_Orchestration3);
