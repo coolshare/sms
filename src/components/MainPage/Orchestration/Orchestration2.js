@@ -100,7 +100,7 @@ class _OrchestrationNetUser extends React.Component {
 				//var list = enterprise.nodes;
 				var max = 3;//+Math.floor(Math.random()*5);
 				for (var j=0; j<max; j++) {
-					var data2 = {"BranchName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
+					var data2 = {"BusinessName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
 					var branch = new Branch(data2, 20, 100, 100+60*j, 35, 0, "#E1E1E1", -8, -8, 16, 16);
 					enterprise.nodes.push(branch);
 					

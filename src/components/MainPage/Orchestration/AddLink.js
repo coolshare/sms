@@ -53,7 +53,7 @@ class _AddLink extends React.Component {
 		      			<div ref="src" style={{"float":"left", "width":"45%", "marginRight":"20px", "border":"1px solid #000", "borderRadius":"10px", "padding":"20px"}}>
 		      				<h4>Source</h4>
 				      		<label className="field"  style={{'margin':'20px','width':'200px', 'paddingTop':'40px'}}>Branch Name:
-								<input name="BranchName1" readOnly value={self.src.data.BranchName} ref={(input)=>{this.fields["BranchName1"] = input}}  type="text" tabIndex="1" placeholder="Branch Name" style={{"width":"200px"}} />
+								<input name="BranchName1" readOnly value={self.src.data.BusinessName} ref={(input)=>{this.fields["BranchName1"] = input}}  type="text" tabIndex="1" placeholder="Branch Name" style={{"width":"200px"}} />
 				            </label>
 				            <label className="field"   style={{'margin':'20px','width':'200px'}}>Contact Name:
 								<input name="ContactName1" readOnly value={self.src.data.ContactName} ref={(input)=>{this.fields["ContactName1"] = input}} type="text" tabIndex="2" placeholder="Contact Name" style={{"width":"200px"}} />
@@ -62,7 +62,7 @@ class _AddLink extends React.Component {
 						<div ref="tar" style={{"float":"left", "width":"45%", "border":"1px solid #000", "borderRadius":"10px", "padding":"20px"}}>
 		      				<h4>Target</h4>
 				      		<label className="field"  style={{'margin':'20px','width':'200px', 'paddingTop':'40px'}}>Branch Name:
-								<input name="BranchName2" readOnly value={self.tar.data.BranchName} ref={(input)=>{this.fields["BranchName2"] = input}}  type="text" tabIndex="1" placeholder="Branch Name" style={{"width":"200px"}} />
+								<input name="BranchName2" readOnly value={self.tar.data.BusinessName} ref={(input)=>{this.fields["BranchName2"] = input}}  type="text" tabIndex="1" placeholder="Branch Name" style={{"width":"200px"}} />
 				            </label>
 				            <label className="field"   style={{'margin':'20px','width':'200px'}}>Contact Name:
 								<input name="ContactName2" readOnly value={self.tar.data.ContactName} ref={(input)=>{this.fields["ContactName2"] = input}} type="text" tabIndex="2" placeholder="Contact Name" style={{"width":"200px"}} />

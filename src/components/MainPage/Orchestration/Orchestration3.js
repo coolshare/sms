@@ -20,8 +20,9 @@ const stateColors = ["green", "yellow", "orange", "pink", "red"]
 class _Orchestration3 extends React.Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
-			detailX:this.props.mainContainerSize.w+100
+			detailX:3000
 		}
 		this.canvasX = 10;
 		this.canvasY = 15;
@@ -44,6 +45,8 @@ class _Orchestration3 extends React.Component {
 		this.noDrag = false;
 		this.innerColor = "#E1E1E1";
 		this.selInnerColor = "#1133E4";
+		this.detailsW = 260;
+		this.detailShowState = false;
 	}
 	componentDidMount() {
 		let self = this;
@@ -76,7 +79,7 @@ class _Orchestration3 extends React.Component {
 				self.cMap[selectedEnterprise][0].style.fill= self.selInnerColor
 			}
 			this.animateDetails(true)
-			//self.refs.detailPane.style.left = (self.props.mainContainerSize.w-300)+"px";
+			
 		});
 		cm.subscribe("setSelectedBranch", (action)=>{
 			var selectedBranch = cm.getStoreValue("OrchestrationReducer", "selectedBranch");
@@ -87,7 +90,7 @@ class _Orchestration3 extends React.Component {
 			if (self.cMap[selectedBranch]!==undefined) {
 				self.cMap[selectedBranch][0].style.fill= self.selInnerColor
 			}
-			self.refs.detailPane.style.left = (self.props.mainContainerSize.w-300)+"px";
+			this.animateDetails(true)
 		});
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
 		if (this.props.provider===null) {
@@ -135,7 +138,7 @@ class _Orchestration3 extends React.Component {
 				//var list = enterprise.nodes;
 				var max = 3;//+Math.floor(Math.random()*5);
 				for (var j=0; j<max; j++) {
-					var data2 = {"id":new Date().valueOf()+j, "BranchName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
+					var data2 = {"id":new Date().valueOf()+j, "BusinessName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
 					var branch = new Branch(data2, 20, 100, 100+60*j, 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
 					enterprise.nodes.push(branch);
 					
@@ -163,32 +166,42 @@ class _Orchestration3 extends React.Component {
 	}
 	
 	animateDetails(isShow) {
-		if (isShow) {
-			this.dx = -10;
-			this.limit = this.props.mainContainerSize.w - 300;
-		} else {
-			this.dx = 10;
-			this.limit = this.props.mainContainerSize.w +100;
+		if (this.detailShowState===isShow) {
+			return;
 		}
-		this.doAnimateDetails(isShow);
+		this.detailShowState = isShow; 
+		var self = this;
+		
+		if (isShow) {			
+			this.setState({"detailX":this.props.mainContainerSize.w +50})
+			//this.refs.detailPane.style.display = "block"
+		
+			this.dx = -11;
+			this.limit = this.props.mainContainerSize.w - this.detailsW;
+		} else {
+			this.dx = 11;
+			//this.refs.detailPane.style.display = "none"
+			this.limit = this.props.mainContainerSize.w +50;
+		}
+		this.doAnimateDetails(isShow)
 	}
 	
 	doAnimateDetails(isShow) {
 		var self = this;
 		if (isShow) {
-			if (self.refs.detailPane.style.left<this.limit) {
+			if (self.refs.detailPane.offsetLeft<this.limit) {
 				return;
 			}
 			
 		} else {
-			if (self.refs.detailPane.style.left>this.limit) {
+			if (self.refs.detailPane.offsetLeft>this.limit) {
 				return;
 			}
 		}
 		self.setState({"detailX":this.state.detailX+self.dx})
 
 		setTimeout(()=>{
-			self.doAnimateDetails()
+			self.doAnimateDetails(isShow)
 		
 		}, 10)
 	}
@@ -282,7 +295,11 @@ class _Orchestration3 extends React.Component {
 		      })
 		      .on("mouseup", (d)=>{
 					self.handleMouseUp(d);
-					self.refs.detailPane.style.left = (self.props.mainContainerSize.w+300)+"px";
+					//self.setState({"detailX":self.props.mainContainerSize.w+self.detailsW});
+					if (!self.involveNode) {						
+						self.animateDetails(false)
+					}
+					self.involveNode = false;
 				})
 
 		  var collide = [60, 300, 50];
@@ -358,19 +375,24 @@ class _Orchestration3 extends React.Component {
 			.style("cursor", "pointer")  
 			.style("fill", function(d) {return stateColors[d.state]})
 			.on("click", (d)=>{
+				self.involveNode = true;
 				self.handleNodeClick(d)
 			})
 			.on("dblclick", (d)=>{
+				self.involveNode = true;
 				self.handleNodeDBClick(d)
 			})
 			.on("mousedown", (d)=>{
 				
+				self.involveNode = true;
 				self.handleMouseDown(d)
 			})
 			.on("mouseup", (d)=>{
+				self.involveNode = true;
 				self.handleMouseUp()
 			})
 			.on("mouseover", (d)=>{
+				self.involveNode = true;
 				self.handleMouseOver(d);
 			});
 		  var color = null;
@@ -387,18 +409,23 @@ class _Orchestration3 extends React.Component {
 			})  
 			.style("cursor", "pointer")
 			.on("click", (d)=>{
+				self.involveNode = true;
 				self.handleNodeClick(d)
 			})
 			.on("dblclick", (d)=>{
+				self.involveNode = true;
 				self.handleNodeDBClick(d)
 			})
 			.on("mousedown", (d)=>{
+				self.involveNode = true;
 				self.handleMouseDown(d)
 			})
 			.on("mouseup", (d)=>{
+				self.involveNode = true;
 				self.handleMouseUp()
 			})
 			.on("mouseover", (d)=>{
+				self.involveNode = true;
 				self.handleMouseOver(d);
 			});
 		  if (self.cMap===undefined) {
@@ -418,18 +445,23 @@ class _Orchestration3 extends React.Component {
 					.attr("y", function(d) {return d.iconY}).attr("width", function(d) {return d.iconW}).attr("height",  function(d) {return d.iconH})  
 					.style("cursor", "pointer")
 					.on("click", (d)=>{
+						self.involveNode = true;
 						self.handleNodeClick(d)
 					})
 					.on("dblclick", (d)=>{
+						self.involveNode = true;
 						self.handleNodeDBClick(d)
 					})
 					.on("mousedown", (d)=>{
+						self.involveNode = true;
 						self.handleMouseDown(d)
 					})
 					.on("mouseup", (d)=>{
+						self.involveNode = true;
 						self.handleMouseUp()
 					})
 					.on("mouseover", (d)=>{
+						self.involveNode = true;
 						self.handleMouseOver(d);
 					});	
 		    nodeSvg.append("text").text(function(d) {
@@ -496,7 +528,7 @@ class _Orchestration3 extends React.Component {
 		}
 	}
 	handleMouseDown = (d) => {
-		
+		d3.event.preventDefault();
 		if (this.props.selectedTab!=="Enterprise") {
 			return;
 		}
@@ -510,6 +542,10 @@ class _Orchestration3 extends React.Component {
 	}
 	
 	handleMouseUp = (d) => {
+		
+		
+		d3.event.preventDefault();
+	
 		if (this.props.selectedTab!=="Enterprise") {
 			return;
 		}
@@ -535,7 +571,7 @@ class _Orchestration3 extends React.Component {
 		
 		d3.select("#dragLine").remove();
 		self.dragLine = undefined;
-		d3.event.preventDefault();
+
 	}
 	
 	addEnterpriseLink = () => {	
@@ -571,6 +607,7 @@ class _Orchestration3 extends React.Component {
 	render() {
 		
 		var self = this;
+		console.log("X="+self.state.detailX)
 	    return (
 	    	<div>
 	    		<Header/>
@@ -581,10 +618,10 @@ class _Orchestration3 extends React.Component {
 			    		<div id="svg"/>
 				    	
 					</div>
-					<div ref="detailPane" style={{"position":"absolute","left":self.state.detailX, "top":"130px", "width":"300px", "height":this.props.mainContainerSize.h+"px", "border": "1px solid black"}}>
-						{this.props.selectedTab==="Provider"?<OrchestrationEnterpriseDetail selectedEnterprise={self.props.selectedEnterprise}/>:
+					<div ref="detailPane" style={{"position":"absolute","left":self.state.detailX, "top":"130px", "width":self.detailsW+"px", "height":this.props.mainContainerSize.h+"px", "border": "1px solid black"}}>
+						{this.props.selectedTab==="Provider"?<OrchestrationEnterpriseDetail selectedEnterprise={self.props.selectedEnterprise}  title="Enterprise Info"/>:
 						this.props.selectedTab==="Enterprise"?		
-						<OrchestrationBranchDetail selectedBranch={self.props.selectedBranch}/>:null}
+						<OrchestrationBranchDetail selectedBranch={self.props.selectedBranch} title="Branch Info"/>:null}
 					</div>
 					<OrchestrationFloatMenu/>	
 				</div>

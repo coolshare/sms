@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import cm from '../../../common/CommunicationManager'
 import Utils from '../../../common/Utils'
+import BranchForm from './BranchForm'
 	
 class _OrchestrationBranchDetail extends React.Component {
 
@@ -15,7 +16,7 @@ class _OrchestrationBranchDetail extends React.Component {
 		var selectedBranch = selectedEnterprise.branchMap[id];
 		return (
 		    <div>
-		    	<h4>{selectedBranch.data.BranchName}</h4>
+		    	<BranchForm selectedBranch={selectedBranch.data} title="Branch Info"/>
 		    </div>
 		);
 	}
