@@ -1,13 +1,10 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import cm from '../../../common/CommunicationManager'
-import Header from '../../Header/Header'
-import EnterpriseAdmin from './EnterpriseAdmin'
-
 /**
 *
 */
-export default class Admin extends React.Component{
+export default class EnterpriseAdmin extends React.Component{
 	
 	/**
     * render
@@ -19,8 +16,7 @@ export default class Admin extends React.Component{
 		return (
 			
 			<div>
-				<Header/>
-				<EnterpriseAdmin/>
+				EnterpriseAdmin
       		</div>
 		)
 	}

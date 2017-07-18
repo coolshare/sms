@@ -13,6 +13,7 @@ import Orchestration from '../components/MainPage/Orchestration/Orchestration3'
 import AddEnterprise from '../components/MainPage/Orchestration/AddEnterprise'
 import AddBranch from '../components/MainPage/Orchestration/AddBranch'
 import AddLink from '../components/MainPage/Orchestration/AddLink'
+import Admin from '../components/MainPage/Admin/Admin'
 
 const routeData = {
 		"Login":{"label":"Login", "component":Login, "icon":"", "path":"Login"},
@@ -27,7 +28,8 @@ const routeData = {
 		"Orchestration":{"label":"Orchestration", "component":Orchestration, "icon":"", "path":"Orchestration"},
 		"AddEnterprise":{"label":"AddEnterprise", "component":AddEnterprise, "icon":"", "path":"AddEnterprise"},
 		"AddBranch":{"label":"AddBranch", "component":AddBranch, "icon":"", "path":"AddBranch"},
-		"AddLink":{"label":"AddLink", "component":AddLink, "icon":"", "path":"AddLink"}
+		"AddLink":{"label":"AddLink", "component":AddLink, "icon":"", "path":"AddLink"},
+		"Admin":{"label":"Admin", "component":Admin, "icon":"", "path":"Admin"}
 }
 
 

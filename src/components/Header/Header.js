@@ -78,6 +78,7 @@ class _Header extends React.Component{
 				<div style={{"width":"50%", "height":"50px", "float":"left", 'paddingTop':'20px'}}>
 		      		<span><a href="#" style={{"textCecoration": "none"}} onClick={(evt) => this.handleLink("MainRouteContainer", evt)} className={this.props.currentLink=="MainRouteContainer"?"selectedTopLink":"unselectedTopLink"}>Dashboard</a></span>
 		      		<span style={{"marginLeft":"40px"}}><a href="#" style={{"textDecoration": "none"}} onClick={(evt) => this.handleLink("Orchestration", evt)} className={this.props.currentLink=="Orchestration"?"selectedTopLink":"unselectedTopLink"}>Orchestration</a></span>
+		      		<span style={{"marginLeft":"40px"}}><a href="#" style={{"textDecoration": "none"}} onClick={(evt) => this.handleLink("Admin", evt)} className={this.props.currentLink=="Admin"?"selectedTopLink":"unselectedTopLink"}>Admin</a></span>
 		      	</div>
 		      	<br style={{"clear":"both"}}/>
 				<div className="headerPathContainer" style={{"height":"20px", "backgroundColor":"#e6eaec"}}>
