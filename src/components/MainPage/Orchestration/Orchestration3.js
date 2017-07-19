@@ -50,27 +50,42 @@ class _Orchestration3 extends React.Component {
 	}
 	componentDidMount() {
 		let self = this;
+		this.user = cm.getStoreValue("HeaderReducer", "user");
 		cm.dispatch({"type":"updateMainContainerSize", "data":{"w":this.refs.orchestrationMain.clientWidth, "h":this.refs.orchestrationMain.clientHeight}})
 		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink",/* "setSelectedEnterprise", "setSelectedBranch", */"removeEnterprise", "removeBranch"], (action)=>{
 			if (cm.getStoreValue("HeaderReducer", "currentLink")!=="Orchestration") {
 				return;
 			}
 		
-			var tab = cm.getStoreValue("OrchestrationReducer", "selectedTab");
+			
 			var data = cm.getStoreValue("OrchestrationReducer","provider")
 			var filter = cm.getStoreValue("OrchestrationReducer", "search");
 			filter = filter.trim()===""?undefined:filter.toLowerCase();
-			if (tab==="Provider") {
-				self.buildProviderDiagram(filter)
-			} else if (tab==="Enterprise") {
-				if (self.props.selectedEnterprise!==null) {
-					self.buildEnterpriseDiagram(undefined, filter)
-				}				
+			console.log("role="+cm.role)
+			if (self.user.role==="Provider") {
+				var tab = cm.getStoreValue("OrchestrationReducer", "selectedTab");
+				if (tab==="Provider") {
+					self.buildProviderDiagram(filter)
+				} else if (tab==="Enterprise") {
+					if (self.props.selectedEnterprise!==null) {
+						self.buildEnterpriseDiagram(undefined, filter)
+					}				
+				}
+			} else if (self.user.role==="Enterprise") {
+				
+				cm.dispatch({"type":"setSelectedEnterprise", "data":self.loginEnterprice.id})
+				self.buildEnterpriseDiagram(self.loginEnterprice.id, filter)
 			}
+			
 		})
 		
 		cm.subscribe("setSelectedEnterprise", (action)=>{
+			if (self.cMap===undefined) {
+				return 
+			}
+		
 			var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "selectedEnterprise");
+			
 			for (var i in self.cMap) {
 				var c = self.cMap[i];
 				c[0].style.fill = self.innerColor
@@ -99,7 +114,7 @@ class _Orchestration3 extends React.Component {
 		
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
 		if (this.props.provider===null) {
-			var dummyEnterprises = [{"BusinessName":"Walmart", "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+			var dummyEnterprises = [{"BusinessName":this.user.company.BusinessName, "id":this.user.company.id, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"Target", "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"BurgerKing", "ContactName":"BurgerKing Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"phone", "Address":"555 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"Frys", "ContactName":"Frys Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"166623 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
@@ -107,6 +122,10 @@ class _Orchestration3 extends React.Component {
 			
 
 			for (var i=0; i<dummyEnterprises.length; i++) {
+				
+				if (dummyEnterprises[i].id!==undefined) {
+					continue;
+				}
 				dummyEnterprises[i].id = new Date().valueOf()+i
 			}
 			
@@ -116,6 +135,9 @@ class _Orchestration3 extends React.Component {
 			this.provider.enterpriseMap[this.provider.internetForProvider.id] = this.provider.internetForProvider;
 			for (var i=0; i<dummyEnterprises.length; i++) {
 				var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
+				if (this.user.role==="Enterprise" && enterprise.id===this.user.company.id) {
+					this.loginEnterprice = enterprise;
+				}
 				this.provider.nodes.push(enterprise);
 				this.provider.enterpriseMap[enterprise.id] = enterprise;
 			}
