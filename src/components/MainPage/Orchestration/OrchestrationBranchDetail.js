@@ -16,7 +16,7 @@ class _OrchestrationBranchDetail extends React.Component {
 		var selectedBranch = selectedEnterprise.branchMap[id];
 		return (
 		    <div>
-		    	<BranchForm selectedBranch={selectedBranch.data} title="Branch Info"/>
+		    	<BranchForm branch={selectedBranch.data} title="Branch Info"/>
 		    </div>
 		);
 	}

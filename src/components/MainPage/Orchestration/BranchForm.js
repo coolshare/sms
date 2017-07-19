@@ -19,7 +19,7 @@ export default class BranchForm extends React.Component {
 		var data = {};
 		
 		for (var f in this.fields) {
-			data[f] = this.fields[f].value			
+			data[f] = this.fields[f].defaultValue			
 		}
 		data.id = new Date().valueOf();
 		cm.dispatch({"type":"ClosePopup"})
@@ -33,9 +33,7 @@ export default class BranchForm extends React.Component {
 		e.preventDefault();
 		cm.dispatch({"type":"ClosePopup"})
 	}
-	handleChange = () => {
-		
-	}
+
 	render() {
 		var branch = this.props.branch
 		if (branch===undefined) {
@@ -45,25 +43,25 @@ export default class BranchForm extends React.Component {
 				
 	      		<form onSubmit={ (e) => this.handleOK(e) } ref="AddBranchForm">
 		      		<label className="field"  style={{'margin':'10px','width':'450px'}}>Branch Name:
-						<input name="BusinessName" value={branch.BusinessName} onChange={this.handleChange} ref={(input)=>{this.fields["BusinessName"] = input}}  type="text" tabIndex="1" placeholder="Branch Name" style={{"width":"200px"}} />
+						<input name="BusinessName" defaultValue={branch.BusinessName} ref={(input)=>{this.fields["BusinessName"] = input}}  type="text" tabIndex="1" placeholder="Branch Name" style={{"width":"200px"}} />
 		            </label>
 		            <label className="field"   style={{'margin':'10px','width':'450px'}}>Contact Name:
-						<input name="ContactName" value={branch.ContactName} onChange={this.handleChange} ref={(input)=>{this.fields["ContactName"] = input}} type="text" tabIndex="2" placeholder="Contact Name" style={{"width":"200px"}} />
+						<input name="ContactName" defaultValue={branch.ContactName} ref={(input)=>{this.fields["ContactName"] = input}} type="text" tabIndex="2" placeholder="Contact Name" style={{"width":"200px"}} />
 		            </label>
 						<label className="field"  style={{'margin':'10px','width':'450px'}}>Phone:
-						<input name="Phone" value={branch.Phone} onChange={this.handleChange} ref={(input)=>{this.fields["Phone"] = input}} type="text" tabIndex="1" placeholder="Phone" style={{"width":"200px"}}/>
+						<input name="Phone" defaultValue={branch.Phone} ref={(input)=>{this.fields["Phone"] = input}} type="text" tabIndex="1" placeholder="Phone" style={{"width":"200px"}}/>
 		            </label>
 		            <label className="field"   style={{'margin':'10px','width':'450px'}}>Email:
-						<input name="Email" value={branch.Email} onChange={this.handleChange} ref={(input)=>{this.fields["Email"] = input}} type="emal" tabIndex="2" placeholder="Email" style={{"width":"200px"}}/>
+						<input name="Email" defaultValue={branch.Email} ref={(input)=>{this.fields["Email"] = input}} type="emal" tabIndex="2" placeholder="Email" style={{"width":"200px"}}/>
 		            </label>
 						<label className="field"  style={{'margin':'10px','width':'450px'}}>Alert Method:
-						<input name="AlertMethod" value={branch.AlertMethod} onChange={this.handleChange} ref={(input)=>{this.fields["AlertMethod"] = input}}  type="text" tabIndex="1" placeholder="Alert Method" style={{"width":"200px"}}/>
+						<input name="AlertMethod" defaultValue={branch.AlertMethod} ref={(input)=>{this.fields["AlertMethod"] = input}}  type="text" tabIndex="1" placeholder="Alert Method" style={{"width":"200px"}}/>
 		            </label>
 		            <label className="field"   style={{'margin':'10px','width':'450px'}}>Address:
-						<input name="Address" value={branch.Address} onChange={this.handleChange} ref={(input)=>{this.fields["Address"] = input}}  type="text" tabIndex="2" placeholder="Address" style={{"width":"200px"}} />
+						<input name="Address" defaultValue={branch.Address} ref={(input)=>{this.fields["Address"] = input}}  type="text" tabIndex="2" placeholder="Address" style={{"width":"200px"}} />
 		            </label>
 					<label className="field"   style={{'margin':'10px','width':'450px'}}>Icon:
-						<input name="Icon" value={branch.Icon} onChange={this.handleChange} ref={(input)=>{this.fields["Icon"] = input}}  type="file" tabIndex="2" placeholder="Icon" style={{"width":"200px"}} />
+						<input name="Icon" defaultValue={branch.Icon} ref={(input)=>{this.fields["Icon"] = input}}  type="file" tabIndex="2" placeholder="Icon" style={{"width":"200px"}} />
 		            </label>
 					<div>
 						<button onClick={this.handleCancel.bind(this)} style={{"marginTop":"10px", "float":"right"}}>Cancel</button>

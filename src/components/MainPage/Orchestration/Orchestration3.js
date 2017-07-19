@@ -225,7 +225,7 @@ class _Orchestration3 extends React.Component {
 	handleNodeClick(d) {	
 		this.noDrag = true;
 		if (this.dragTimer) {
-			console.log("end drag")
+			//console.log("end drag")
 			clearTimeout(this.dragTimer);
 		}
 		self.scTimer = setTimeout(()=>{
@@ -494,9 +494,9 @@ class _Orchestration3 extends React.Component {
 				    	  if (self.c==20) {
 				    		  d.xxx = d.x;
 					  		  d.yyy = d.y;
-					  		  if (d.label=="Walmart") {
-					  			  console.log("self.c="+self.c+" d.xxx="+d.xxx)
-					  		  }
+					  		  //if (d.label=="Walmart") {
+					  		//	  console.log("self.c="+self.c+" d.xxx="+d.xxx)
+					  		  //}
 				    	  }
 				    	  if (d.xxx) {
 					  		  return "translate(" + d.xxx + ", " + d.yyy + ")"; 
@@ -536,7 +536,7 @@ class _Orchestration3 extends React.Component {
 		d3.event.preventDefault();
 		this.noDrag = false;
 		this.dragTimer = setTimeout(()=> {
-			console.log("start drag")
+			//console.log("start drag")
 			self.startDrag(d)
 		}, 400)
 	}
@@ -553,7 +553,7 @@ class _Orchestration3 extends React.Component {
 		var self = this;
 		this.noDrag = true;
 		if (self.dragTimer) {
-			console.log("end drag")
+			//console.log("end drag")
 			clearTimeout(self.dragTimer);
 		}
 
@@ -607,7 +607,7 @@ class _Orchestration3 extends React.Component {
 	render() {
 		
 		var self = this;
-		console.log("X="+self.state.detailX)
+		//console.log("X="+self.state.detailX)
 	    return (
 	    	<div>
 	    		<Header/>

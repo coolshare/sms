@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import cm from '../../../common/CommunicationManager'
 import {connect} from 'react-redux'
+import EnterpriseForm from './EnterpriseForm'
 	
 class _OrchestrationEnterpriseDetail extends React.Component {
 
@@ -15,7 +16,7 @@ class _OrchestrationEnterpriseDetail extends React.Component {
 
 		return (
 			    <div>
-			    	<h4>{selectedEnterprise.data.BusinessName}</h4>
+			    	<EnterpriseForm enterprise={selectedEnterprise.data} title="Branch Info"/>
 			    </div>
 			);
 	}
