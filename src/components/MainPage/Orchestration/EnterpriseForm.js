@@ -1,27 +1,16 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux'
 import cm from '../../../common/CommunicationManager'
 import {PopupCloseBox} from '../../../common/PopupComponents'
 import Utils from '../../../common/Utils'
 import Enterprise from '../../../common/models/Enterprise'
+import Form from '../../../common/Form'
 
-export default class EnterpriseForm extends React.Component {
-	constructor() {
-		super();
-		this.fields = {};
-	}
-
-	componentDidMount() {
-		
-	}
+class _EnterpriseForm extends Form {
 
 	handleOK = (e) => {
 		e.preventDefault();
-		var data = {};
-		
-		for (var f in this.fields) {
-			data[f] = this.fields[f].defaultValue			
-		}
-		data.id = new Date().valueOf();
+		var data = this.collectFields(e);
 		cm.dispatch({"type":"ClosePopup"})
 		setTimeout(function() {
 			cm.dispatch({"type":"addEnterprise", "data":new Enterprise(data, 20, 100+60*cm.getStoreValue("OrchestrationReducer", "counter")[0], 100 , 35, 0, "#E1E1E1", -8, -8, 16, 16)})
@@ -29,20 +18,24 @@ export default class EnterpriseForm extends React.Component {
 		
 		
 	}
+	
 	handleCancel = (e) => {
 		e.preventDefault();
 		cm.dispatch({"type":"ClosePopup"})
 	}
-	render() {
-		
-		var enterprise = this.props.enterprise
-		if (enterprise===undefined) {
-			return null;
+	
+	componentDidUpdate = () => {
+		if (this.props.isNew===undefined) {
+			this.load(this.props.enterprise)
 		}
+		
+	}
+	render() {
+		var enterprise = this.props.isNew?{}:this.props.enterprise
 	    return (
 	    	<form onSubmit={ (e) => this.handleOK(e) } ref="AddenterpriseForm">
-	      		<label className="field"  style={{'margin':'10px','width':'450px'}}>enterprise Name:
-					<input name="BusinessName" defaultValue={enterprise.BusinessName} ref={(input)=>{this.fields["BusinessName"] = input}}  type="text" tabIndex="1" placeholder="enterprise Name" style={{"width":"200px"}} />
+	      		<label className="field"  style={{'margin':'10px','width':'450px'}}>Business Name:
+					<input name="BusinessName" defaultValue={enterprise.BusinessName} ref={(input)=>{this.fields["BusinessName"] = input}}  type="text" tabIndex="1" placeholder="BusinessName Name" style={{"width":"200px"}} />
 	            </label>
 	            <label className="field"   style={{'margin':'10px','width':'450px'}}>Contact Name:
 					<input name="ContactName" defaultValue={enterprise.ContactName} ref={(input)=>{this.fields["ContactName"] = input}} type="text" tabIndex="2" placeholder="Contact Name" style={{"width":"200px"}} />
@@ -56,10 +49,10 @@ export default class EnterpriseForm extends React.Component {
 					<label className="field"  style={{'margin':'10px','width':'450px'}}>Alert Method:
 					<input name="AlertMethod" defaultValue={enterprise.AlertMethod} ref={(input)=>{this.fields["AlertMethod"] = input}}  type="text" tabIndex="1" placeholder="Alert Method" style={{"width":"200px"}}/>
 	            </label>
-	            <label className="field"   style={{'margin':'10px','width':'450px'}}>Address:
-					<input name="Address" defaultValue={enterprise.Address} ref={(input)=>{this.fields["Address"] = input}}  type="text" tabIndex="2" placeholder="Address" style={{"width":"200px"}} />
+	            <label className="field" style={{'margin':'10px','width':'450px'}}>Address:
+					<input name="Address" defaultValue={enterprise.Address}  ref={(input)=>{this.fields["Address"] = input}}  type="text" tabIndex="2" placeholder="Address" style={{"width":"200px"}} />
 	            </label>
-				<label className="field"   style={{'margin':'10px','width':'450px'}}>Icon:
+				<label className="field" style={{'margin':'10px','width':'450px'}}>Icon:
 					<input name="Icon" defaultValue={enterprise.Icon} ref={(input)=>{this.fields["Icon"] = input}}  type="file" tabIndex="2" placeholder="Icon" style={{"width":"200px"}} />
 	            </label>
 				<div>
@@ -71,4 +64,18 @@ export default class EnterpriseForm extends React.Component {
 	    )
 	}
 }
-
+const EnterpriseForm = connect(
+		  store => {
+			    var provider = store.OrchestrationReducer.provider;
+			    var id = store.OrchestrationReducer.selectedEnterprise
+			    if (id===null) {
+			    	enterprise:{}
+			    } else {
+			    	return {
+				    	enterprise: provider.enterpriseMap[id].data
+				    };
+			    }
+			    
+			  }
+			)(_EnterpriseForm);
+export default EnterpriseForm

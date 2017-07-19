@@ -10,7 +10,7 @@ export default class AddEnterprise extends React.Component {
 	    		{cm.isStackEmpty()?null:<div className="PopupHeader"><PopupCloseBox/></div>}
 		    	<div>
 		    		<div style={{"height":"50px", "fontSize":"200%"}}>Add Enterprise</div>
-		      		<EnterpriseForm enterprise={{}}/>
+		      		<EnterpriseForm isNew={true}/>
 			    </div>
 			</div>
 

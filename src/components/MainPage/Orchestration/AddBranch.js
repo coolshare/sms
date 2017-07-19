@@ -11,7 +11,7 @@ export default class AddBranch extends React.Component {
 	    		{cm.isStackEmpty()?null:<div className="PopupHeader"><PopupCloseBox/></div>}
 		    	<div>
 		    		<div style={{"height":"50px", "fontSize":"200%"}}>Add Branch</div>
-		      		<BranchForm branch={{}}/>
+		      		<BranchForm isNew={true}/>
 			    </div>
 			</div>
 

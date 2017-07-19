@@ -92,6 +92,11 @@ class _Orchestration3 extends React.Component {
 			}
 			this.animateDetails(true)
 		});
+		
+		cm.subscribe("hideNodeDetails", (action)=>{
+			this.animateDetails(false)
+		});
+		
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
 		if (this.props.provider===null) {
 			var dummyEnterprises = [{"BusinessName":"Walmart", "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
@@ -163,10 +168,11 @@ class _Orchestration3 extends React.Component {
 		cm.unsubscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink", /*"setSelectedEnterprise", "setSelectedBranch", */"removeEnterprise", "removeBranch"]);
 		cm.unsubscribe("setSelectedEnterprise");		
 		cm.unsubscribe("setSelectedBranch");
+		cm.unsubscribe("hideNodeDetails");
 	}
 	
 	animateDetails(isShow) {
-		if (this.detailShowState===isShow) {
+		if (this.detailShowState===isShow || this.isDBClick) {	
 			return;
 		}
 		this.detailShowState = isShow; 
@@ -207,7 +213,13 @@ class _Orchestration3 extends React.Component {
 	}
 	
 	handleNodeDBClick(d) {	
+		var self = this;
 		this.noDrag = true;
+		this.isDBClick = true;
+		setTimeout(()=>{
+			self.setState({"detailX":self.props.mainContainerSize.w +50})
+			self.detailShowState = false
+		}, 0)
 		if (self.scTimer) {
 			clearTimeout(self.scTimer)
 		}
@@ -255,6 +267,15 @@ class _Orchestration3 extends React.Component {
 	
 	drawDiagram(nodes2, links2, filter) {
 		var self = this;
+		setTimeout(()=>{
+			if (this.isDBClick) {
+				this.isDBClick = false;
+			}
+		
+		}, 1000)
+
+		
+		
 		if (self.svg!==undefined) {
 			//d3.selectAll("g > *").remove()
 			d3.selectAll('#svg svg').remove();
