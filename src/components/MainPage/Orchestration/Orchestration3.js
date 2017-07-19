@@ -73,7 +73,7 @@ class _Orchestration3 extends React.Component {
 				}
 			} else if (self.user.role==="Enterprise") {
 				
-				cm.dispatch({"type":"setSelectedEnterprise", "data":self.loginEnterprice.id})
+				cm.dispatch({"type":"setSelectedEnterprise", "data":self.loginEnterprice.id, "noDetails":true})
 				self.buildEnterpriseDiagram(self.loginEnterprice.id, filter)
 			}
 			
@@ -93,7 +93,10 @@ class _Orchestration3 extends React.Component {
 			if (self.cMap[selectedEnterprise]!==undefined) {
 				self.cMap[selectedEnterprise][0].style.fill= self.selInnerColor
 			}
-			this.animateDetails(true)
+			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
+				this.animateDetails(true)
+			}
+			
 			
 		});
 		cm.subscribe("setSelectedBranch", (action)=>{
@@ -105,7 +108,9 @@ class _Orchestration3 extends React.Component {
 			if (self.cMap[selectedBranch]!==undefined) {
 				self.cMap[selectedBranch][0].style.fill= self.selInnerColor
 			}
-			this.animateDetails(true)
+			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
+				this.animateDetails(true)
+			}
 		});
 		
 		cm.subscribe("hideNodeDetails", (action)=>{

@@ -22,8 +22,10 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
         	selectedBranch: action.data
         })
   	case 'setSelectedEnterprise':
+  		
         return Object.assign({}, state, {
-        	selectedEnterprise: action.data
+        	selectedEnterprise: action.data,
+        	noDetails:action.noDetails
         })
   	case 'addEnterprise':
   		var provider = Object.assign({}, state.provider);
