@@ -47,6 +47,9 @@ const HeaderReducer = (state = {'currentLink':'Orchestration', 'user':{}, 'path'
     case 'popBrowserHistory':
     	browserHistory.goBack()
     	return state;
+    case 'clearBrowserHistory':
+    	window.location.href = "/"
+    	return state;
     default:
       return state
   }
