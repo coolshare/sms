@@ -35,6 +35,11 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
   		var id = action.data.data.id;
   		provider.enterpriseMap[id] = action.data;
   		provider.nodes.push(action.data);
+  		if (provider.internetForProvider===undefined) {
+  			provider.internetForProvider = Object.assign({}, cm.internetForProvider, {"id":new Date().valueOf()})
+  			provider.nodes.push(provider.internetForProvider)
+  			provider.enterpriseMap[provider.internetForProvider.id] = provider.internetForProvider;
+  		}
   		provider.links.push({"source":provider.internetForProvider, "target":action.data})
         return Object.assign({}, state, {
         	provider: provider
@@ -44,6 +49,11 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
   		var enterprise = provider.enterpriseMap[state.selectedEnterprise];
   		enterprise.branchMap[action.data.data.id] = action.data;
   		enterprise.nodes.push(action.data);
+  		if (enterprise.internetForEnterprise===undefined) {
+  			enterprise.internetForEnterprise = Object.assign({}, cm.internetForEnterprise, {"id":new Date().valueOf()})
+  			enterprise.nodes.push(enterprise.internetForEnterprise)
+  		}
+  		
   		enterprise.links.push({"source":enterprise.internetForEnterprise, "target":action.data})
         return Object.assign({}, state, {
         	provider: provider

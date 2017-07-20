@@ -24,6 +24,7 @@ class _Orchestration3 extends React.Component {
 		this.state = {
 			detailX:3000
 		}
+		this.isSimulat = false;
 		this.canvasX = 10;
 		this.canvasY = 15;
 		this.diagramW = 1800;
@@ -123,64 +124,81 @@ class _Orchestration3 extends React.Component {
 		
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
 		if (this.props.provider===null) {
-			var dummyEnterprises = [{"BusinessName":this.user.company.BusinessName, "id":this.user.company.id, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
-			                            {"BusinessName":"Target", "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
-			                            {"BusinessName":"BurgerKing", "ContactName":"BurgerKing Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"phone", "Address":"555 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
-			                            {"BusinessName":"Frys", "ContactName":"Frys Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"166623 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
-			                            {"BusinessName":"BestBuy", "ContactName":"BestBuy Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"17723 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"}];
+			var dummyEnterprises = [];
 			
-
-			for (var i=0; i<dummyEnterprises.length; i++) {
+			
+			if (this.isSimulat) {
+				dummyEnterprises = [{"BusinessName":this.user.company.BusinessName, "id":this.user.company.id, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+				                            {"BusinessName":"Target", "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+				                            {"BusinessName":"BurgerKing", "ContactName":"BurgerKing Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"phone", "Address":"555 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+				                            {"BusinessName":"Frys", "ContactName":"Frys Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"166623 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+				                            {"BusinessName":"BestBuy", "ContactName":"BestBuy Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"17723 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"}];
 				
-				if (dummyEnterprises[i].id!==undefined) {
-					continue;
-				}
-				dummyEnterprises[i].id = new Date().valueOf()+i
-			}
-			
-			internetNode.id = new Date().valueOf()+9999;
-			this.provider.internetForProvider = new Enterprise( internetNode, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
-			this.provider.nodes.push(this.provider.internetForProvider)
-			this.provider.enterpriseMap[this.provider.internetForProvider.id] = this.provider.internetForProvider;
-			for (var i=0; i<dummyEnterprises.length; i++) {
-				var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
-				this.provider.nodes.push(enterprise);
-				this.provider.enterpriseMap[enterprise.id] = enterprise;
-			}
-			
-			
-			cm.dispatch({"type":"setCounter", "data":[i, cm.getStoreValue("OrchestrationReducer", "counter")[1]]})
-			
-			
-			
-			
-			for (var e in this.provider.enterpriseMap) {
-				var enterprise = this.provider.enterpriseMap[e];
-				if (this.provider.internetForProvider.id===enterprise.id) {
-					continue;
-				}
-				this.provider.links.push({"source":this.provider.internetForProvider, "target":enterprise});
-
-				internetNode.id = new Date().valueOf()+9999;
-				enterprise.internetForEnterprise = new Enterprise( internetNode, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
 				
-				enterprise.nodes.push(enterprise.internetForEnterprise)
-				
-				//var n = this.provider.nodes[i];
-				
-				//var list = enterprise.nodes;
-				var max = 3;//+Math.floor(Math.random()*5);
-				for (var j=0; j<max; j++) {
-					var data2 = {"id":new Date().valueOf()+j, "BusinessName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
-					var branch = new Branch(data2, 20, 100, 100+60*j, 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
-					enterprise.nodes.push(branch);
+				for (var i=0; i<dummyEnterprises.length; i++) {
 					
-					enterprise.branchMap[branch.id] = branch;
-					enterprise.links.push({"source":enterprise.internetForEnterprise, "target":branch});
+					if (dummyEnterprises[i].id!==undefined) {
+						continue;
+					}
+					dummyEnterprises[i].id = new Date().valueOf()+i
+				}
+			}
+			
+			//Create Internet Node for provider
+			internetNode.id = new Date().valueOf()+9999;
+			cm.internetForProvider = new Enterprise( internetNode, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
+			
+			
+			//Create Internet Node for Enterprice
+			internetNode.id = new Date().valueOf()+9999;
+			cm.internetForEnterprise = new Branch(Object.assign({}, internetNode), 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
+			
+			if (this.isSimulat) {
+				
+				this.provider.internetForProvider = Object.assign({}, cm.internetForProvider, {"id":new Date().valueOf()})
+				this.provider.nodes.push(this.provider.internetForProvider)
+				this.provider.enterpriseMap[this.provider.internetForProvider.id] = this.provider.internetForProvider;
+			
+				for (var i=0; i<dummyEnterprises.length; i++) {
+					var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
+					this.provider.nodes.push(enterprise);
+					this.provider.enterpriseMap[enterprise.id] = enterprise;
 				}
 				
+				
+				cm.dispatch({"type":"setCounter", "data":[i, cm.getStoreValue("OrchestrationReducer", "counter")[1]]})
+				
+				
+				
+				
+				for (var e in this.provider.enterpriseMap) {
+					var enterprise = this.provider.enterpriseMap[e];
+					if (this.provider.internetForProvider.id===enterprise.id) {
+						continue;
+					}
+					this.provider.links.push({"source":this.provider.internetForProvider, "target":enterprise});
+	
+					internetNode.id = new Date().valueOf()+9999;
+					enterprise.internetForEnterprise =  Object.assign({}, cm.internetForEnterprise, {"id":new Date().valueOf()})//new Enterprise( internetNode, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
+					
+					enterprise.nodes.push(enterprise.internetForEnterprise)
+					
+					//var n = this.provider.nodes[i];
+					
+					//var list = enterprise.nodes;
+					var max = 3;//+Math.floor(Math.random()*5);
+					for (var j=0; j<max; j++) {
+						var data2 = {"id":new Date().valueOf()+j, "BusinessName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
+						var branch = new Branch(data2, 20, 100, 100+60*j, 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
+						enterprise.nodes.push(branch);
+						
+						enterprise.branchMap[branch.id] = branch;
+						enterprise.links.push({"source":enterprise.internetForEnterprise, "target":branch});
+					}
+					
+				}
+				cm.dispatch({"type":"setCounter", "data":[cm.getStoreValue("OrchestrationReducer", "counter")[0], j]})
 			}
-			cm.dispatch({"type":"setCounter", "data":[cm.getStoreValue("OrchestrationReducer", "counter")[0], j]})
 			//for (var i=1; i<data.nodes.length; i++) {
 			//	data["Enterprise"].links.push({ source: data["Enterprise"].nodes[0], target:data.nodes[i] });
 			//}

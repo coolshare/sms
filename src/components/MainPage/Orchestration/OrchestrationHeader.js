@@ -55,7 +55,7 @@ class _OrchestrationHeader extends React.Component {
 		var selectedTab = this.props.selectedTab
 		var buttonName = [];
 		if (selectedTab==="Provider") {
-			buttonName = ["Add Provider", "Remove Provider"]
+			buttonName = ["Add Enterprise", "Remove Enterprise"]
 		} else {
 			buttonName = ["Add Branch", "Remove Branch"]
 		}

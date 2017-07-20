@@ -11,7 +11,7 @@ export default class  Login extends React.Component{
 		super();
 	
 		this.state = {
-			role:"Enterprise",
+			role:"Provider",
 			company:{"BusinessName":"Walmart", "id":new Date().valueOf()}
 		}
 	}
