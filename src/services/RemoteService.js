@@ -18,7 +18,7 @@ export class _RemoteService extends Service {
 		this.get("http://73.71.159.185:8888?url="+url, options, key, result, requests, len)
 	};
 	_get = (url, options, result, requests, len) => {
-		debugger
+		
 		options = options||{};
 		let self = this;
 		if (url.data) {
@@ -161,28 +161,48 @@ export class _RemoteService extends Service {
 	}
 	
 	get = (action) => {
-		var id1, id2, options;
-		[id1, id2, options] = action.params;
+		var id, options;
+		[id, options] = action.params;
 		options.action = action;
-		this._get(cm.baseUrl+id1 + "/"+this.key+ "/"+id2, options);
+		var url = cm.baseUrl
+		if (this.hasOwnProperty("enterpriceId")) {
+			
+			url += cm.selectedEnterprise 
+		}
+		this._get(url + "/"+this.key+ "/"+id, options);
 	}
 	create = (action) => {
-		var id1, data, options
-		[id1, data, options] = action.params;
+		var id, options;
+		[data, options] = action.params;
 		options.action = action;
-		this._post(cm.baseUrl+id1 + "/"+this.key, data, options);
+		var url = cm.baseUrl
+		if (this.hasOwnProperty("enterpriceId")) {
+			
+			url += cm.selectedEnterprise 
+		}
+		this._post(url + "/"+this.key, data, options);		
 	}
 	edit =(action) => {
-		var id1, id2, data, options
-		[id1, id2, data, options] = action.params;
+		var id, options;
+		[id, data, options] = action.params;
 		options.action = action;
-		this._put(cm.baseUrl+id1 + "/"+this.key+"/"+id2, data, options);
+		var url = cm.baseUrl
+		if (this.hasOwnProperty("enterpriceId")) {			
+			url += cm.selectedEnterprise 
+		}
+		this._put(url + "/"+this.key+ "/"+id, data, options);
+		
 	}
 	remove = (action) => {
-		var id1, id2, options
-		[id1, id2, options] = action.params;
+		var id, options;
+		[id, options] = action.params;
 		options.action = action;
-		this._remove(cm.baseUrl+id1 + "/"+this.key+"/"+id2, options);
+		var url = cm.baseUrl
+		if (this.hasOwnProperty("enterpriceId")) {			
+			url += cm.selectedEnterprise 
+		}
+		this._remove(url + "/"+this.key+ "/"+id, options);
+
 	}
 	
   }

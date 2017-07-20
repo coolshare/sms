@@ -17,6 +17,7 @@ export default class  Login extends React.Component{
 	}
 	handleLogin= () => {
 		cm.dispatch([{"type":"pushPath", "action":cm.routeData["Orchestration"]}, {"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value, "role":this.state.role, "company":this.state.company}}]);
+		
 	}
 	setRole = (e) => {
 		this.setState(Object.assign({}, this.state, {

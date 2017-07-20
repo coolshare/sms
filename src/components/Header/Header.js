@@ -73,7 +73,7 @@ class _Header extends React.Component{
 			}
 			
 		})
-		var user = cm.getStoreValue("HeaderReducer", "user");
+
 		return (
 			
 			<div id="header"   style={{'height':'70px', 'margin':'5px','border':'1px solid #e1e1e1', "backgroundColor":"#1b83b1", "color":"#AAA"}}>
@@ -83,8 +83,8 @@ class _Header extends React.Component{
 		      		<span style={{"marginLeft":"40px"}}><a href="#" style={{"textDecoration": "none"}} onClick={(evt) => this.handleLink("Orchestration", evt)} className={this.props.currentLink=="Orchestration"?"selectedTopLink":"unselectedTopLink"}>Orchestration</a></span>
 		      		<span style={{"marginLeft":"40px"}}><a href="#" style={{"textDecoration": "none"}} onClick={(evt) => this.handleLink("Admin", evt)} className={this.props.currentLink=="Admin"?"selectedTopLink":"unselectedTopLink"}>Adminstration</a></span>
 		      	</div>
-		      	<div style={{"width":"20%", "height":"50px", "float":"right", 'paddingTop':'5px'}}>
-		      		<span>{user.name}</span><span style={{"marginLeft":"10px", "textDecoration": "underline", "cursor":"pointer"}} onClick={this.handleLogout.bind(this)}>Logout</span>
+		      	<div style={{"width":"20%", "height":"50px", "float":"right", 'paddingTop':'5px', "paddingRight":"7px"}}>
+		      		<span>{this.props.user.user}</span><span style={{"marginLeft":"10px", "textDecoration": "underline", "cursor":"pointer", "float":"right"}} onClick={this.handleLogout.bind(this)}>Logout</span>
 		      	</div>
 		      	<br style={{"clear":"both"}}/>
 				<div className="headerPathContainer" style={{"height":"20px", "backgroundColor":"#e6eaec"}}>

@@ -1,4 +1,3 @@
-import Service from '../common/Service'
 import cm from '../common/CommunicationManager'
 import {_RemoteService} from './RemoteService'
 
@@ -6,13 +5,18 @@ class _BranchService extends _RemoteService {
 	
 	constructor(name, key) {
 		super(name, key, ["getAll"]);
+		this.enterpriceId = null;
 		
 	}
 	getAll = (action) => {	
 		var id1, options;
-		[id1, options] = action.params;
+		[options] = action.params;
 		options.action = action;
-		this._get(cm.baseUrl+id1 + "/"+this.key, options);
+		var url = cm.baseUrl
+		if (this.hasOwnProperty("enterpriceId")) {			
+			url += cm.selectedEnterprise 
+		}
+		this._get(url + "/"+this.key, options);
 	};
 	
   }

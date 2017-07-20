@@ -1,4 +1,6 @@
+import cm from '../../../common/CommunicationManager'
 import Utils from '../../../common/Utils'
+
 const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter':[0, 0], 'selectedBranch':null, 'selectedEnterprise':null, 'provider':null,'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
   switch (action.type) {
   	case 'setSearch':
@@ -19,10 +21,11 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
         })
   	case 'setSelectedBranch':
         return Object.assign({}, state, {
-        	selectedBranch: action.data
+        	selectedBranch: action.data,
+        	noDetails:action.noDetails
         })
   	case 'setSelectedEnterprise':
-  		
+  		cm.selectedEnterprise = action.data;
         return Object.assign({}, state, {
         	selectedEnterprise: action.data,
         	noDetails:action.noDetails

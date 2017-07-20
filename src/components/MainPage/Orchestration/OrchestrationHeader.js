@@ -62,7 +62,8 @@ class _OrchestrationHeader extends React.Component {
 		
 		return (
 		    	<div style={{"margin":"8px"}}>
-		    		<input placeholder="Search" ref={(input)=>this.searchField = input} onChange={(e)=>this.handleChange(e)}/><span className={selectedTab==="Provider"?"selectedTab":"unselectedTab"} style={{"marginLeft":"20px", "marginRight":"20px"}} onClick={this.handleProvider.bind(this)}>Provider</span>
+		    		<input placeholder="Search" ref={(input)=>this.searchField = input} onChange={(e)=>this.handleChange(e)} style={{"marginRight":"20px"}}/>
+		    		{this.props.user.role==="Provider"?<span className={selectedTab==="Provider"?"selectedTab":"unselectedTab"} style={{"marginRight":"20px"}} onClick={this.handleProvider.bind(this)}>Provider</span>:null}
 		    		{this.props.selectedEnterprise===null?<span className="disabled" style={{"marginRight":"20px"}}>Enterprise</span>:<span className={selectedTab==="Enterprise"?"selectedTab":"unselectedTab"} style={{"marginRight":"20px"}} onClick={this.handleEnterprise.bind(this)}>Enterprise</span>}
 		    		<span style={{"float":"right", "fontSize":"70%", "marginRight":"20px", "textDecoration":"underline"}}>
 		    			<span className="headLink" style={{"marginRight":"20px"}} onClick={this.handleAdd.bind(this)}>{buttonName[0]}</span>
@@ -81,7 +82,8 @@ const OrchestrationHeader = connect(
 			    return {
 			    	selectedTab: store.OrchestrationReducer.selectedTab,
 			    	selectedBranch: store.OrchestrationReducer.selectedBranch,
-			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise
+			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise,
+			    	user: store.HeaderReducer.user
 			    };
 			  }
 			)(_OrchestrationHeader);

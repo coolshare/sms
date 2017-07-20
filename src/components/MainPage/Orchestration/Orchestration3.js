@@ -47,18 +47,15 @@ class _Orchestration3 extends React.Component {
 		this.selInnerColor = "#1133E4";
 		this.detailsW = 260;
 		this.detailShowState = false;
+		this.cMap = {"Provider":undefined, "Enterprise":undefined}
 	}
 	componentDidMount() {
 		let self = this;
-		//cm.dispatch({"type":"/BranchService/getAll", "params":["101",{"test":"ddd"}]});
-		debugger
-		cm.dispatch({"type":"/BranchService/get", "params":["101","3", {"callback":(data)=>{
-			console.log("test")
-		}}]});
+		
 		
 		this.user = cm.getStoreValue("HeaderReducer", "user");
 		cm.dispatch({"type":"updateMainContainerSize", "data":{"w":this.refs.orchestrationMain.clientWidth, "h":this.refs.orchestrationMain.clientHeight}})
-		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink",/* "setSelectedEnterprise", "setSelectedBranch", */"removeEnterprise", "removeBranch"], (action)=>{
+		cm.subscribe(["switchTopLink", "setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink",/* "setSelectedEnterprise", "setSelectedBranch", */"removeEnterprise", "removeBranch"], (action)=>{
 			if (cm.getStoreValue("HeaderReducer", "currentLink")!=="Orchestration") {
 				return;
 			}
@@ -79,25 +76,26 @@ class _Orchestration3 extends React.Component {
 				}
 			} else if (self.user.role==="Enterprise") {
 				
-				cm.dispatch({"type":"setSelectedEnterprise", "data":self.loginEnterprice.id, "noDetails":true})
-				self.buildEnterpriseDiagram(self.loginEnterprice.id, filter)
+				cm.dispatch({"type":"setSelectedEnterprise", "data":self.user.company.id, "noDetails":true})
+				self.buildEnterpriseDiagram(self.user.company.id, filter)
 			}
 			
 		})
 		
 		cm.subscribe("setSelectedEnterprise", (action)=>{
-			if (self.cMap===undefined) {
+			if (self.cMap["Provider"]===undefined) {
 				return 
 			}
 		
 			var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "selectedEnterprise");
 			
-			for (var i in self.cMap) {
-				var c = self.cMap[i];
+			for (var i in self.cMap["Provider"]) {
+				var c = self.cMap["Provider"][i];
 				c[0].style.fill = self.innerColor
 			}
-			if (self.cMap[selectedEnterprise]!==undefined) {
-				self.cMap[selectedEnterprise][0].style.fill= self.selInnerColor
+			
+			if (self.cMap["Provider"][selectedEnterprise]!==undefined) {
+				self.cMap["Provider"][selectedEnterprise][0].style.fill= self.selInnerColor
 			}
 			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
 				this.animateDetails(true)
@@ -107,12 +105,12 @@ class _Orchestration3 extends React.Component {
 		});
 		cm.subscribe("setSelectedBranch", (action)=>{
 			var selectedBranch = cm.getStoreValue("OrchestrationReducer", "selectedBranch");
-			for (var i in self.cMap) {
-				var c = self.cMap[i];
+			for (var i in self.cMap["Enterprise"]) {
+				var c = self.cMap["Enterprise"][i];
 				c[0].style.fill = self.innerColor
 			}
-			if (self.cMap[selectedBranch]!==undefined) {
-				self.cMap[selectedBranch][0].style.fill= self.selInnerColor
+			if (self.cMap["Enterprise"][selectedBranch]!==undefined) {
+				self.cMap["Enterprise"][selectedBranch][0].style.fill= self.selInnerColor
 			}
 			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
 				this.animateDetails(true)
@@ -146,9 +144,6 @@ class _Orchestration3 extends React.Component {
 			this.provider.enterpriseMap[this.provider.internetForProvider.id] = this.provider.internetForProvider;
 			for (var i=0; i<dummyEnterprises.length; i++) {
 				var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
-				if (this.user.role==="Enterprise" && enterprise.id===this.user.company.id) {
-					this.loginEnterprice = enterprise;
-				}
 				this.provider.nodes.push(enterprise);
 				this.provider.enterpriseMap[enterprise.id] = enterprise;
 			}
@@ -192,9 +187,15 @@ class _Orchestration3 extends React.Component {
 		
 			cm.dispatch({"type":"setProvider", "data":this.provider})
 			//this.buildProviderDiagram()
+			cm.dispatch({"type":"setSelectedTab", "data":this.user.role})
+
 		} 
 		
-		
+		//cm.dispatch({"type":"/BranchService/getAll", "params":[{"test":"ddd"}]});
+		//debugger
+		//cm.dispatch({"type":"/BranchService/get", "params":["3", {"callback":(data)=>{
+		//	console.log("test")
+		//}}]});
 	}
 	
 	componentWillUnmount() {
@@ -245,7 +246,10 @@ class _Orchestration3 extends React.Component {
 		}, 10)
 	}
 	
-	handleNodeDBClick(d) {	
+	handleNodeDBClick(d) {
+		if (d.label==="") {
+			return;
+		}
 		var self = this;
 		this.noDrag = true;
 		this.isDBClick = true;
@@ -268,6 +272,9 @@ class _Orchestration3 extends React.Component {
 		}
 	}
 	handleNodeClick(d) {	
+		if (d.label==="") {
+			return;
+		}
 		this.noDrag = true;
 		if (this.dragTimer) {
 			//console.log("end drag")
@@ -288,17 +295,17 @@ class _Orchestration3 extends React.Component {
 	buildEnterpriseDiagram(id, filter) {
 		id = id||this.props.selectedEnterprise;
 		var enterprise = this.provider.enterpriseMap[id] 
-		this.cMap = undefined;
-		this.drawDiagram(enterprise.nodes, enterprise.links, filter);
+		this.cMap["Enterprise"] = undefined;
+		this.drawDiagram("Enterprise", enterprise.nodes, enterprise.links, filter);
 	}
 	
 	buildProviderDiagram(filter) {
 		
-		this.cMap = undefined;
-		this.drawDiagram(this.provider.nodes, this.provider.links, filter);
+		this.cMap["Provider"] = undefined;
+		this.drawDiagram("Provider", this.provider.nodes, this.provider.links, filter);
 	}
 	
-	drawDiagram(nodes2, links2, filter) {
+	drawDiagram(tab, nodes2, links2, filter) {
 		var self = this;
 		setTimeout(()=>{
 			if (this.isDBClick) {
@@ -449,17 +456,17 @@ class _Orchestration3 extends React.Component {
 				self.involveNode = true;
 				self.handleMouseOver(d);
 			});
-		  var color = null;
-		  if (self.props.selectedTab==="Provider" && self.props.selectedEnterprise!=null ||
-				  self.props.selectedTab==="Enterprise" && self.props.selectedBranch!=null) {
-			  color = "#1133E4";
-		  }
+
 		  var dd = nodeSvg.append("circle")
 			.attr("r", function(d){return d.r-5;})
 			.style("fill", function(d) {
-				return (self.props.selectedTab==="Provider" && self.props.selectedEnterprise==d.id
-						|| self.props.selectedTab==="Enterprise" && self.props.selectedBranch==d.id)?
-				color:d.innerColor
+				var selectedTab = cm.getStoreValue("OrchestrationReducer", "selectedTab")
+				if (self.props.selectedBranch==d.id  && selectedTab==="Enterprise"|| self.props.selectedEnterprise==d.id && selectedTab==="Provider") {								
+					return self.selInnerColor
+				} else {
+					return d.innerColor;
+				}
+				
 			})  
 			.style("cursor", "pointer")
 			.on("click", (d)=>{
@@ -482,13 +489,13 @@ class _Orchestration3 extends React.Component {
 				self.involveNode = true;
 				self.handleMouseOver(d);
 			});
-		  if (self.cMap===undefined) {
-				self.cMap = {};
+		  if (self.cMap[tab]===undefined) {
+				self.cMap[tab] = {};
 				for (var i=0; i<dd._groups.length;i++) {
 					for (var j=0; j<dd._groups[i].length; j++) {
 						var c = dd._groups[i][j];
 						var data = c.__data__;
-						self.cMap[data.id] = [c, data];
+						self.cMap[tab][data.id] = [c, data];
 					}
 				}
 			}
@@ -662,6 +669,7 @@ class _Orchestration3 extends React.Component {
 		
 		var self = this;
 		//console.log("X="+self.state.detailX)
+		
 	    return (
 	    	<div>
 	    		<Header/>

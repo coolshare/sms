@@ -6,7 +6,7 @@ export default class Service {
 		this.name = name;
 		this.APIs = APIs;
 		//console.log("cm="+cm)
-		debugger
+		
 		this.registerTypes();
 	}
 	
