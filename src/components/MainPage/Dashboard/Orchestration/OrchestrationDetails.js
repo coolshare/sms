@@ -10,7 +10,7 @@ import cm from '../../../../common/CommunicationManager'
 class _OrchestrationDetails extends React.Component{
 	
 	handleClick=() => {
-		cm.dispatch({"type":"/RemoteService/fatchThroughProxy", "data":{"url":"http://coolshare.com/markqian/AngularJS/Directives/RoutedTab/data/House.json"}, "callback":function(data) {
+		cm.dispatch({"type":"/RemoteService/getThroughProxy", "data":{"url":"http://coolshare.com/markqian/AngularJS/Directives/RoutedTab/data/House.json"}, "callback":function(data) {
 			console.log(JSON.stringify(data))
 		}})
 	}

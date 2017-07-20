@@ -9,7 +9,7 @@ const CommonReducer = (state = {'appLoaded':false}, action) => {
   		return Object.assign({}, state, {
   			appLoaded: true
         })
-  	case 'fetchMultiDone':
+  	case 'getMultiDone':
   		return state;  	
   	case 'RemoteService':
   		let options = action.options;

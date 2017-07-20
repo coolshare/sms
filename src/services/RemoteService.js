@@ -1,22 +1,24 @@
 import axios from 'axios'
 import Service from '../common/Service'
 import cm from '../common/CommunicationManager'
+import ExceptionService from './ExceptionService'
 
-const methodList = ["fetch", "fatchThroughProxy", "fetchSequencially", "fetchMulti"]
-
-class _RemoteService extends Service {
+export class _RemoteService extends Service {
 	
-	constructor(name, APIs) {
-		super(name, APIs);
+	constructor(name, key, APIs) {
+		super(name, ["get", "getThroughProxy", "getSequencially", "getMulti",
+			"post", "put", "remove"].concat(APIs));
+		this.key = key;
 	}
-	fatchThroughProxy = (url, options, key, result, requests, len) => {
+	getThroughProxy = (url, options, key, result, requests, len) => {
 		if (url.data) {
 			this.action = url;
 			url = this.action.data.url;
 		}
-		this.fetch("http://73.71.159.185:8888?url="+url, options, key, result, requests, len)
+		this.get("http://73.71.159.185:8888?url="+url, options, key, result, requests, len)
 	};
-	fetch = (url, options, key, result, requests, len) => {
+	_get = (url, options, result, requests, len) => {
+		debugger
 		options = options||{};
 		let self = this;
 		if (url.data) {
@@ -39,13 +41,13 @@ class _RemoteService extends Service {
 				  }
 				  if (result.multiType==="multi") {					  
 					  if (--result.countDown==0) {
-						  cm.dispatch({"type":"fetchMultiDone", "key":result.type, "result":result})
+						  cm.dispatch({"type":"getMultiDone", "key":result.type, "result":result})
 						  if (options.callback) {
 			    			  options.callback(result);
 			    		  }
 					  }
 				  } else if (result.multiType==="seq") {
-					  self.fetchEach(result, requests, options);
+					  self._getEach(result, requests, options);
 			    	  if (len===0) {
 			    		  if (options.callback) {
 			    			  options.callback(result);
@@ -54,45 +56,135 @@ class _RemoteService extends Service {
 				  }
 				   
 		      } else {
-		    	  if (self.action.actionType!=undefined||self.action.stateField!==undefined) {
-					  cm.dispatch({"type":"RemoteService", "options":{"action":self.action, "data":res.data}});
-				  }
-				  if (self.action.callback) {
-					  self.action.callback(res.data);
-				  }
-		      }
-			  if (self.action!==undefined) {
-				  cm.dispatch({"type":self.action.type+"/done", "data":res.data})
-			  }
-		      
+		    	  if (options.action!==undefined) {
+		    		  if (options.action.actionType!=undefined||options.action.stateField!==undefined) {
+						  cm.dispatch({"type":"RemoteService", "options":{"action":options.action, "data":res.data}});
+					  }
+					  if (options.action.callback) {
+						  options.action.callback(res.data);
+					  }
+			      
+				  
+					  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
+		    	  }
+		    	  
+			  
+		      } 
 			  return res;
 		  })/*.catch(function (error) {
 			  debugger
 			    console.log(error);
 		  });*/
 	}
-	fetchSequencially = (type, requests, options) => {
+	getSequencially = (type, requests, options) => {
 		let result = {"type":type, "dataMap":{}, "multiType":"seq"};
-		this.fetchEach(result, requests, options)
+		this.getEach(result, requests, options)
 	}
 	
-	fetchEach = (result, requests, options) => {
+	getEach = (result, requests, options) => {
 		if (requests.length===0) {
 			cm.dispatch({"type":result.type, "data":result.dataList});
 			return
 		}
 		let request = requests.shift();
-		this.fetch(request.url, options, request.key, result, requests, requests.length);
+		this._get(request.url, options, request.key, result, requests, requests.length);
 	}
 	
-	fetchMulti = (type, requests, options) => {
+	getMulti = (type, requests, options) => {
 		let result = {"type":type, "dataMap":{}, "multiType":"multi", "countDown":requests.length};
 		for (let i=0; i<requests.length; i++) {
 			let request = requests[i];
-			this.fetch(request.url, options, request.key, result, requests, requests.length);
+			this._get(request.url, options, request.key, result, requests, requests.length);
 		}
 	}
 	
+	_post = (url, data, options) => {
+		let self = this;
+		axios.post(url, data)
+		  .then(function (response) {
+			  if (response.status >= 400) {
+		          throw new Error("Bad response from server");
+		      }
+			  
+			  if (options.action!==undefined) {
+				  if (options.action.callback) {
+					  options.action.callback(res.data);
+				  }
+			  
+				  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
+			  }
+		  })
+		  .catch(function (error) {
+		    ExceptionService.handle(error);
+		  });
+	}
+	_put = (url, data, options) => {
+		let self = this;
+		axios.put(url, data)
+		  .then(function (response) {
+			  if (response.status >= 400) {
+		          throw new Error("Bad response from server");
+		      }
+			  
+			  if (options.action!==undefined) {
+				  if (options.callback) {
+					  options.callback(res.data);
+				  }
+			  
+				  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
+			  }
+		  })
+		  .catch(function (error) {
+		    ExceptionService.handle(error);
+		  });
+	}
+	_remove = (url, options) => {
+		let self = this;
+		axios.delete(url+"/"+id)
+		  .then(function (response) {
+			  if (response.status >= 400) {
+		          throw new Error("Bad response from server");
+		      }
+			  
+			  if (options.action!==undefined) {
+				  if (options.action.callback) {
+					  options.action.callback(res.data);
+				  }
+
+			  
+				  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
+			  }
+		  })
+		  .catch(function (error) {
+		    ExceptionService.handle(error);
+		  });
+	}
+	
+	get = (action) => {
+		var id1, id2, options;
+		[id1, id2, options] = action.params;
+		options.action = action;
+		this._get(cm.baseUrl+id1 + "/"+this.key+ "/"+id2, options);
+	}
+	create = (action) => {
+		var id1, data, options
+		[id1, data, options] = action.params;
+		options.action = action;
+		this._post(cm.baseUrl+id1 + "/"+this.key, data, options);
+	}
+	edit =(action) => {
+		var id1, id2, data, options
+		[id1, id2, data, options] = action.params;
+		options.action = action;
+		this._put(cm.baseUrl+id1 + "/"+this.key+"/"+id2, data, options);
+	}
+	remove = (action) => {
+		var id1, id2, options
+		[id1, id2, options] = action.params;
+		options.action = action;
+		this._remove(cm.baseUrl+id1 + "/"+this.key+"/"+id2, options);
+	}
+	
   }
-const RemoteService = new _RemoteService("RemoteService", methodList);
+const RemoteService = new _RemoteService("RemoteService");
 export default RemoteService;

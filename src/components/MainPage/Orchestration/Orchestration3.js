@@ -50,6 +50,12 @@ class _Orchestration3 extends React.Component {
 	}
 	componentDidMount() {
 		let self = this;
+		//cm.dispatch({"type":"/BranchService/getAll", "params":["101",{"test":"ddd"}]});
+		debugger
+		cm.dispatch({"type":"/BranchService/get", "params":["101","3", {"callback":(data)=>{
+			console.log("test")
+		}}]});
+		
 		this.user = cm.getStoreValue("HeaderReducer", "user");
 		cm.dispatch({"type":"updateMainContainerSize", "data":{"w":this.refs.orchestrationMain.clientWidth, "h":this.refs.orchestrationMain.clientHeight}})
 		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink",/* "setSelectedEnterprise", "setSelectedBranch", */"removeEnterprise", "removeBranch"], (action)=>{
