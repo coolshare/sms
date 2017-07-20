@@ -11,8 +11,8 @@ export default class  Login extends React.Component{
 		super();
 	
 		this.state = {
-			role:"Provider",
-			company:{"BusinessName":"Walmart", "id":new Date().valueOf()}
+			role:"Enterprise",
+			company:{"BusinessName":"Walmart", "id":101}
 		}
 	}
 	handleLogin= () => {

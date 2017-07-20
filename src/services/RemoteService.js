@@ -15,7 +15,7 @@ export class _RemoteService extends Service {
 			this.action = url;
 			url = this.action.data.url;
 		}
-		this.get("http://73.71.159.185:8888?url="+url, options, key, result, requests, len)
+		this._get("http://73.71.159.185:8888?url="+url, options, key, result, requests, len)
 	};
 	_get = (url, options, result, requests, len) => {
 		
@@ -56,25 +56,23 @@ export class _RemoteService extends Service {
 				  }
 				   
 		      } else {
-		    	  if (options.action!==undefined) {
-		    		  if (options.action.actionType!=undefined||options.action.stateField!==undefined) {
-						  cm.dispatch({"type":"RemoteService", "options":{"action":options.action, "data":res.data}});
-					  }
-					  if (options.action.callback) {
-						  options.action.callback(res.data);
-					  }
-			      
-				  
-					  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
-		    	  }
-		    	  
+	    		  if (options.actionType!=undefined||options.stateField!==undefined) {
+					  cm.dispatch({"type":"RemoteService", "options":{"action":{"type":options.actionType, "stateField":options.stateField}, "data":res.data}});
+				  }
+				  if (options.callback) {
+					  options.callback(res.data);
+				  }
+		      
 			  
+				  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
 		      } 
 			  return res;
-		  })/*.catch(function (error) {
-			  debugger
+		  }).catch(function (error) {
+			  if (options.action.error) {
+				  options.action.error(error)
+			  }
 			    console.log(error);
-		  });*/
+		  });
 	}
 	getSequencially = (type, requests, options) => {
 		let result = {"type":type, "dataMap":{}, "multiType":"seq"};
@@ -105,14 +103,13 @@ export class _RemoteService extends Service {
 			  if (response.status >= 400) {
 		          throw new Error("Bad response from server");
 		      }
-			  
-			  if (options.action!==undefined) {
-				  if (options.action.callback) {
-					  options.action.callback(res.data);
-				  }
-			  
-				  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
+
+			  if (options.callback) {
+				  options.callback(res.data);
 			  }
+			  
+			  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
+
 		  })
 		  .catch(function (error) {
 		    ExceptionService.handle(error);
@@ -126,13 +123,11 @@ export class _RemoteService extends Service {
 		          throw new Error("Bad response from server");
 		      }
 			  
-			  if (options.action!==undefined) {
-				  if (options.callback) {
-					  options.callback(res.data);
-				  }
-			  
-				  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
+			  if (options.callback) {
+				  options.callback(res.data);
 			  }
+			  
+			  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
 		  })
 		  .catch(function (error) {
 		    ExceptionService.handle(error);
@@ -146,14 +141,12 @@ export class _RemoteService extends Service {
 		          throw new Error("Bad response from server");
 		      }
 			  
-			  if (options.action!==undefined) {
-				  if (options.action.callback) {
-					  options.action.callback(res.data);
-				  }
+			  if (options.callback) {
+				  options.callback(res.data);
+			  }
 
 			  
-				  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
-			  }
+			  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
 		  })
 		  .catch(function (error) {
 		    ExceptionService.handle(error);
@@ -161,48 +154,44 @@ export class _RemoteService extends Service {
 	}
 	
 	get = (action) => {
-		var id, options;
-		[id, options] = action.params;
+		var options = action.options||{};
 		options.action = action;
 		var url = cm.baseUrl
 		if (this.hasOwnProperty("enterpriceId")) {
 			
-			url += cm.selectedEnterprise 
+			url += cm.selectedEnterprise +"/"
 		}
-		this._get(url + "/"+this.key+ "/"+id, options);
+		this._get(url +this.key+ "/"+action.params[0], options);
 	}
 	create = (action) => {
-		var id, options;
-		[data, options] = action.params;
+		var options = action.options||{};
 		options.action = action;
 		var url = cm.baseUrl
 		if (this.hasOwnProperty("enterpriceId")) {
 			
-			url += cm.selectedEnterprise 
+			url += cm.selectedEnterprise +"/"
 		}
-		this._post(url + "/"+this.key, data, options);		
+		this._post(url +this.key+ "/", action.params[0], options);	
 	}
 	edit =(action) => {
-		var id, options;
-		[id, data, options] = action.params;
+		var options = action.options||{};
 		options.action = action;
 		var url = cm.baseUrl
-		if (this.hasOwnProperty("enterpriceId")) {			
-			url += cm.selectedEnterprise 
+		if (this.hasOwnProperty("enterpriceId")) {
+			
+			url += cm.selectedEnterprise +"/"
 		}
-		this._put(url + "/"+this.key+ "/"+id, data, options);
-		
+		this._put(url +this.key+ "/", action.params[0], options);	
 	}
 	remove = (action) => {
-		var id, options;
-		[id, options] = action.params;
+		var options = action.options||{};
 		options.action = action;
 		var url = cm.baseUrl
-		if (this.hasOwnProperty("enterpriceId")) {			
-			url += cm.selectedEnterprise 
+		if (this.hasOwnProperty("enterpriceId")) {
+			
+			url += cm.selectedEnterprise+"/"
 		}
-		this._remove(url + "/"+this.key+ "/"+id, options);
-
+		this._put(url + this.key+ "/", action.params[0], options);			
 	}
 	
   }

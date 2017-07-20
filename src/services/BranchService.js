@@ -9,9 +9,7 @@ class _BranchService extends _RemoteService {
 		
 	}
 	getAll = (action) => {	
-		var id1, options;
-		[options] = action.params;
-		options.action = action;
+		var options  = action.options||{};
 		var url = cm.baseUrl
 		if (this.hasOwnProperty("enterpriceId")) {			
 			url += cm.selectedEnterprise 
