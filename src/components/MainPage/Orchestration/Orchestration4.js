@@ -55,8 +55,8 @@ class _Orchestration3 extends React.Component {
 		cm.internetForEnterprise = new Branch({"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
 		cm.enterpriseCopy = new Enterprise({}, 20, 100, 100, 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
 		cm.branchCopy = new Branch({}, 20, 100, 100, 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
-		
-		
+		this.dirty = true;
+		cm.dispatch({"type":"setProvider", "data": new Provider()})
 		
 	}
 	componentDidMount() {
@@ -133,7 +133,8 @@ class _Orchestration3 extends React.Component {
 		});
 		
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
-		if (true || this.props.provider===null) {
+		if (this.dirty) {
+			this.dirty = false;
 			var dummyEnterprises = [];
 			
 			
@@ -393,23 +394,35 @@ class _Orchestration3 extends React.Component {
 		if (self.svg!==undefined) {
 			return
 		}
-		var dx = 20, dy = 20;	
-		var radius = 100;
+		var dx = 200, dy = 200;	
+		
+		var rings = [[20, 100],[30, 200],[50, 300],[80, 400],[100, 500]]
+		var j = 0;
+
+		
+		var radius = rings[j][1];
 		var width = (radius * 2) + 50;
         var height = (radius * 2) + 50;
-		nodes[0].xx = width/2+dx;
-		nodes[0].yy = height/2+dy;
-		
-		for (var i=1; i<nodes.length; i++) {
-			var angle = (i / (nodes.length/2)) * Math.PI; // Calculate the angle at which the element will be placed.
+        var x0 = nodes[0].xx = width/2+dx;
+		var y0 = nodes[0].yy = height/2+dy;
+		for (var i=1, k=0; i<nodes.length; i++, k++) {
+			
+			var angle = (k / (rings[j][0]/2)) * Math.PI; // Calculate the angle at which the element will be placed.
                                                 // For a semicircle, we would use (i / numNodes) * Math.PI.
 			var x = (radius * Math.cos(angle)) + (width/2); // Calculate the x position of the element.
-			var y = (radius * Math.sin(angle)) + (width/2); // Calculate the y position of the element.
+			var y = (radius * Math.sin(angle)) + (height/2); // Calculate the y position of the element.
 			nodes[i].xx = x+dx;
 			nodes[i].yy = y+dy;
+			if (k>rings[j][0]) {
+				k = 0
+				j++;
+				radius = rings[j][1];
+				width = (radius * 2) + 50;
+		        height = (radius * 2) + 50;
+			}
 		}
 
-		var width = 700, height = 700;
+		var width = 1200, height = 1200;
 		self.svg = d3.select("#svg").append("svg")
 		    .attr("width", width)
 		    .attr("height", height)
