@@ -393,18 +393,20 @@ class _Orchestration3 extends React.Component {
 		if (self.svg!==undefined) {
 			return
 		}
-			
+		var dx = 20, dy = 20;	
 		var radius = 100;
 		var width = (radius * 2) + 50;
         var height = (radius * 2) + 50;
+		nodes[0].xx = width/2+dx;
+		nodes[0].yy = height/2+dy;
 		
-		for (var i=0; i<nodes.length; i++) {
+		for (var i=1; i<nodes.length; i++) {
 			var angle = (i / (nodes.length/2)) * Math.PI; // Calculate the angle at which the element will be placed.
                                                 // For a semicircle, we would use (i / numNodes) * Math.PI.
 			var x = (radius * Math.cos(angle)) + (width/2); // Calculate the x position of the element.
 			var y = (radius * Math.sin(angle)) + (width/2); // Calculate the y position of the element.
-			nodes[i].xx = x;
-			nodes[i].yy = y;
+			nodes[i].xx = x+dx;
+			nodes[i].yy = y+dy;
 		}
 
 		var width = 700, height = 700;
@@ -440,6 +442,12 @@ class _Orchestration3 extends React.Component {
 		  var self = this;
 		  
 		  var filteredMap = {};
+		  for (var i=0; i<links.length; i++) {
+			  var link = links[i]
+			  var g = link.g = self.svg.append("g").attr("class", "link")
+			  link.line = g.append("line").data([link]).attr("x1", link.source.xx).attr("y1", link.source.yy).attr("x2",
+						link.target.xx).attr("y2", link.target.yy)
+		  }
 		  for (var i=0; i<nodes.length; i++) {
 			  var node = nodes[i];
 			  
