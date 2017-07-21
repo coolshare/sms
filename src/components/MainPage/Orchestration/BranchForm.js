@@ -11,6 +11,7 @@ class _BranchForm extends Form {
 	handleOK = (e) => {
 		e.preventDefault();
 		var data = this.collectFields(e);
+		data.BranchId = new Date().valueOf();
 		cm.dispatch({"type":"ClosePopup"})
 		setTimeout(function() {
 			cm.dispatch({"type":"addBranch", "data":new Branch(data, 20, 100, 100+60*cm.getStoreValue("OrchestrationReducer", "counter")[1] , 35, 0, "#E1E1E1", -8, -8, 16, 16)})

@@ -11,7 +11,7 @@ class _OrchestrationEnterpriseDetail extends React.Component {
 		if (!id) {
 			return null;
 		}
-		var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "provider").enterpriseMap[id];
+		var selectedEnterprise = this.props.provider.enterpriseMap[id];
 		
 
 		return (
@@ -24,7 +24,8 @@ class _OrchestrationEnterpriseDetail extends React.Component {
 const OrchestrationEnterpriseDetail = connect(
 		  store => {
 			    return {
-			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise
+			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise,
+			    	provider: store.OrchestrationReducer.provider
 			    };
 			  }
 			)(_OrchestrationEnterpriseDetail);

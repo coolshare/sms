@@ -1,7 +1,8 @@
 import cm from '../../../common/CommunicationManager'
 import Utils from '../../../common/Utils'
+import Provider from '../../../common/models/Provider'
 
-const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter':[0, 0], 'selectedBranch':null, 'selectedEnterprise':null, 'provider':null,'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
+const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter':[0, 0], 'selectedBranch':null, 'selectedEnterprise':null, 'provider':new Provider(),'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
   switch (action.type) {
   	case 'setSearch':
       return Object.assign({}, state, {
@@ -32,7 +33,7 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
         })
   	case 'addEnterprise':
   		var provider = Object.assign({}, state.provider);
-  		var id = action.data.data.id;
+  		var id = action.data.data.EnterpriseId;
   		provider.enterpriseMap[id] = action.data;
   		provider.nodes.push(action.data);
   		if (provider.internetForProvider===undefined) {
@@ -47,7 +48,7 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
   	case 'addBranch':
   		var provider = Object.assign({}, state.provider);
   		var enterprise = provider.enterpriseMap[state.selectedEnterprise];
-  		enterprise.branchMap[action.data.data.id] = action.data;
+  		enterprise.branchMap[action.data.data.BranchId] = action.data;
   		enterprise.nodes.push(action.data);
   		if (enterprise.internetForEnterprise===undefined) {
   			enterprise.internetForEnterprise = Object.assign({}, cm.internetForEnterprise, {"id":new Date().valueOf()})

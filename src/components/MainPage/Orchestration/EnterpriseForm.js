@@ -11,6 +11,7 @@ class _EnterpriseForm extends Form {
 	handleOK = (e) => {
 		e.preventDefault();
 		var data = this.collectFields(e);
+		data.EnterpriseId = new Date().valueOf();
 		cm.dispatch({"type":"ClosePopup"})
 		setTimeout(function() {
 			cm.dispatch({"type":"addEnterprise", "data":new Enterprise(data, 20, 100+60*cm.getStoreValue("OrchestrationReducer", "counter")[0], 100 , 35, 0, "#E1E1E1", -8, -8, 16, 16)})

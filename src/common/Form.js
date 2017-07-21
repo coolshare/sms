@@ -13,7 +13,7 @@ export default class Form extends React.Component {
 		for (var f in this.fields) {
 			data[f] = this.fields[f].value			
 		}
-		data.id = new Date().valueOf();
+
 		return data;
 	}
 	

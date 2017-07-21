@@ -68,8 +68,8 @@ export class _RemoteService extends Service {
 		      } 
 			  return res;
 		  }).catch(function (error) {
-			  if (options.action.error) {
-				  options.action.error(error)
+			  if (options.error) {
+				  options.error(error)
 			  }
 			    console.log(error);
 		  });

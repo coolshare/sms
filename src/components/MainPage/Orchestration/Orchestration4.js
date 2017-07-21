@@ -24,7 +24,7 @@ class _Orchestration3 extends React.Component {
 		this.state = {
 			detailX:3000
 		}
-		this.isSimulat = false;
+		this.isSimulat = true;
 		this.canvasX = 10;
 		this.canvasY = 15;
 		this.diagramW = 1800;
@@ -133,7 +133,7 @@ class _Orchestration3 extends React.Component {
 		});
 		
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
-		if (this.props.provider===null) {
+		if (true || this.props.provider===null) {
 			var dummyEnterprises = [];
 			
 			
@@ -388,41 +388,27 @@ class _Orchestration3 extends React.Component {
 		this.drawDiagram("Provider", this.provider.nodes, this.provider.links, filter);
 	}
 	
-	drawDiagram(tab, nodes2, links2, filter) {
+	drawDiagram(tab, nodes, links, filter) {
 		var self = this;
-		setTimeout(()=>{
-			if (this.isDBClick) {
-				this.isDBClick = false;
-			}
-		
-		}, 1000)
-
-		
-		
 		if (self.svg!==undefined) {
-			//d3.selectAll("g > *").remove()
-			d3.selectAll('#svg svg').remove();
-			self.gMap = undefined;
+			return
 		}
-		self.c = 0
-		if (links2.length==0) {
 			
-			var radius = 100;
-			var width = (radius * 2) + 50;
-            var height = (radius * 2) + 50;
-			
-			for (var i=0; i<nodes2.length; i++) {
-				var angle = (i / (nodes2.length/2)) * Math.PI; // Calculate the angle at which the element will be placed.
-	                                                // For a semicircle, we would use (i / numNodes) * Math.PI.
-				var x = (radius * Math.cos(angle)) + (width/2); // Calculate the x position of the element.
-				var y = (radius * Math.sin(angle)) + (width/2); // Calculate the y position of the element.
-				nodes2[i].xx = x;
-				nodes2[i].yy = y;
-			}
+		var radius = 100;
+		var width = (radius * 2) + 50;
+        var height = (radius * 2) + 50;
+		
+		for (var i=0; i<nodes.length; i++) {
+			var angle = (i / (nodes.length/2)) * Math.PI; // Calculate the angle at which the element will be placed.
+                                                // For a semicircle, we would use (i / numNodes) * Math.PI.
+			var x = (radius * Math.cos(angle)) + (width/2); // Calculate the x position of the element.
+			var y = (radius * Math.sin(angle)) + (width/2); // Calculate the y position of the element.
+			nodes[i].xx = x;
+			nodes[i].yy = y;
 		}
-		var nodeSvg, linkSvg, simulation, nodeEnter, linkEnter ;
+
 		var width = 700, height = 700;
-		var svg = self.svg = d3.select("#svg").append("svg")
+		self.svg = d3.select("#svg").append("svg")
 		    .attr("width", width)
 		    .attr("height", height)
 		    .on("mousemove", function() {
@@ -445,32 +431,119 @@ class _Orchestration3 extends React.Component {
 					}
 					self.involveNode = false;
 				})
+		self.update(nodes, links, filter);
+	}
+	
+	
 
-		  var collide = [60, 300, 50];
-			if (links2.length===0) {
-				collide = [10, 50, 20];
-			}
-		self.simulation = simulation = d3.forceSimulation()
-		  .force("link", d3.forceLink().id(function(d) {
-		    return d.id;
-		  }).distance(collide[2]))
-		  .force("collide", d3.forceCollide(collide[0]))
-		  .force("charge", d3.forceManyBody())
-		  .force("center", d3.forceCenter(collide[1], collide[1]))
-		  .on("tick", ticked);
-		self.simulation.stop();	
-		update(nodes2, links2, filter);
-		self.simulation.restart();	
-
-		
-		function update(nodes2, links2, filter) {
+	update(nodes, links, filter) {
+		  var self = this;
 		  
-		  var nodes = [];
-		  var links = [];
 		  var filteredMap = {};
-		  for (var i=0; i<nodes2.length; i++) {
-			  var n = nodes2[i];
-			  if (filter===undefined) {
+		  for (var i=0; i<nodes.length; i++) {
+			  var node = nodes[i];
+			  
+			  var g = node.g = self.svg.append("g").attr("class", "node").attr("width", 2*node.r).attr("height", 2*node.r)
+			  .attr("transform", "translate(" + node.xx + "," + node.yy + ")")
+			  
+			  node.c1 = g.append("circle")
+			  	.data([node])
+				.attr("r", function(d){return d.r;})
+				
+				.style("stroke-width", 1)    // set the stroke width
+				.style("stroke", "black")  
+				.style("cursor", "pointer")  
+				.style("fill", function(d) {return stateColors[d.state]})
+				.on("click", (d)=>{
+					self.involveNode = true;
+					self.handleNodeClick(d)
+				})
+				.on("dblclick", (d)=>{
+					self.involveNode = true;
+					self.handleNodeDBClick(d)
+				})
+				.on("mousedown", (d)=>{
+					
+					self.involveNode = true;
+					self.handleMouseDown(d)
+				})
+				.on("mouseup", (d)=>{
+					self.involveNode = true;
+					self.handleMouseUp()
+				})
+				.on("mouseover", (d)=>{
+					self.involveNode = true;
+					self.handleMouseOver(d);
+				});
+	
+			  node.c2 = g.append("circle")
+			    .data([node])
+				.attr("r", function(d){return d.r-5;})
+				.style("fill", function(d) {
+					var selectedTab = cm.getStoreValue("OrchestrationReducer", "selectedTab")
+					if (self.props.selectedBranch==d.id  && selectedTab==="Enterprise"|| self.props.selectedEnterprise==d.id && selectedTab==="Provider") {								
+						return self.selInnerColor
+					} else {
+						return d.innerColor;
+					}
+					
+				})  
+				.style("cursor", "pointer")
+				.on("click", (d)=>{
+					self.involveNode = true;
+					self.handleNodeClick(d)
+				})
+				.on("dblclick", (d)=>{
+					self.involveNode = true;
+					self.handleNodeDBClick(d)
+				})
+				.on("mousedown", (d)=>{
+					self.involveNode = true;
+					self.handleMouseDown(d)
+				})
+				.on("mouseup", (d)=>{
+					self.involveNode = true;
+					self.handleMouseUp()
+				})
+				.on("mouseover", (d)=>{
+					self.involveNode = true;
+					self.handleMouseOver(d);
+				});
+	
+			  node.image = g.append("svg:image").data([node]).attr("xlink:href", function(d) {
+	
+					return d.icon;
+					} )
+				.attr("x", function(d) {return d.iconX})
+				.attr("y", function(d) {return d.iconY}).attr("width", function(d) {return d.iconW}).attr("height",  function(d) {return d.iconH})  
+				.style("cursor", "pointer")
+				.on("click", (d)=>{
+					self.involveNode = true;
+					self.handleNodeClick(d)
+				})
+				.on("dblclick", (d)=>{
+					self.involveNode = true;
+					self.handleNodeDBClick(d)
+				})
+				.on("mousedown", (d)=>{
+					self.involveNode = true;
+					self.handleMouseDown(d)
+				})
+				.on("mouseup", (d)=>{
+					self.involveNode = true;
+					self.handleMouseUp()
+				})
+				.on("mouseover", (d)=>{
+					self.involveNode = true;
+					self.handleMouseOver(d);
+				});	
+			  node.text = g.append("text").data([node]).text(function(d) {
+				return d.label.length<22?d.label:d.label.substring(0, 21)+"...";
+				} )
+				.style("font-size", function(d) { return "12px"; })
+			    .attr("dx", "-1.55em").attr("dy", function(d){return d.fontDy});
+			    
+			  /*if (filter===undefined) {
 				  nodes.push(n)
 			  } else {
 				  if (n.label.toLowerCase().indexOf(filter)<0 && n.label!=="") {						  
@@ -478,193 +551,10 @@ class _Orchestration3 extends React.Component {
 					  continue;
 				  }
 				  nodes.push(n)
-			  }
+			  }*/
 			  
-		  }
-		  for (var i=0; i<links2.length; i++) {
-			  var link = links2[i];
-			  if (filteredMap[link.source.id]!==undefined || filteredMap[link.target.id]!==undefined) {
-				  continue;
-			  }
-			  links.push(link)
-		  }
-		  self.simulation
-		    .nodes(nodes)
-
-		  self.simulation.force("link")
-		    .links(links);
-
-		  self.linkSvg = linkSvg = self.svg.selectAll(".link")
-		    .data(links) //, function(d) { return d.target.id; })
-
-		  linkSvg.exit().remove();
-
-		  linkSvg = linkSvg.enter()
-		      .append("line")
-		      .attr("class", "link");
-
-		  self.nodeSvg = nodeSvg = self.svg.selectAll(".node")
-		    .data(nodes) //, function(d) { return d.id; })
-
-		  nodeSvg.exit().remove();
-
-		  nodeSvg = nodeSvg.enter()
-		    .append("g")
-		      .attr("class", "node")
-		  
-		    nodeSvg.append("circle")
-			.attr("r", function(d){return d.r;})
-			.style("stroke-width", 1)    // set the stroke width
-			.style("stroke", "black")  
-			.style("cursor", "pointer")  
-			.style("fill", function(d) {return stateColors[d.state]})
-			.on("click", (d)=>{
-				self.involveNode = true;
-				self.handleNodeClick(d)
-			})
-			.on("dblclick", (d)=>{
-				self.involveNode = true;
-				self.handleNodeDBClick(d)
-			})
-			.on("mousedown", (d)=>{
-				
-				self.involveNode = true;
-				self.handleMouseDown(d)
-			})
-			.on("mouseup", (d)=>{
-				self.involveNode = true;
-				self.handleMouseUp()
-			})
-			.on("mouseover", (d)=>{
-				self.involveNode = true;
-				self.handleMouseOver(d);
-			});
-
-		  var dd = nodeSvg.append("circle")
-			.attr("r", function(d){return d.r-5;})
-			.style("fill", function(d) {
-				var selectedTab = cm.getStoreValue("OrchestrationReducer", "selectedTab")
-				if (self.props.selectedBranch==d.id  && selectedTab==="Enterprise"|| self.props.selectedEnterprise==d.id && selectedTab==="Provider") {								
-					return self.selInnerColor
-				} else {
-					return d.innerColor;
-				}
-				
-			})  
-			.style("cursor", "pointer")
-			.on("click", (d)=>{
-				self.involveNode = true;
-				self.handleNodeClick(d)
-			})
-			.on("dblclick", (d)=>{
-				self.involveNode = true;
-				self.handleNodeDBClick(d)
-			})
-			.on("mousedown", (d)=>{
-				self.involveNode = true;
-				self.handleMouseDown(d)
-			})
-			.on("mouseup", (d)=>{
-				self.involveNode = true;
-				self.handleMouseUp()
-			})
-			.on("mouseover", (d)=>{
-				self.involveNode = true;
-				self.handleMouseOver(d);
-			});
-		  if (self.cMap[tab]===undefined) {
-				self.cMap[tab] = {};
-				for (var i=0; i<dd._groups.length;i++) {
-					for (var j=0; j<dd._groups[i].length; j++) {
-						var c = dd._groups[i][j];
-						var data = c.__data__;
-						self.cMap[tab][data.id] = [c, data];
-					}
-				}
-			}
-		    nodeSvg.append("svg:image").attr("xlink:href", function(d) {
-
-				return d.icon;
-				} ).attr("x", function(d) {return d.iconX})
-					.attr("y", function(d) {return d.iconY}).attr("width", function(d) {return d.iconW}).attr("height",  function(d) {return d.iconH})  
-					.style("cursor", "pointer")
-					.on("click", (d)=>{
-						self.involveNode = true;
-						self.handleNodeClick(d)
-					})
-					.on("dblclick", (d)=>{
-						self.involveNode = true;
-						self.handleNodeDBClick(d)
-					})
-					.on("mousedown", (d)=>{
-						self.involveNode = true;
-						self.handleMouseDown(d)
-					})
-					.on("mouseup", (d)=>{
-						self.involveNode = true;
-						self.handleMouseUp()
-					})
-					.on("mouseover", (d)=>{
-						self.involveNode = true;
-						self.handleMouseOver(d);
-					});	
-		    nodeSvg.append("text").text(function(d) {
-					return d.label.length<22?d.label:d.label.substring(0, 21)+"...";
-					} )
-					.style("font-size", function(d) { return "12px"; })
-		      .attr("dx", "-1.55em").attr("dy", function(d){return d.fontDy});
-		}
-
-		function ticked() {
-			if (self.c>25) {
-				return 
-			}
-			self.c++;
-			
-		  	linkSvg
-		      .attr("x1", function(d) {
-		    	  
-		    	  return d.source.xxx?d.source.xxx:d.source.x; })
-		      .attr("y1", function(d) { return d.source.yyy?d.source.yyy:d.source.y; })
-		      .attr("x2", function(d) { return d.target.xxx?d.target.xxx:d.target.x; })
-		      .attr("y2", function(d) { return d.target.yyy?d.target.yyy:d.target.y; });
-		  	
-		  	
-		  	
-		  	if (links2.length>0) {
-		  		if (self.c>1) {
-		  			nodeSvg
-				      .attr("transform", function(d) {				      
-				    	  if (self.c==20) {
-				    		  d.xxx = d.x;
-					  		  d.yyy = d.y;
-					  		  //if (d.label=="Walmart") {
-					  		//	  console.log("self.c="+self.c+" d.xxx="+d.xxx)
-					  		  //}
-				    	  }
-				    	  if (d.xxx) {
-					  		  return "translate(" + d.xxx + ", " + d.yyy + ")"; 
-				    	  } else {
-				    		  return "translate(" + d.x + ", " + d.y + ")"; 
-				    	  }  
-				    });
-				      
-		  		} else {
-		  			nodeSvg
-				      .attr("transform", function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
-		  		}
-		  	
-		  		
-			} else {
-				nodeSvg
-			      .attr("transform", function(d) { return "translate(" + d.xx + ", " + d.yy + ")"; });
-			}
-		}
-	}	
-	
-
-	
-	
+		  } 
+	}
 	
 	handleMouseOver(d) {
 		if (this.dragLine!==undefined) {
