@@ -24,7 +24,7 @@ class _Orchestration3 extends React.Component {
 		this.state = {
 			detailX:3000
 		}
-		this.isSimulat = true;
+		this.isSimulat = false;
 		this.canvasX = 10;
 		this.canvasY = 15;
 		this.diagramW = 1800;
@@ -45,18 +45,14 @@ class _Orchestration3 extends React.Component {
 		this.provider = this.props.provider===null?new Provider():this.props.provider;
 		this.noDrag = false;
 		this.innerColor = "#E1E1E1";
-		this.selInnerColor = "#1133E4";
+		cm.selInnerColor = "#1133E4";
 		this.detailsW = 260;
 		this.detailShowState = false;
-		this.cMap = {"Provider":undefined, "Enterprise":undefined}
+		
 		//Create Internet Node for provider
 		cm.internetForProvider = new Enterprise({"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);		
 		//Create Internet Node for Enterprice
 		cm.internetForEnterprise = new Branch({"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
-		cm.enterpriseCopy = new Enterprise({}, 20, 100, 100, 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
-		cm.branchCopy = new Branch({}, 20, 100, 100, 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
-		this.dirty = true;
-		cm.dispatch({"type":"setProvider", "data": new Provider()})
 		
 	}
 	componentDidMount() {
@@ -94,20 +90,9 @@ class _Orchestration3 extends React.Component {
 		})
 		
 		cm.subscribe("setSelectedEnterprise", (action)=>{
-			if (self.cMap["Provider"]===undefined) {
-				return 
-			}
 		
 			var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "selectedEnterprise");
-			
-			for (var i in self.cMap["Provider"]) {
-				var c = self.cMap["Provider"][i];
-				c[0].style.fill = self.innerColor
-			}
-			
-			if (self.cMap["Provider"][selectedEnterprise]!==undefined) {
-				self.cMap["Provider"][selectedEnterprise][0].style.fill= self.selInnerColor
-			}
+
 			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
 				this.animateDetails(true)
 			}
@@ -116,13 +101,7 @@ class _Orchestration3 extends React.Component {
 		});
 		cm.subscribe("setSelectedBranch", (action)=>{
 			var selectedBranch = cm.getStoreValue("OrchestrationReducer", "selectedBranch");
-			for (var i in self.cMap["Enterprise"]) {
-				var c = self.cMap["Enterprise"][i];
-				c[0].style.fill = self.innerColor
-			}
-			if (self.cMap["Enterprise"][selectedBranch]!==undefined) {
-				self.cMap["Enterprise"][selectedBranch][0].style.fill= self.selInnerColor
-			}
+
 			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
 				this.animateDetails(true)
 			}
@@ -133,149 +112,138 @@ class _Orchestration3 extends React.Component {
 		});
 		
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
-		if (this.dirty) {
-			this.dirty = false;
-			var dummyEnterprises = [];
+
+		var dummyEnterprises = [];
+		
+		var ddd = {}
+		if (this.isSimulat) {
+			dummyEnterprises = [{"BusinessName":this.user.company.BusinessName, "EnterpriseId":this.user.company.id, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+			                            {"BusinessName":"Target", "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+			                            {"BusinessName":"BurgerKing", "ContactName":"BurgerKing Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"phone", "Address":"555 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+			                            {"BusinessName":"Frys", "ContactName":"Frys Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"166623 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+			                            {"BusinessName":"BestBuy", "ContactName":"BestBuy Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"17723 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"}];
 			
 			
-			if (this.isSimulat) {
-				dummyEnterprises = [{"BusinessName":this.user.company.BusinessName, "EnterpriseId":this.user.company.id, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
-				                            {"BusinessName":"Target", "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
-				                            {"BusinessName":"BurgerKing", "ContactName":"BurgerKing Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"phone", "Address":"555 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
-				                            {"BusinessName":"Frys", "ContactName":"Frys Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"166623 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
-				                            {"BusinessName":"BestBuy", "ContactName":"BestBuy Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"17723 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"}];
+			for (var i=0; i<dummyEnterprises.length; i++) {
 				
-				
-				for (var i=0; i<dummyEnterprises.length; i++) {
-					
-					if (dummyEnterprises[i].EnterpriseId!==undefined) {
-						continue;
-					}
-					dummyEnterprises[i].EnterpriseId = new Date().valueOf()+i
+				if (dummyEnterprises[i].EnterpriseId!==undefined) {
+					continue;
 				}
+				dummyEnterprises[i].EnterpriseId = new Date().valueOf()+Math.floor(Math.random()*99999)
+			}
+		}
+		
+		
+		
+		if (this.isSimulat) {
+			
+			this.provider.internetForProvider = new Enterprise({"EnterpriseId":new Date().valueOf()+88, "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48)
+			this.provider.nodes.push(this.provider.internetForProvider)
+			this.provider.enterpriseMap[this.provider.internetForProvider.id] = this.provider.internetForProvider;
+		
+			for (var i=0; i<dummyEnterprises.length; i++) {
+				
+				var data = dummyEnterprises[i];
+				var enterprise = new Enterprise(data, 20, 100, 100, 35, Math.floor(Math.random()*5), this.innerColor, -8, -8, 16, 16)
+				this.provider.nodes.push(enterprise);
+				this.provider.enterpriseMap[enterprise.id] = enterprise;
+				cm.nodeMap[enterprise.id] = enterprise;
+				ddd[enterprise.id] = enterprise;
 			}
 			
 			
+			cm.dispatch({"type":"setCounter", "data":[i, cm.getStoreValue("OrchestrationReducer", "counter")[1]]})
 			
-			if (this.isSimulat) {
+			
+			
+			
+			for (var e in this.provider.enterpriseMap) {
+				var enterprise = this.provider.enterpriseMap[e];
+				if (this.provider.internetForProvider.id===enterprise.id) {
+					continue;
+				}
+				this.provider.links.push({"source":this.provider.internetForProvider, "target":enterprise});
+
+
+				enterprise.internetForEnterprise =  new Branch({"BranchId":new Date().valueOf()+99, "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
+
+				enterprise.nodes.push(enterprise.internetForEnterprise)
 				
-				this.provider.internetForProvider = Object.assign({}, cm.internetForProvider, {"id":new Date().valueOf()})
-				this.provider.nodes.push(this.provider.internetForProvider)
-				this.provider.enterpriseMap[this.provider.internetForProvider.id] = this.provider.internetForProvider;
-			
-				for (var i=0; i<dummyEnterprises.length; i++) {
+				//var n = this.provider.nodes[i];
+				
+				//var list = enterprise.nodes;
+				var max = 3;//+Math.floor(Math.random()*5);
+				for (var j=0; j<max; j++) {
+					var data2 = {"BranchId":new Date().valueOf()+Math.floor(Math.random()*99999), "BusinessName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
+					var branch = new Branch(data2, 20, 100, 100, 35, Math.floor(Math.random()*5), this.innerColor, -8, -8, 16, 16)
+					enterprise.nodes.push(branch);
 					
-					var data = dummyEnterprises[i];
-					var enterprise = Object.assign({}, cm.enterpriseCopy, {
-						data: data, id:data.EnterpriseId, label:data.BusinessName, icon:data.Icon});//new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
-					this.provider.nodes.push(enterprise);
-					this.provider.enterpriseMap[enterprise.id] = enterprise;
+					enterprise.branchMap[branch.id] = branch;
+					cm.nodeMap[branch.id] = branch;
+					ddd[branch.id] = branch;
+					enterprise.links.push({"source":enterprise.internetForEnterprise, "target":branch});
 				}
 				
-				
-				cm.dispatch({"type":"setCounter", "data":[i, cm.getStoreValue("OrchestrationReducer", "counter")[1]]})
-				
-				
-				
-				
-				for (var e in this.provider.enterpriseMap) {
-					var enterprise = this.provider.enterpriseMap[e];
-					if (this.provider.internetForProvider.id===enterprise.id) {
-						continue;
-					}
-					this.provider.links.push({"source":this.provider.internetForProvider, "target":enterprise});
-	
-					internetNode.id = new Date().valueOf()+9999;
-					enterprise.internetForEnterprise =  Object.assign({}, cm.internetForEnterprise, {
-						"id":new Date().valueOf()
-						
-					})//new Enterprise( internetNode, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
-					
-					
-					enterprise.nodes.push(enterprise.internetForEnterprise)
-					
-					//var n = this.provider.nodes[i];
-					
-					//var list = enterprise.nodes;
-					var max = 3;//+Math.floor(Math.random()*5);
-					for (var j=0; j<max; j++) {
-						var data2 = {"BranchId":new Date().valueOf()+j, "BusinessName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
-						var branch = Object.assign({}, cm.branchCopy, {
-							data: data2, "label":data2.BusinessName, "icon":data2.Icon});//new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
-						//var branch = new Branch(data2, 20, 100, 100+60*j, 35, Math.floor(Math.random()*5), self.innerColor, -8, -8, 16, 16);
-						enterprise.nodes.push(branch);
-						
-						enterprise.branchMap[branch.id] = branch;
-						enterprise.links.push({"source":enterprise.internetForEnterprise, "target":branch});
-					}
-					
-				}
-				
-				cm.dispatch({"type":"setCounter", "data":[cm.getStoreValue("OrchestrationReducer", "counter")[0], j]})
 			}
-			//for (var i=1; i<data.nodes.length; i++) {
-			//	data["Enterprise"].links.push({ source: data["Enterprise"].nodes[0], target:data.nodes[i] });
-			//}
-			if (this.isSimulat) {
-				cm.dispatch({"type":"setProvider", "data":this.provider})
-				//this.buildProviderDiagram()
-				cm.dispatch({"type":"setSelectedTab", "data":this.user.role})
-			} else {
-				
-				cm.selectedEnterprise = this.user.company.id
-				self.selectedEnterprise = this.user.company.id;
-				
-				
-				cm.dispatch({"type":"/EnterpriseService/get", "params":[self.user.company.id], "options":{"callback":(data)=>{
-						var enterprise = new Enterprise( data, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
-						self.provider.nodes.push(enterprise);
-						self.provider.enterpriseMap[enterprise.id] = enterprise;
-				  		if (self.provider.internetForProvider===undefined) {
-				  			self.provider.internetForProvider = Object.assign({}, cm.internetForProvider, {"id":new Date().valueOf()})
-				  			self.provider.nodes.push(self.provider.internetForProvider)
-				  			self.provider.enterpriseMap[self.provider.internetForProvider.id] = self.provider.internetForProvider;
+			
+			cm.dispatch({"type":"setCounter", "data":[cm.getStoreValue("OrchestrationReducer", "counter")[0], j]})
+		}
+		//for (var i=1; i<data.nodes.length; i++) {
+		//	data["Enterprise"].links.push({ source: data["Enterprise"].nodes[0], target:data.nodes[i] });
+		//}
+		if (this.isSimulat) {
+			cm.dispatch({"type":"setProvider", "data":this.provider})
+			//this.buildProviderDiagram()
+			cm.dispatch({"type":"setSelectedTab", "data":this.user.role})
+		} else {
+			
+			cm.selectedEnterprise = this.user.company.id
+			self.selectedEnterprise = this.user.company.id;
+			
+			
+			cm.dispatch({"type":"/EnterpriseService/get", "params":[self.user.company.id], "options":{"callback":(data)=>{
+					var enterprise = new Enterprise( data, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
+					self.provider.nodes.push(enterprise);
+					self.provider.enterpriseMap[enterprise.id] = enterprise;
+			  		if (self.provider.internetForProvider===undefined) {
+			  			self.provider.internetForProvider = Object.assign({}, cm.internetForProvider, {"id":new Date().valueOf()})
+			  			self.provider.nodes.push(self.provider.internetForProvider)
+			  			self.provider.enterpriseMap[self.provider.internetForProvider.id] = self.provider.internetForProvider;
+			  		}
+			  		self.provider.links.push({"source":self.provider.internetForProvider, "target":enterprise})
+			  		debugger
+					cm.dispatch({"type":"/BranchService/getAll", "options":{"callback":(data2)=>{
+						if (enterprise.internetForEnterprise===undefined) {
+				  			enterprise.internetForEnterprise = Object.assign({}, cm.internetForEnterprise, {"id":new Date().valueOf()})
+				  			enterprise.nodes.push(enterprise.internetForEnterprise)
 				  		}
-				  		self.provider.links.push({"source":self.provider.internetForProvider, "target":enterprise})
-				  		debugger
-						cm.dispatch({"type":"/BranchService/getAll", "options":{"callback":(data2)=>{
-							if (enterprise.internetForEnterprise===undefined) {
-					  			enterprise.internetForEnterprise = Object.assign({}, cm.internetForEnterprise, {"id":new Date().valueOf()})
-					  			enterprise.nodes.push(enterprise.internetForEnterprise)
-					  		}
-							for (var i=0; i<data2.length;i++) {
-								var b = selEnterprise.nodes[i];
-								selEnterprise.nodes.push(b);
-								selEnterprise.branchMap[b.id] = b;
-								enterprise.links.push({"source":enterprise.internetForEnterprise, "target":b});
-							}
-							cm.dispatch({"type":"setProvider", "data":self.provider})
-							//this.buildProviderDiagram()
-							
-							cm.dispatch({"type":"setSelectedTab", "data":self.user.role})
-						}}});
-					}, "error":(error)=> {
-						
-						var data = {"BusinessName":self.user.company.BusinessName, "id":self.user.company.id, "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"}
-						var enterprise = Object.assign({}, cm.enterpriseCopy, {
-							data: data, id: self.user.company.id});
-						self.provider.nodes.push(enterprise);
-						self.provider.enterpriseMap[enterprise.id] = enterprise;
-						
+						for (var i=0; i<data2.length;i++) {
+							var b = selEnterprise.nodes[i];
+							selEnterprise.nodes.push(b);
+							selEnterprise.branchMap[b.id] = b;
+							enterprise.links.push({"source":enterprise.internetForEnterprise, "target":b});
+						}
 						cm.dispatch({"type":"setProvider", "data":self.provider})
 						//this.buildProviderDiagram()
 						
 						cm.dispatch({"type":"setSelectedTab", "data":self.user.role})
-					
 					}}});
+				}, "error":(error)=> {
+					
+					var data = {"BusinessName":self.user.company.BusinessName, "id":self.user.company.id, "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"}
+					var enterprise = new Branch(data, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
+					self.provider.nodes.push(enterprise);
+					self.provider.enterpriseMap[enterprise.id] = enterprise;
+					
+					cm.dispatch({"type":"setProvider", "data":self.provider})
+					//this.buildProviderDiagram()
+					
+					cm.dispatch({"type":"setSelectedTab", "data":self.user.role})
 				
-			}
+				}}});
 			
-
-		} 
-		
+		}
 	
-		
-		
 		//debugger
 		//cm.dispatch({"type":"/BranchService/get", "params":["3", {"callback":(data)=>{
 		//	console.log("test")
@@ -287,6 +255,7 @@ class _Orchestration3 extends React.Component {
 		cm.unsubscribe("setSelectedEnterprise");		
 		cm.unsubscribe("setSelectedBranch");
 		cm.unsubscribe("hideNodeDetails");
+		cm.dispatch({"type":"setProvider", "data":new Provider()})
 	}
 	
 	animateDetails(isShow) {
@@ -379,13 +348,11 @@ class _Orchestration3 extends React.Component {
 	buildEnterpriseDiagram(id, filter) {
 		id = id||this.props.selectedEnterprise;
 		var enterprise = this.provider.enterpriseMap[id] 
-		this.cMap["Enterprise"] = undefined;
 		this.drawDiagram("Enterprise", enterprise.nodes, enterprise.links, filter);
 	}
 	
 	buildProviderDiagram(filter) {
-		
-		this.cMap["Provider"] = undefined;
+
 		this.drawDiagram("Provider", this.provider.nodes, this.provider.links, filter);
 	}
 	
@@ -407,7 +374,7 @@ class _Orchestration3 extends React.Component {
 		var y0 = nodes[0].yy = height/2+dy;
 		for (var i=1, k=0; i<nodes.length; i++, k++) {
 			
-			var angle = (k / (rings[j][0]/2)) * Math.PI; // Calculate the angle at which the element will be placed.
+			var angle = (k / (Math.min(rings[j][0], nodes.length)/2)) * Math.PI; // Calculate the angle at which the element will be placed.
                                                 // For a semicircle, we would use (i / numNodes) * Math.PI.
 			var x = (radius * Math.cos(angle)) + (width/2); // Calculate the x position of the element.
 			var y = (radius * Math.sin(angle)) + (height/2); // Calculate the y position of the element.
@@ -461,6 +428,7 @@ class _Orchestration3 extends React.Component {
 			  link.line = g.append("line").data([link]).attr("x1", link.source.xx).attr("y1", link.source.yy).attr("x2",
 						link.target.xx).attr("y2", link.target.yy)
 		  }
+		  debugger
 		  for (var i=0; i<nodes.length; i++) {
 			  var node = nodes[i];
 			  
@@ -503,7 +471,7 @@ class _Orchestration3 extends React.Component {
 				.style("fill", function(d) {
 					var selectedTab = cm.getStoreValue("OrchestrationReducer", "selectedTab")
 					if (self.props.selectedBranch==d.id  && selectedTab==="Enterprise"|| self.props.selectedEnterprise==d.id && selectedTab==="Provider") {								
-						return self.selInnerColor
+						return cm.selInnerColor
 					} else {
 						return d.innerColor;
 					}

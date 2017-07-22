@@ -1,3 +1,5 @@
+
+
 export default class Node {
 	constructor(r, xx, yy, fontDy, state, innerColor, iconX, iconY, iconW, iconH, label, icon) {
 		this.label = label;
@@ -13,4 +15,6 @@ export default class Node {
 		this.iconW = iconW;
 		this.iconH = iconH;
 	}
+	
+	
 }

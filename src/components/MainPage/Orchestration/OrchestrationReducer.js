@@ -21,12 +21,22 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
       	  selectedTab: action.data
         })
   	case 'setSelectedBranch':
+  		if (cm.selectedBranch!==undefined) {
+  			cm.nodeMap[cm.selectedBranch].updateUI();
+  		}
+  		cm.selectedBranch = action.data;
+  		
+  		cm.nodeMap[cm.selectedBranch].updateUI();
         return Object.assign({}, state, {
         	selectedBranch: action.data,
         	noDetails:action.noDetails
         })
   	case 'setSelectedEnterprise':
+  		if (cm.selectedEnterprise!==undefined) {
+  			cm.nodeMap[cm.selectedEnterprise].updateUI();
+  		}
   		cm.selectedEnterprise = action.data;
+  		cm.nodeMap[cm.selectedEnterprise].updateUI();
         return Object.assign({}, state, {
         	selectedEnterprise: action.data,
         	noDetails:action.noDetails
@@ -35,6 +45,7 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
   		var provider = Object.assign({}, state.provider);
   		var id = action.data.data.EnterpriseId;
   		provider.enterpriseMap[id] = action.data;
+  		cm.nodeMap[id] = action.data;
   		provider.nodes.push(action.data);
   		if (provider.internetForProvider===undefined) {
   			provider.internetForProvider = Object.assign({}, cm.internetForProvider, {"id":new Date().valueOf()})
@@ -49,6 +60,7 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
   		var provider = Object.assign({}, state.provider);
   		var enterprise = provider.enterpriseMap[state.selectedEnterprise];
   		enterprise.branchMap[action.data.data.BranchId] = action.data;
+  		cm.nodeMap[action.data.data.BranchId] = action.data;
   		enterprise.nodes.push(action.data);
   		if (enterprise.internetForEnterprise===undefined) {
   			enterprise.internetForEnterprise = Object.assign({}, cm.internetForEnterprise, {"id":new Date().valueOf()})
@@ -63,6 +75,7 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
   		var provider = Object.assign({}, state.provider);
   		var id = state.selectedEnterprise;
   		delete provider.enterpriseMap[id];
+  		delete cm.nodeMap[id];
   		var foundIndex = -1;
   		for (var i=0; i<provider.nodes.length; i++) {
   			var enterprise = provider.nodes[i]
@@ -95,6 +108,7 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
   		var enterprise = provider.enterpriseMap[state.selectedEnterprise];
   		var id = state.selectedBranch;
   		delete enterprise.branchMap[id];
+  		delete cm.nodeMap[id];
   		var foundIndex = -1;
   		for (var i=0; i<enterprise.nodes.length; i++) {
   			var branch = enterprise.nodes[i]

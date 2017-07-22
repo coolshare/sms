@@ -38,6 +38,7 @@ class CommunicationManager {
 		this.subscribeMap = {};
 		this.routeData = routeData;
 		this.baseUrl = "http://192.168.10.225:5000/mano/public/v1/"
+		this.nodeMap = {}
 	}
 	
 	init(store) {	

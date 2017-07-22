@@ -45,7 +45,7 @@ class _Orchestration3 extends React.Component {
 		this.provider = this.props.provider===null?new Provider():this.props.provider;
 		this.noDrag = false;
 		this.innerColor = "#E1E1E1";
-		this.selInnerColor = "#1133E4";
+		cm.selInnerColor = "#1133E4";
 		this.detailsW = 260;
 		this.detailShowState = false;
 		this.cMap = {"Provider":undefined, "Enterprise":undefined}
@@ -106,7 +106,7 @@ class _Orchestration3 extends React.Component {
 			}
 			
 			if (self.cMap["Provider"][selectedEnterprise]!==undefined) {
-				self.cMap["Provider"][selectedEnterprise][0].style.fill= self.selInnerColor
+				self.cMap["Provider"][selectedEnterprise][0].style.fill= cm.selInnerColor
 			}
 			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
 				this.animateDetails(true)
@@ -121,7 +121,7 @@ class _Orchestration3 extends React.Component {
 				c[0].style.fill = self.innerColor
 			}
 			if (self.cMap["Enterprise"][selectedBranch]!==undefined) {
-				self.cMap["Enterprise"][selectedBranch][0].style.fill= self.selInnerColor
+				self.cMap["Enterprise"][selectedBranch][0].style.fill= cm.selInnerColor
 			}
 			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
 				this.animateDetails(true)
@@ -545,7 +545,7 @@ class _Orchestration3 extends React.Component {
 			.style("fill", function(d) {
 				var selectedTab = cm.getStoreValue("OrchestrationReducer", "selectedTab")
 				if (self.props.selectedBranch==d.id  && selectedTab==="Enterprise"|| self.props.selectedEnterprise==d.id && selectedTab==="Provider") {								
-					return self.selInnerColor
+					return cm.selInnerColor
 				} else {
 					return d.innerColor;
 				}
