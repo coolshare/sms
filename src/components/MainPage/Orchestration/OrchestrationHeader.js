@@ -33,11 +33,17 @@ class _OrchestrationHeader extends React.Component {
 		      cancelLabel: 'Cancel',                             // Text button cancel 
 		      onConfirm: () => {
 		    	  	if (this.props.selectedTab==="Provider") {
-			  			cm.dispatch({"type":"removeEnterprise"})
-			  			cm.dispatch({"type":"setSelectedEnterprise"})
+		    	  		cm.dispatch({"type":"/EnterpriseService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedEnterprise")], "options":{"callback":(data)=>{
+		    	  			cm.dispatch({"type":"removeEnterprise"})
+				  			cm.dispatch({"type":"setSelectedEnterprise"})
+		    	  		}}})
+			  			
 			  		} else if (this.props.selectedTab==="Enterprise") {
-			  			cm.dispatch({"type":"removeBranch"})
-			  			cm.dispatch({"type":"setSelectedBranch"})
+			  			cm.dispatch({"type":"/BranchService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedBranch")], "options":{"callback":(data)=>{
+			  				cm.dispatch({"type":"removeBranch"})
+				  			cm.dispatch({"type":"setSelectedBranch"})
+		    	  		}}})
+			  			
 			  		}
 		    	  	cm.dispatch({"type":"hideNodeDetails"})
 		      },    // Action after Confirm 

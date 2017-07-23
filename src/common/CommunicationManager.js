@@ -9,7 +9,7 @@ import ENGListDetails from '../components/MainPage/Dashboard/ENGList/ENGListDeta
 import ENGAlertsDetails from '../components/MainPage/Dashboard/ENGAlerts/ENGAlertsDetails'
 import ResouceUsageDetails from '../components/MainPage/Dashboard/ResouceUsage/ResouceUsageDetails'
 //import Orchestration from '../components/MainPage/Orchestration/Orchestration2'
-import Orchestration from '../components/MainPage/Orchestration/Orchestration4'
+import Orchestration from '../components/MainPage/Orchestration/Orchestration'
 import AddEnterprise from '../components/MainPage/Orchestration/AddEnterprise'
 import AddBranch from '../components/MainPage/Orchestration/AddBranch'
 import AddLink from '../components/MainPage/Orchestration/AddLink'
@@ -37,7 +37,7 @@ class CommunicationManager {
 		this.stack = [];
 		this.subscribeMap = {};
 		this.routeData = routeData;
-		this.baseUrl = "http://192.168.10.225:5000/mano/public/v1/"
+		this.baseUrl = "http://192.168.7.231:5000/mano/public/v1/"
 		this.nodeMap = {}
 	}
 	

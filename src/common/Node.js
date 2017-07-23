@@ -1,4 +1,4 @@
-
+import cm from './CommunicationManager'
 
 export default class Node {
 	constructor(r, xx, yy, fontDy, state, innerColor, iconX, iconY, iconW, iconH, label, icon) {
@@ -16,5 +16,18 @@ export default class Node {
 		this.iconH = iconH;
 	}
 	
-	
+	updateSelected(isSelected) {
+		if (this.c2) {
+			this.c2.style("fill", function(d) {				
+				if (isSelected) {								
+					return cm.selInnerColor
+				} else {
+					return d.innerColor;
+				}
+				
+			})  
+		}
+		
+		
+	}
 }

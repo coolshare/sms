@@ -12,7 +12,7 @@ export default class Service {
 	
 	registerTypes() {
 		var self = this;
-		
+
 		//console.log("cm="+cm)
 		for (var i=0; i<self.APIs.length; i++) {
 			let mn = self.APIs[i];

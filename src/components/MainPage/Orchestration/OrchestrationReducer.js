@@ -2,16 +2,12 @@ import cm from '../../../common/CommunicationManager'
 import Utils from '../../../common/Utils'
 import Provider from '../../../common/models/Provider'
 
-const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter':[0, 0], 'selectedBranch':null, 'selectedEnterprise':null, 'provider':new Provider(),'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
+const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'selectedBranch':null, 'selectedEnterprise':null, 'provider':new Provider(),'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
   switch (action.type) {
   	case 'setSearch':
       return Object.assign({}, state, {
     	  search: action.data
       })
-  	case 'setCounter':
-        return Object.assign({}, state, {
-      	  counter: action.data
-        })
     case 'setProvider':
       return Object.assign({}, state, {
     	  provider: action.data
@@ -21,22 +17,23 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'counter
       	  selectedTab: action.data
         })
   	case 'setSelectedBranch':
-  		if (cm.selectedBranch!==undefined) {
-  			cm.nodeMap[cm.selectedBranch].updateUI();
+  		if (cm.selectedBranch) {
+  			cm.nodeMap[cm.selectedBranch].updateSelected(false);
   		}
   		cm.selectedBranch = action.data;
   		
-  		cm.nodeMap[cm.selectedBranch].updateUI();
+  		cm.nodeMap[cm.selectedBranch].updateSelected(true);
         return Object.assign({}, state, {
         	selectedBranch: action.data,
         	noDetails:action.noDetails
         })
   	case 'setSelectedEnterprise':
-  		if (cm.selectedEnterprise!==undefined) {
-  			cm.nodeMap[cm.selectedEnterprise].updateUI();
+  		console.log("cm.selectedEnterprise="+cm.selectedEnterprise)
+  		if (cm.selectedEnterprise) {	
+  			cm.nodeMap[cm.selectedEnterprise].updateSelected(false);
   		}
   		cm.selectedEnterprise = action.data;
-  		cm.nodeMap[cm.selectedEnterprise].updateUI();
+  		cm.nodeMap[cm.selectedEnterprise].updateSelected(true);
         return Object.assign({}, state, {
         	selectedEnterprise: action.data,
         	noDetails:action.noDetails

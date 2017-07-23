@@ -8,8 +8,7 @@ class _EnterpriseService extends _RemoteService {
 		
 	}
 	getAll = (action) => {	
-		var options;
-		[options] = action.params;
+		var options = action.options||{};
 		options.action = action;
 		this._get(cm.baseUrl+ this.key, options);
 	};

@@ -7,7 +7,7 @@ export class _RemoteService extends Service {
 	
 	constructor(name, key, APIs) {
 		super(name, ["get", "getThroughProxy", "getSequencially", "getMulti",
-			"post", "put", "remove"].concat(APIs));
+			"create", "edit", "remove"].concat(APIs));
 		this.key = key;
 	}
 	getThroughProxy = (url, options, key, result, requests, len) => {
@@ -133,9 +133,9 @@ export class _RemoteService extends Service {
 		    ExceptionService.handle(error);
 		  });
 	}
-	_remove = (url, options) => {
+	_remove = (url, id, options) => {
 		let self = this;
-		axios.delete(url+"/"+id)
+		axios.delete(url+id+"/")
 		  .then(function (response) {
 			  if (response.status >= 400) {
 		          throw new Error("Bad response from server");
@@ -171,7 +171,7 @@ export class _RemoteService extends Service {
 			
 			url += cm.selectedEnterprise +"/"
 		}
-		this._post(url +this.key+ "/", action.params[0], options);	
+		this._post(url +this.key, action.params[0], options);	
 	}
 	edit =(action) => {
 		var options = action.options||{};
@@ -191,7 +191,7 @@ export class _RemoteService extends Service {
 			
 			url += cm.selectedEnterprise+"/"
 		}
-		this._put(url + this.key+ "/", action.params[0], options);			
+		this._remove(url + this.key+ "/", action.params[0], options);			
 	}
 	
   }

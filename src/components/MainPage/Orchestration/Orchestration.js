@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux'
 import * as d3 from "d3";
 import cm from '../../../common/CommunicationManager'
-import OrchestrationDetail from './OrchestrationDetail'
+import OrchestrationBranchDetail from './OrchestrationBranchDetail'
+import OrchestrationEnterpriseDetail from './OrchestrationEnterpriseDetail'
 import OrchestrationHeader from './OrchestrationHeader'
 import OrchestrationFloatMenu from './OrchestrationFloatMenu'
 import Enterprise from '../../../common/models/Enterprise'
@@ -13,14 +14,17 @@ import {InternetNode, HostNode, PodNode} from './DiagramElements'
 import Header from '../../../components/Header/Header'
 import Provider from '../../../common/models/Provider'
 
+
 const stateColors = ["green", "yellow", "orange", "pink", "red"]
 
-class _Orchestration2 extends React.Component {
+class _Orchestration extends React.Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
-			data:null
+			detailX:3000
 		}
+		this.isSimulat = false;
 		this.canvasX = 10;
 		this.canvasY = 15;
 		this.diagramW = 1800;
@@ -38,91 +42,322 @@ class _Orchestration2 extends React.Component {
 		this.collectNodes = {"Container":this.handleProvider, "Enterprise":this.handleEnterprise};
 		this.enterpriseX = 0;
 		this.enterpriseY = 0;
-		this.provider = new Provider();
+		this.provider = this.props.provider===null?new Provider():this.props.provider;
 		this.noDrag = false;
+		this.innerColor = "#E1E1E1";
+		cm.selInnerColor = "#1133E4";
+		this.detailsW = 260;
+		this.detailShowState = false;
+		
 	}
 	componentDidMount() {
 		let self = this;
-		cm.subscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider"], (action)=>{
-			var tab = cm.getStoreValue("OrchestrationReducer", "selectedTab");
-			var data = cm.getStoreValue("OrchestrationReducer","provider")
-			if (tab==="Provider") {
-				self.buildProviderDiagram()
-			} else if (tab==="Enterprise") {
-				if (self.props.selectedEnterprise!==null) {
-					self.buildEnterpriseDiagram()
-				}				
+		
+		
+		this.user = cm.getStoreValue("HeaderReducer", "user");
+		
+		cm.dispatch({"type":"updateMainContainerSize", "data":{"w":this.refs.orchestrationMain.clientWidth, "h":this.refs.orchestrationMain.clientHeight}})
+		cm.subscribe(["switchTopLink", "setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink",/* "setSelectedEnterprise", "setSelectedBranch", */"removeEnterprise", "removeBranch"], (action)=>{
+			if (cm.getStoreValue("HeaderReducer", "currentLink")!=="Orchestration") {
+				return;
 			}
+		
+			
+			var provider = cm.getStoreValue("OrchestrationReducer","provider")
+			var filter = cm.getStoreValue("OrchestrationReducer", "search");
+			filter = filter.trim()===""?undefined:filter.toLowerCase();
+			console.log("role="+cm.role)
+			if (self.user.role==="Provider") {
+				var tab = cm.getStoreValue("OrchestrationReducer", "selectedTab");
+				if (tab==="Provider") {
+					self.buildProviderDiagram(filter, true)
+				} else if (tab==="Enterprise") {
+					if (self.props.selectedEnterprise!==null) {
+						var selectedEnterprise = provider.enterpriseMap[self.props.selectedEnterprise];
+						if (selectedEnterprise.dirty) {
+							cm.dispatch({"type":"/BranchService/getAll", "params":[self.props.selectedEnterprise], "options":{"callback":(data)=>{
+								if (selectedEnterprise.internetForEnterprise===undefined) {
+									selectedEnterprise.internetForEnterprise = new Branch({"BranchId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);	
+						  			selectedEnterprise.nodes.push(selectedEnterprise.internetForEnterprise)
+						  		}
+							
+								for (var i=0; i<data.length; i++) {
+									var branch = new Branch(data[i], 20, 100, 100, 35, Math.floor(Math.random()*5), this.innerColor, -8, -8, 16, 16)
+									selectedEnterprise.nodes.push(branch);
+									
+									selectedEnterprise.branchMap[branch.id] = branch;
+									cm.nodeMap[branch.id] = branch;
+									selectedEnterprise.links.push({"source":selectedEnterprise.internetForEnterprise, "target":branch});
+								}
+								selectedEnterprise.dirty = false;
+								self.buildEnterpriseDiagram(undefined, filter, true)
+							}}})
+						} else {
+							self.buildEnterpriseDiagram(undefined, filter, true)
+						}
+					
+						
+					}				
+				}
+			} else if (self.user.role==="Enterprise") {
+				
+				cm.dispatch({"type":"setSelectedEnterprise", "data":self.user.company.id, "noDetails":true})
+				self.buildEnterpriseDiagram(self.user.company.id, filter)
+			}
+			
 		})
+		
+		cm.subscribe("setSelectedEnterprise", (action)=>{
+		
+			var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "selectedEnterprise");
+
+			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
+				this.animateDetails(true)
+			}
+			
+			
+		});
+		cm.subscribe("setSelectedBranch", (action)=>{
+			var selectedBranch = cm.getStoreValue("OrchestrationReducer", "selectedBranch");
+
+			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
+				this.animateDetails(true)
+			}
+		});
+		
+		cm.subscribe("hideNodeDetails", (action)=>{
+			this.animateDetails(false)
+		});
+		
 		var internetNode = {"BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}
-		if (this.props.provider===null) {
-			var dummyEnterprises = [{"BusinessName":"Walmart", "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
+
+		var dummyEnterprises = [];
+		
+		var ddd = {}
+		if (this.isSimulat) {
+			dummyEnterprises = [{"BusinessName":this.user.company.BusinessName, "EnterpriseId":this.user.company.id, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"Target", "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"BurgerKing", "ContactName":"BurgerKing Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"phone", "Address":"555 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"Frys", "ContactName":"Frys Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"166623 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"},
 			                            {"BusinessName":"BestBuy", "ContactName":"BestBuy Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"17723 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"}];
 			
-
-			for (var i=0; i<dummyEnterprises.length; i++) {
-				dummyEnterprises[i].id = new Date().valueOf()+i
-			}
 			
-			internetNode.id = new Date().valueOf()+9999;
-			var internetForProvider = new Enterprise( internetNode, 5, 50, 50 , 35, 0, "#E1E1E1", -24, -24, 48, 48);
-			this.provider.nodes.push(internetForProvider)
-			this.provider.enterpriseMap[internetForProvider.id] = internetForProvider;
 			for (var i=0; i<dummyEnterprises.length; i++) {
-				var enterprise = new Enterprise( dummyEnterprises[i], 20, 100+60*i, 100 , 35, 0, "#E1E1E1", -8, -8, 16, 16);
+				
+				if (dummyEnterprises[i].EnterpriseId!==undefined) {
+					continue;
+				}
+				dummyEnterprises[i].EnterpriseId = new Date().valueOf()+Math.floor(Math.random()*99999)
+			}
+		}
+		
+		
+		
+		if (this.isSimulat) {
+			
+			this.provider.internetForProvider = new Enterprise({"EnterpriseId":new Date().valueOf()+88, "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48)
+			this.provider.nodes.push(this.provider.internetForProvider)
+			this.provider.enterpriseMap[this.provider.internetForProvider.id] = this.provider.internetForProvider;
+		
+			for (var i=0; i<dummyEnterprises.length; i++) {
+				
+				var data = dummyEnterprises[i];
+				var enterprise = new Enterprise(data, 20, 100, 100, 35, Math.floor(Math.random()*5), this.innerColor, -8, -8, 16, 16)
 				this.provider.nodes.push(enterprise);
 				this.provider.enterpriseMap[enterprise.id] = enterprise;
+				cm.nodeMap[enterprise.id] = enterprise;
+				ddd[enterprise.id] = enterprise;
 			}
-			
-			
-			cm.dispatch({"type":"setCounter", "data":[i, cm.getStoreValue("OrchestrationReducer", "counter")[1]]})
-			
-			
 			
 			
 			for (var e in this.provider.enterpriseMap) {
 				var enterprise = this.provider.enterpriseMap[e];
-				if (internetForProvider.id===enterprise.id) {
+				if (this.provider.internetForProvider.id===enterprise.id) {
 					continue;
 				}
-				this.provider.links.push({"source":internetForProvider, "target":enterprise});
+				this.provider.links.push({"source":this.provider.internetForProvider, "target":enterprise});
 
-				internetNode.id = new Date().valueOf()+9999;
-				var internetForEnterprise = new Enterprise( internetNode, 5, 50, 50 , 35, 0, "#E1E1E1", -24, -24, 48, 48);
-				
-				enterprise.nodes.push(internetForEnterprise)
+
+				enterprise.internetForEnterprise =  new Branch({"BranchId":new Date().valueOf()+99, "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
+
+				enterprise.nodes.push(enterprise.internetForEnterprise)
 				
 				//var n = this.provider.nodes[i];
 				
 				//var list = enterprise.nodes;
 				var max = 3;//+Math.floor(Math.random()*5);
 				for (var j=0; j<max; j++) {
-					var data2 = {"BusinessName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
-					var branch = new Branch(data2, 20, 100, 100+60*j, 35, 0, "#E1E1E1", -8, -8, 16, 16);
+					var data2 = {"BranchId":new Date().valueOf()+Math.floor(Math.random()*99999), "BusinessName":enterprise.data.BusinessName+"Branch"+j, "ContactName":"Jackson Wang", "Phone":"408-333-4444", "Email":"jwang@aaa.com", "AlertMethod":"email", "Address":"123 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/gcp.png"};
+					var branch = new Branch(data2, 20, 100, 100, 35, Math.floor(Math.random()*5), this.innerColor, -8, -8, 16, 16)
 					enterprise.nodes.push(branch);
 					
 					enterprise.branchMap[branch.id] = branch;
-					enterprise.links.push({"source":internetForEnterprise, "target":branch});
+					cm.nodeMap[branch.id] = branch;
+					ddd[branch.id] = branch;
+					enterprise.links.push({"source":enterprise.internetForEnterprise, "target":branch});
 				}
 				
 			}
-			cm.dispatch({"type":"setCounter", "data":[cm.getStoreValue("OrchestrationReducer", "counter")[0], j]})
-			//for (var i=1; i<data.nodes.length; i++) {
-			//	data["Enterprise"].links.push({ source: data["Enterprise"].nodes[0], target:data.nodes[i] });
-			//}
-		
+
+		}
+		//for (var i=1; i<data.nodes.length; i++) {
+		//	data["Enterprise"].links.push({ source: data["Enterprise"].nodes[0], target:data.nodes[i] });
+		//}
+		if (this.isSimulat) {
 			cm.dispatch({"type":"setProvider", "data":this.provider})
-			this.buildProviderDiagram()
-		} 
+			//this.buildProviderDiagram()
+			cm.dispatch({"type":"setSelectedTab", "data":this.user.role})
+		} else {
+			if (self.props.selectedTab==="Provider") {
+				self.loadProvider();
+			} else if (self.props.selectedTab==="Enterprise") {
+				self.loadEnterPrise()
+			}
+			
+			
+		}
+	
+		//debugger
+		//cm.dispatch({"type":"/BranchService/get", "params":["3", {"callback":(data)=>{
+		//	console.log("test")
+		//}}]});
+	}
+	loadProvider = () => {
+		var self = this;
+	
+		cm.dispatch({"type":"/EnterpriseService/getAll", "options":{"callback":(data)=>{
+			if (self.provider.internetForProvider===undefined) {
+	  			self.provider.internetForProvider = new Enterprise({"EnterpriseId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);		
+	  			self.provider.nodes.push(self.provider.internetForProvider)
+	  			self.provider.enterpriseMap[self.provider.internetForProvider.id] = self.provider.internetForProvider;
+	  		}
+		
+			for (var i=0; i<data.length;i++) {
+				var e = new Enterprise(data[i], 20, 100, 100, 35, Math.floor(Math.random()*5), this.innerColor, -8, -8, 16, 16)
+				self.provider.nodes.push(e);
+				self.provider.enterpriseMap[e.id] = e;
+				cm.nodeMap[e.id] = e;
+				self.provider.links.push({"source":self.provider.internetForProvider, "target":e});
+			}
+			cm.dispatch({"type":"setProvider", "data":self.provider})
+			//this.buildProviderDiagram()
+			
+			cm.dispatch({"type":"setSelectedTab", "data":self.user.role})
+		}}});
+	}
+	loadEnterPrise = () => {
+		cm.selectedEnterprise = this.user.company.id
+		self.selectedEnterprise = this.user.company.id;
 		
 		
+		cm.dispatch({"type":"/EnterpriseService/get", "params":[self.user.company.id], "options":{"callback":(data)=>{
+			var enterprise = new Enterprise( data, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
+			self.provider.nodes.push(enterprise);
+			self.provider.enterpriseMap[enterprise.id] = enterprise;
+			cm.nodeMap[enterprise.id] = enterprise;
+	  		if (self.provider.internetForProvider===undefined) {
+	  			self.provider.internetForProvider = new Enterprise({"EnterpriseId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);		
+	  			self.provider.nodes.push(self.provider.internetForProvider)
+	  			self.provider.enterpriseMap[self.provider.internetForProvider.id] = self.provider.internetForProvider;
+	  		}
+	  		self.provider.links.push({"source":self.provider.internetForProvider, "target":enterprise})
+	  		
+			cm.dispatch({"type":"/BranchService/getAll", "options":{"callback":(data2)=>{
+				if (enterprise.internetForEnterprise===undefined) {
+		  			enterprise.internetForEnterprise = new Branch({"BranchId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);	
+		  			enterprise.nodes.push(enterprise.internetForEnterprise)
+		  		}
+				for (var i=0; i<data2.length;i++) {
+					var b = new Branch(data2[i], 20, 100, 100, 35, Math.floor(Math.random()*5), this.innerColor, -8, -8, 16, 16)
+					enterprise.nodes.push(b);
+					enterprise.branchMap[b.id] = b;
+					cm.nodeMap[b.id] = b;
+					enterprise.links.push({"source":enterprise.internetForEnterprise, "target":b});
+				}
+				cm.dispatch({"type":"setProvider", "data":self.provider})
+				//this.buildProviderDiagram()
+				
+				cm.dispatch({"type":"setSelectedTab", "data":self.user.role})
+			}}});
+		}, "error":(error)=> {
+			
+			var data = {"BusinessName":self.user.company.BusinessName, "id":self.user.company.id, "ContactName":"Mark Wang", "Phone":"408-111-4444", "Email":"mwang@aaa.com", "AlertMethod":"email", "Address":"222 abc st, sunnyvale, CA 95111", "Icon":"http://coolshare.com/temp/aws.png"}
+			var enterprise = new Branch(data, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
+			self.provider.nodes.push(enterprise);
+			cm.nodeMap[enterprise.id] = enterprise;
+			self.provider.enterpriseMap[enterprise.id] = enterprise;
+			
+			cm.dispatch({"type":"setProvider", "data":self.provider})
+			//this.buildProviderDiagram()
+			
+			cm.dispatch({"type":"setSelectedTab", "data":self.user.role})
+		
+		}}});
 	}
 	
-	handleNodeClick(d) {	
+	componentWillUnmount() {
+		cm.unsubscribe(["setSelectedTab", "addEnterprise", "addBranch", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink", /*"setSelectedEnterprise", "setSelectedBranch", */"removeEnterprise", "removeBranch"]);
+		cm.unsubscribe("setSelectedEnterprise");		
+		cm.unsubscribe("setSelectedBranch");
+		cm.unsubscribe("hideNodeDetails");
+		cm.dispatch({"type":"setProvider", "data":new Provider()})
+	}
+	
+	animateDetails(isShow) {
+		if (this.detailShowState===isShow || this.isDBClick) {	
+			return;
+		}
+		this.detailShowState = isShow; 
+		var self = this;
+		
+		if (isShow) {			
+			this.setState({"detailX":this.props.mainContainerSize.w +50})
+			//this.refs.detailPane.style.display = "block"
+		
+			this.dx = -11;
+			this.limit = this.props.mainContainerSize.w - this.detailsW;
+		} else {
+			this.dx = 11;
+			//this.refs.detailPane.style.display = "none"
+			this.limit = this.props.mainContainerSize.w +50;
+		}
+		this.doAnimateDetails(isShow)
+	}
+	
+	doAnimateDetails(isShow) {
+		var self = this;
+		if (isShow) {
+			if (self.refs.detailPane.offsetLeft<this.limit) {
+				return;
+			}
+			
+		} else {
+			if (self.refs.detailPane.offsetLeft>this.limit) {
+				return;
+			}
+		}
+		self.setState({"detailX":this.state.detailX+self.dx})
+
+		setTimeout(()=>{
+			self.doAnimateDetails(isShow)
+		
+		}, 10)
+	}
+	
+	handleNodeDBClick(d) {
+		if (d.label==="") {
+			return;
+		}
+		var self = this;
 		this.noDrag = true;
+		this.isDBClick = true;
+		setTimeout(()=>{
+			self.setState({"detailX":self.props.mainContainerSize.w +50})
+			self.detailShowState = false
+		}, 0)
+		if (self.scTimer) {
+			clearTimeout(self.scTimer)
+		}
 		if (this.dragTimer) {
 			console.log("end drag")
 			clearTimeout(this.dragTimer);
@@ -134,151 +369,238 @@ class _Orchestration2 extends React.Component {
 			
 		}
 	}
-
+	handleNodeClick(d) {	
+		if (d.label==="") {
+			return;
+		}
+		this.noDrag = true;
+		if (this.dragTimer) {
+			//console.log("end drag")
+			clearTimeout(this.dragTimer);
+		}
+		self.scTimer = setTimeout(()=>{
+			if (d.type==="Enterprise") {
+				cm.dispatch({"type":"setSelectedEnterprise", "data":d.id})
+			} else if (d.type==="Branch") {
+				cm.dispatch({"type":"setSelectedBranch", "data":d.id})
+			}
+		
+		}, 500)
+		
+		
+	}
 	
-	buildEnterpriseDiagram(id) {
+	buildEnterpriseDiagram(id, filter, forceReload) {
 		id = id||this.props.selectedEnterprise;
 		var enterprise = this.provider.enterpriseMap[id] 
-		this.drawDiagram(enterprise.nodes, enterprise.links);
+		this.drawDiagram("Enterprise", enterprise.nodes, enterprise.links, filter, forceReload);
 	}
 	
-	buildProviderDiagram() {
-		this.drawDiagram(this.provider.nodes, this.provider.links);
-	}
-	
-	drawDiagram(nodes2, links2) {
-		var self = this;
-		
-		var width = 960,
-	    height = 500;
+	buildProviderDiagram(filter, forceReload) {
 
-		var color = d3.scaleOrdinal(d3.schemeCategory20);
+		this.drawDiagram("Provider", this.provider.nodes, this.provider.links, filter, forceReload);
+	}
 	
-		var nodes = [],
-		    links = [];
-		var collide = [60, 300, 50];
-		if (links2.length===0) {
-			collide = [10, 200, 20];
+	drawDiagram(tab, nodes, links, filter, forceReload) {
+		
+		
+		var self = this;
+		if (self.svg!==undefined) {
+			if (forceReload) {
+				d3.selectAll("svg").remove();
+				self.svg=undefined
+			} else {
+				return
+			}
+		
+			
 		}
-		var simulation = d3.forceSimulation()
-		    .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(collide[2]))
-		    .force("charge", d3.forceManyBody())
-		    
-		    .force("collide", d3.forceCollide(collide[0]))
-		    .force("charge", d3.forceManyBody())
-		    .force("center", d3.forceCenter(collide[1], collide[1]));
-	
-		var svg = d3.select("#svg").append("svg")
+		if (nodes.length===0) {
+			return;
+		}
+		var dx = 200, dy = 200;	
+		
+		var rings = [[20, 100],[30, 200],[50, 300],[80, 400],[100, 500]]
+		var j = 0;
+
+		
+		var radius = rings[j][1];
+		var width = (radius * 2) + 50;
+        var height = (radius * 2) + 50;
+        var x0 = nodes[0].xx = width/2+dx;
+		var y0 = nodes[0].yy = height/2+dy;
+		for (var i=1, k=0; i<nodes.length; i++, k++) {
+			
+			var angle = (k / (Math.min(rings[j][0], nodes.length)/2)) * Math.PI; // Calculate the angle at which the element will be placed.
+                                                // For a semicircle, we would use (i / numNodes) * Math.PI.
+			var x = (radius * Math.cos(angle)) + (width/2); // Calculate the x position of the element.
+			var y = (radius * Math.sin(angle)) + (height/2); // Calculate the y position of the element.
+			nodes[i].xx = x+dx;
+			nodes[i].yy = y+dy;
+			if (k>rings[j][0]) {
+				k = 0
+				j++;
+				radius = rings[j][1];
+				width = (radius * 2) + 50;
+		        height = (radius * 2) + 50;
+			}
+		}
+
+		var width = 1200, height = 1200;
+		self.svg = d3.select("#svg").append("svg")
 		    .attr("width", width)
-		    .attr("height", height);
-	
-		var node = svg.selectAll(".node"),
-		    link = svg.selectAll(".link");
-	
-		// 1. Add three nodes and three links.
-		//var a = {id: "a", "label":"a"}, b = {id: "b", "label":"b"}, c = {id: "c", "label":"c"}, d = {id: "d", "label":"d"};
-		//var a = nodes2[1], b = nodes2[2], c = nodes2[3], d = nodes2[4];
-		setTimeout(function() {
-		  for (var i=0; i<nodes2.length; i++) {
-			  nodes.push(nodes2[i])
-		  }
-		  for (var i=0; i<links2.length; i++) {
-			  links.push(links2[i])
-		  }
-		  //nodes.push(a, b, c, d);
-		  //links.push({source: a, target: b}, {source: a, target: c}, {source: d, target: c});
-		  start();
-		}, 0);
-		//setTimeout(function() {
-		//	nodes.push(nodes2[nodes2.length-1]);
-		//  start();
-		//}, 3000);
-		// 2. Remove node B and associated links.
-		setTimeout(function() {
-			links.push({source: nodes[1], target: nodes[2]});
-		  start();
-		}, 5000);
-	
-		/*// Add node B back.
-		setTimeout(function() {
-		  var a = nodes[0], b = {id: "b"}, c = nodes[1];
-		  nodes.push(b);
-		  links.push({source: a, target: b}, {source: b, target: c});
-		  start();
-		}, 6000);
-	*/
-		function start() {
-		  link = link.data(links, function(d) { return d.source.id + "-" + d.target.id; })
-		          .enter().append("line")
-		          .merge(link)
-		          .attr("class", "link");
-	
-		  link.exit().remove();
-	
-		  node = node.data(nodes, function(d) { return d.id;})
-		    .enter().append("circle")
-			.attr("r", function(d){return d.r;})
-			.style("stroke-width", 1)    // set the stroke width
-			.style("stroke", "black")  
-			.style("cursor", "pointer")  
-			.style("fill", function(d) {return stateColors[d.state]})
-			.on("click", (d)=>{
-				self.handleNodeClick(d)
-			})
-			.on("mousedown", (d)=>{
-				
-				self.handleMouseDown(d)
-			})
-			.on("mouseup", (d)=>{
-				self.handleMouseUp()
-			})
-			.on("mouseover", (d)=>{
-				self.handleMouseOver(d);
-			});
-	
-		  node.exit().remove();
-	
-		  simulation
-		    .nodes(nodes)
-		    .on("tick", tick);
-	
-		  simulation.force("link")
-		    .links(links);
-		}
-	
-		function tick() {
-		  node.attr("cx", function(d) { return d.x; })
-		      .attr("cy", function(d) { return d.y; })
-	
-		  link.attr("x1", function(d) { return d.source.x; })
-		      .attr("y1", function(d) { return d.source.y; })
-		      .attr("x2", function(d) { return d.target.x; })
-		      .attr("y2", function(d) { return d.target.y; });
-		}
-	
+		    .attr("height", height)
+		    .on("mousemove", function() {
+		    	  if (self.dragLine!==undefined) {
+		    		  var e = d3.event;
+		    		  
+		    		  self.dragLine.attr("x1",self.dragX)
+		                 .attr("y1",self.dragY)
+		                 .attr("x2",e.clientX)
+		                 .attr("y2",e.clientY-110);
+		    		  //console.log("x="+e.clientX+" y="+e.clientY)
+		    		  //self.dragLine.attr("transform", "translate(" + e.clientX + "," + e.clientY + ")")
+		    	  }
+		      })
+		      .on("mouseup", (d)=>{
+					self.handleMouseUp(d);
+					//self.setState({"detailX":self.props.mainContainerSize.w+self.detailsW});
+					if (!self.involveNode) {						
+						self.animateDetails(false)
+					}
+					self.involveNode = false;
+				})
+		self.update(nodes, links, filter);
 	}
 	
 	
+
+	update(nodes, links, filter) {
+		  var self = this;
+		  
+		  var filteredMap = {};
+		  for (var i=0; i<links.length; i++) {
+			  var link = links[i]
+			  var g = link.g = self.svg.append("g").attr("class", "link")
+			  link.line = g.append("line").data([link]).attr("x1", link.source.xx).attr("y1", link.source.yy).attr("x2",
+						link.target.xx).attr("y2", link.target.yy)
+		  }
+		  
+		  for (var i=0; i<nodes.length; i++) {
+			  var node = nodes[i];
+			  
+			  var g = node.g = self.svg.append("g").attr("class", "node").attr("width", 2*node.r).attr("height", 2*node.r)
+			  .attr("transform", "translate(" + node.xx + "," + node.yy + ")")
+			  
+			  node.c1 = g.append("circle")
+			  	.data([node])
+				.attr("r", function(d){return d.r;})
+				
+				.style("stroke-width", 1)    // set the stroke width
+				.style("stroke", "black")  
+				.style("cursor", "pointer")  
+				.style("fill", function(d) {return stateColors[d.state]})
+				.on("click", (d)=>{
+					self.involveNode = true;
+					self.handleNodeClick(d)
+				})
+				.on("dblclick", (d)=>{
+					self.involveNode = true;
+					self.handleNodeDBClick(d)
+				})
+				.on("mousedown", (d)=>{
+					
+					self.involveNode = true;
+					self.handleMouseDown(d)
+				})
+				.on("mouseup", (d)=>{
+					self.involveNode = true;
+					self.handleMouseUp()
+				})
+				.on("mouseover", (d)=>{
+					self.involveNode = true;
+					self.handleMouseOver(d);
+				});
 	
+			  node.c2 = g.append("circle")
+			    .data([node])
+				.attr("r", function(d){return d.r-5;})
+				.style("fill", function(d) {
+					var selectedTab = cm.getStoreValue("OrchestrationReducer", "selectedTab")
+					if (self.props.selectedBranch==d.id  && selectedTab==="Enterprise"|| self.props.selectedEnterprise==d.id && selectedTab==="Provider") {								
+						return cm.selInnerColor
+					} else {
+						return d.innerColor;
+					}
+					
+				})  
+				.style("cursor", "pointer")
+				.on("click", (d)=>{
+					self.involveNode = true;
+					self.handleNodeClick(d)
+				})
+				.on("dblclick", (d)=>{
+					self.involveNode = true;
+					self.handleNodeDBClick(d)
+				})
+				.on("mousedown", (d)=>{
+					self.involveNode = true;
+					self.handleMouseDown(d)
+				})
+				.on("mouseup", (d)=>{
+					self.involveNode = true;
+					self.handleMouseUp()
+				})
+				.on("mouseover", (d)=>{
+					self.involveNode = true;
+					self.handleMouseOver(d);
+				});
 	
+			  node.image = g.append("svg:image").data([node]).attr("xlink:href", function(d) {
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+					return d.icon;
+					} )
+				.attr("x", function(d) {return d.iconX})
+				.attr("y", function(d) {return d.iconY}).attr("width", function(d) {return d.iconW}).attr("height",  function(d) {return d.iconH})  
+				.style("cursor", "pointer")
+				.on("click", (d)=>{
+					self.involveNode = true;
+					self.handleNodeClick(d)
+				})
+				.on("dblclick", (d)=>{
+					self.involveNode = true;
+					self.handleNodeDBClick(d)
+				})
+				.on("mousedown", (d)=>{
+					self.involveNode = true;
+					self.handleMouseDown(d)
+				})
+				.on("mouseup", (d)=>{
+					self.involveNode = true;
+					self.handleMouseUp()
+				})
+				.on("mouseover", (d)=>{
+					self.involveNode = true;
+					self.handleMouseOver(d);
+				});	
+			  node.text = g.append("text").data([node]).text(function(d) {
+				return d.label.length<22?d.label:d.label.substring(0, 21)+"...";
+				} )
+				.style("font-size", function(d) { return "12px"; })
+			    .attr("dx", "-1.55em").attr("dy", function(d){return d.fontDy});
+			    
+			  /*if (filter===undefined) {
+				  nodes.push(n)
+			  } else {
+				  if (n.label.toLowerCase().indexOf(filter)<0 && n.label!=="") {						  
+					  filteredMap[n.id] = n;
+					  continue;
+				  }
+				  nodes.push(n)
+			  }*/
+			  
+		  } 
+	}
 	
 	handleMouseOver(d) {
 		if (this.dragLine!==undefined) {
@@ -286,20 +608,32 @@ class _Orchestration2 extends React.Component {
 		}
 	}
 	handleMouseDown = (d) => {
+		d3.event.preventDefault();
+		if (this.props.selectedTab!=="Enterprise") {
+			return;
+		}
 		var self = this;
 		d3.event.preventDefault();
 		this.noDrag = false;
 		this.dragTimer = setTimeout(()=> {
-			console.log("start drag")
+			//console.log("start drag")
 			self.startDrag(d)
 		}, 400)
 	}
 	
 	handleMouseUp = (d) => {
+		
+		
+		d3.event.preventDefault();
+	
+		if (this.props.selectedTab!=="Enterprise") {
+			return;
+		}
+	
 		var self = this;
 		this.noDrag = true;
 		if (self.dragTimer) {
-			console.log("end drag")
+			//console.log("end drag")
 			clearTimeout(self.dragTimer);
 		}
 
@@ -307,9 +641,9 @@ class _Orchestration2 extends React.Component {
 		
 		if (this.dragLine!==undefined) {
 			if (this.props.selectedTab==="Provider") {
-				this.addEnterpriseLink();
 				
-			} else if (this.props.selectedTab==="Provider") {
+				
+			} else if (this.props.selectedTab==="Enterprise") {
 				this.addBranchLink();
 			}
 		}
@@ -317,10 +651,12 @@ class _Orchestration2 extends React.Component {
 		
 		d3.select("#dragLine").remove();
 		self.dragLine = undefined;
+
 	}
 	
 	addEnterpriseLink = () => {	
 		//this.simulation.stop();
+		
 		cm.dispatch({"type":"addEnterpriseLink", "data":{"source":this.dndSrc.id, "target":this.dndTar.id, "tab":this.props.selectedTab}})
 		var provider = this.props.provider;
 		var src = provider.enterpriseMap[this.dndSrc.id];
@@ -329,35 +665,44 @@ class _Orchestration2 extends React.Component {
   		provider.links.push({"source":src, "target":tar})
   		//this.simulation.restart();
 	}
-	addBranchLink = () => {		
-		cm.dispatch({"type":"addBranchLink", "data":{"source":this.dndSrc.id, "target":this.dndTar.id, "tab":this.props.selectedTab}})
+	addBranchLink = () => {	
+		
+		cm.dispatch({"type":"saveCurrentLink", "source":this.dndSrc.id, "target":this.dndTar.id})
+		cm.popup(cm.routeData["AddLink"].component, "AddLink")
+		//cm.dispatch({"type":"addBranchLink", "data":{"source":this.dndSrc.id, "target":this.dndTar.id, "tab":this.props.selectedTab}})
 	}
 	
 	startDrag = (d) => {
 		if (this.noDrag) {
 			return;
 		}
-		this.dragX = d.x;
-		this.dragY = d.y
+		this.dragX = d.x+d.r;
+		this.dragY = d.y+d.r
 		
-		this.dragLine = this.state.diagram.append("line").attr("x1", d.x).attr("y1", d.y).attr("x2", d.x).attr("y2", d.y)
+		this.dragLine = this.svg.append("line").attr("x1", this.dragX).attr("y1", this.dragY).attr("x2", this.dragX).attr("y2", this.dragY)
 			.attr("stroke", "#000").attr("id", "dragLine")
 		this.dndSrc = d;
 		//console.log("this.dragLine="+this.dragLine)
 	}  
 	render() {
+		
+		var self = this;
+		//console.log("X="+self.state.detailX)
+		
 	    return (
 	    	<div>
 	    		<Header/>
-		    	<div style={{"minHeight":Utils.screenH+"px"}}>
+		    	<div style={{"minHeight":this.props.mainContainerSize.h+"px"}} ref="orchestrationMain">
 		    		{cm.isStackEmpty()?null:<div className="PopupHeader"><PopupCloseBox/></div>}
-		    		<div style={{"float":"left"}}>
+		    		<div style={{"width":"100vw"}}>
 			    		<OrchestrationHeader/>
 			    		<div id="svg"/>
 				    	
 					</div>
-					<div style={{"float":"left","width":"25vw", "height":Utils.screenH+"px", "border": "1px solid black"}}>
-						<OrchestrationDetail selectedNode={this.props.selectedNode}/>
+					<div ref="detailPane" style={{"position":"absolute","left":self.state.detailX, "top":"130px", "width":self.detailsW+"px", "height":this.props.mainContainerSize.h+"px", "border": "1px solid black"}}>
+						{this.props.selectedTab==="Provider"?<OrchestrationEnterpriseDetail selectedEnterprise={self.props.selectedEnterprise}  title="Enterprise Info"/>:
+						this.props.selectedTab==="Enterprise"?		
+						<OrchestrationBranchDetail selectedBranch={self.props.selectedBranch} title="Branch Info"/>:null}
 					</div>
 					<OrchestrationFloatMenu/>	
 				</div>
@@ -368,10 +713,13 @@ class _Orchestration2 extends React.Component {
 const Orchestration = connect(
 		  store => {
 			    return {
+			    	search: store.OrchestrationReducer.search,
 			    	selectedTab: store.OrchestrationReducer.selectedTab,
 			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise,
-			    	provider: store.OrchestrationReducer.provider
+			    	selectedBranch: store.OrchestrationReducer.selectedBranch,
+			    	provider: store.OrchestrationReducer.provider,
+			    	mainContainerSize: store.MainContainerReducer.mainContainerSize
 			    };
 			  }
-			)(_Orchestration2);
+			)(_Orchestration);
 export default Orchestration
