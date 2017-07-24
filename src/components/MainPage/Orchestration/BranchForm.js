@@ -66,9 +66,9 @@ class _BranchForm extends Form {
 const BranchForm = connect(
 		  store => {
 			    var provider = store.OrchestrationReducer.provider;
-			    var id = store.OrchestrationReducer.selectedEnterprise;
+			    var id = store.OrchestrationReducer.selectedEnterpriseId;
 			    var enterprise = provider.enterpriseMap[id];
-			    id = store.OrchestrationReducer.selectedBranch
+			    id = store.OrchestrationReducer.selectedBranchId
 			    if (id===null) {
 			    	branch:{}
 			    } else {

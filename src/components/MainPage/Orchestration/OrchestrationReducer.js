@@ -2,8 +2,12 @@ import cm from '../../../common/CommunicationManager'
 import Utils from '../../../common/Utils'
 import Provider from '../../../common/models/Provider'
 
-const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'selectedBranch':null, 'selectedEnterprise':null, 'provider':new Provider(),'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
+const OrchestrationReducer = (state = {'enterpriseList':[],'currentLink':null, 'search':'', 'selectedBranchId':null, 'selectedEnterpriseId':null, 'provider':new Provider(),'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
   switch (action.type) {
+  	case 'setEnterpriseList':
+      return Object.assign({}, state, {
+    	  enterpriseList: action.data
+      })
   	case 'setSearch':
       return Object.assign({}, state, {
     	  search: action.data
@@ -16,26 +20,31 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'selecte
         return Object.assign({}, state, {
       	  selectedTab: action.data
         })
-  	case 'setSelectedBranch':
-  		if (cm.selectedBranch) {
-  			cm.nodeMap[cm.selectedBranch].updateSelected(false);
+  	case 'setSelectedBranchId':
+  		if (cm.selectedBranchId) {
+  			cm.nodeMap[cm.selectedBranchId].updateSelected(false);
   		}
-  		cm.selectedBranch = action.data;
+  		cm.selectedBranchId = action.data;
   		
-  		cm.nodeMap[cm.selectedBranch].updateSelected(true);
+  		cm.nodeMap[cm.selectedBranchId].updateSelected(true);
         return Object.assign({}, state, {
-        	selectedBranch: action.data,
+        	selectedBranchId: action.data,
         	noDetails:action.noDetails
         })
-  	case 'setSelectedEnterprise':
-  		console.log("cm.selectedEnterprise="+cm.selectedEnterprise)
-  		if (cm.selectedEnterprise) {	
-  			cm.nodeMap[cm.selectedEnterprise].updateSelected(false);
+  	case 'setSelectedEnterpriseId':
+  		console.log("cm.selectedEnterpriseId="+cm.selectedEnterpriseId)
+  		var pre = cm.nodeMap[cm.selectedEnterpriseId];
+  		if (pre) {	
+  			pre.updateSelected(false);
   		}
-  		cm.selectedEnterprise = action.data;
-  		cm.nodeMap[cm.selectedEnterprise].updateSelected(true);
+  		cm.selectedEnterpriseId = action.data;
+  		var selectedEnterprise = cm.nodeMap[cm.selectedEnterpriseId]
+  		if (selectedEnterprise) {
+  			selectedEnterprise.updateSelected(true);
+  		}
+  		
         return Object.assign({}, state, {
-        	selectedEnterprise: action.data,
+        	selectedEnterpriseId: action.data,
         	noDetails:action.noDetails
         })
   	case 'addEnterprise':
@@ -55,7 +64,7 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'selecte
         })
   	case 'addBranch':
   		var provider = Object.assign({}, state.provider);
-  		var enterprise = provider.enterpriseMap[state.selectedEnterprise];
+  		var enterprise = provider.enterpriseMap[state.selectedEnterpriseId];
   		enterprise.branchMap[action.data.data.BranchId] = action.data;
   		cm.nodeMap[action.data.data.BranchId] = action.data;
   		enterprise.nodes.push(action.data);
@@ -70,7 +79,7 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'selecte
         })
   	case 'removeEnterprise':
   		var provider = Object.assign({}, state.provider);
-  		var id = state.selectedEnterprise;
+  		var id = state.selectedEnterpriseId;
   		delete provider.enterpriseMap[id];
   		delete cm.nodeMap[id];
   		var foundIndex = -1;
@@ -102,8 +111,8 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'selecte
         })
   	case 'removeBranch':
   		var provider = Object.assign({}, state.provider);
-  		var enterprise = provider.enterpriseMap[state.selectedEnterprise];
-  		var id = state.selectedBranch;
+  		var enterprise = provider.enterpriseMap[state.selectedEnterpriseId];
+  		var id = state.selectedBranchId;
   		delete enterprise.branchMap[id];
   		delete cm.nodeMap[id];
   		var foundIndex = -1;
@@ -145,7 +154,7 @@ const OrchestrationReducer = (state = {'currentLink':null, 'search':'', 'selecte
         })
   	case 'addBranchLink':
   		var provider = Object.assign({}, state.provider);
-  		var enterprise = provider.enterpriseMap[state.selectedEnterprise]
+  		var enterprise = provider.enterpriseMap[state.selectedEnterpriseId]
   		var src = enterprise.branchMap[action.data.source];
   		var tar = enterprise.branchMap[action.data.target];
   		enterprise.links.push({"source":src, "target":tar})

@@ -7,7 +7,7 @@ class _OrchestrationEnterpriseDetail extends React.Component {
 
 	 render() {
 		var self = this;	
-		let id = this.props.selectedEnterprise;
+		let id = this.props.selectedEnterpriseId;
 		if (!id) {
 			return null;
 		}
@@ -24,7 +24,7 @@ class _OrchestrationEnterpriseDetail extends React.Component {
 const OrchestrationEnterpriseDetail = connect(
 		  store => {
 			    return {
-			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise,
+			    	selectedEnterpriseId: store.OrchestrationReducer.selectedEnterpriseId,
 			    	provider: store.OrchestrationReducer.provider
 			    };
 			  }

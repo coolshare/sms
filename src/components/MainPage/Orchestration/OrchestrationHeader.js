@@ -33,15 +33,15 @@ class _OrchestrationHeader extends React.Component {
 		      cancelLabel: 'Cancel',                             // Text button cancel 
 		      onConfirm: () => {
 		    	  	if (this.props.selectedTab==="Provider") {
-		    	  		cm.dispatch({"type":"/EnterpriseService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedEnterprise")], "options":{"callback":(data)=>{
+		    	  		cm.dispatch({"type":"/EnterpriseService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedEnterpriseId")], "options":{"callback":(data)=>{
 		    	  			cm.dispatch({"type":"removeEnterprise"})
-				  			cm.dispatch({"type":"setSelectedEnterprise"})
+				  			cm.dispatch({"type":"setSelectedEnterpriseId"})
 		    	  		}}})
 			  			
 			  		} else if (this.props.selectedTab==="Enterprise") {
-			  			cm.dispatch({"type":"/BranchService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedBranch")], "options":{"callback":(data)=>{
+			  			cm.dispatch({"type":"/BranchService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedBranchId")], "options":{"callback":(data)=>{
 			  				cm.dispatch({"type":"removeBranch"})
-				  			cm.dispatch({"type":"setSelectedBranch"})
+				  			cm.dispatch({"type":"setSelectedBranchId"})
 		    	  		}}})
 			  			
 			  		}
@@ -53,6 +53,7 @@ class _OrchestrationHeader extends React.Component {
 		
 	}
 	handleChange = (e) => {
+		
 		cm.dispatch({"type":"setSearch", "data":e.target.value})
 
 	}
@@ -70,10 +71,10 @@ class _OrchestrationHeader extends React.Component {
 		    	<div style={{"margin":"8px"}}>
 		    		<input placeholder="Search" ref={(input)=>this.searchField = input} onChange={(e)=>this.handleChange(e)} style={{"marginRight":"20px"}}/>
 		    		{this.props.user.role==="Provider"?<span className={selectedTab==="Provider"?"selectedTab":"unselectedTab"} style={{"marginRight":"20px"}} onClick={this.handleProvider.bind(this)}>Provider</span>:null}
-		    		{this.props.selectedEnterprise===null?<span className="disabled" style={{"marginRight":"20px"}}>Enterprise</span>:<span className={selectedTab==="Enterprise"?"selectedTab":"unselectedTab"} style={{"marginRight":"20px"}} onClick={this.handleEnterprise.bind(this)}>Enterprise</span>}
+		    		{this.props.selectedEnterpriseId===null?<span className="disabled" style={{"marginRight":"20px"}}>Enterprise</span>:<span className={selectedTab==="Enterprise"?"selectedTab":"unselectedTab"} style={{"marginRight":"20px"}} onClick={this.handleEnterprise.bind(this)}>Enterprise</span>}
 		    		<span style={{"float":"right", "fontSize":"70%", "marginRight":"20px", "textDecoration":"underline"}}>
 		    			<span className="headLink" style={{"marginRight":"20px"}} onClick={this.handleAdd.bind(this)}>{buttonName[0]}</span>
-		    			{this.props.selectedTab==="Provider" && this.props.selectedEnterprise!==null || this.props.selectedTab==="Enterprise" && this.props.selectedBranch!==null?<span className="headLink" onClick={this.handleRemove.bind(this)}>{buttonName[1]}</span>:<span className="disabled" >{buttonName[1]}</span>}
+		    			{this.props.selectedTab==="Provider" && this.props.selectedEnterpriseId!==null || this.props.selectedTab==="Enterprise" && this.props.selectedBranchId!==null?<span className="headLink" onClick={this.handleRemove.bind(this)}>{buttonName[1]}</span>:<span className="disabled" >{buttonName[1]}</span>}
 		    		</span>
 			    </div>
 		    );
@@ -87,8 +88,8 @@ const OrchestrationHeader = connect(
 		  store => {
 			    return {
 			    	selectedTab: store.OrchestrationReducer.selectedTab,
-			    	selectedBranch: store.OrchestrationReducer.selectedBranch,
-			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise,
+			    	selectedBranchId: store.OrchestrationReducer.selectedBranchId,
+			    	selectedEnterpriseId: store.OrchestrationReducer.selectedEnterpriseId,
 			    	user: store.HeaderReducer.user
 			    };
 			  }

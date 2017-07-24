@@ -159,7 +159,7 @@ export class _RemoteService extends Service {
 		var url = cm.baseUrl
 		if (this.hasOwnProperty("enterpriceId")) {
 			
-			url += cm.selectedEnterprise +"/"
+			url += cm.selectedEnterpriseId +"/"
 		}
 		this._get(url +this.key+ "/"+action.params[0], options);
 	}
@@ -169,7 +169,7 @@ export class _RemoteService extends Service {
 		var url = cm.baseUrl
 		if (this.hasOwnProperty("enterpriceId")) {
 			
-			url += cm.selectedEnterprise +"/"
+			url += cm.selectedEnterpriseId +"/"
 		}
 		this._post(url +this.key, action.params[0], options);	
 	}
@@ -179,7 +179,7 @@ export class _RemoteService extends Service {
 		var url = cm.baseUrl
 		if (this.hasOwnProperty("enterpriceId")) {
 			
-			url += cm.selectedEnterprise +"/"
+			url += cm.selectedEnterpriseId +"/"
 		}
 		this._put(url +this.key+ "/", action.params[0], options);	
 	}
@@ -189,7 +189,7 @@ export class _RemoteService extends Service {
 		var url = cm.baseUrl
 		if (this.hasOwnProperty("enterpriceId")) {
 			
-			url += cm.selectedEnterprise+"/"
+			url += cm.selectedEnterpriseId+"/"
 		}
 		this._remove(url + this.key+ "/", action.params[0], options);			
 	}

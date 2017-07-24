@@ -3,5 +3,6 @@ export default class Provider {
 		this.enterpriseMap = {};
 		this.nodes = [];
 		this.links = [];
+		this.dirty = true;
 	}
 }

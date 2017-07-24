@@ -12,7 +12,7 @@ class _BranchService extends _RemoteService {
 		var options  = action.options||{};
 		var url = cm.baseUrl
 		if (this.hasOwnProperty("enterpriceId")) {			
-			url += cm.selectedEnterprise 
+			url += cm.selectedEnterpriseId 
 		}
 		this._get(url + "/"+this.key, options);
 	};

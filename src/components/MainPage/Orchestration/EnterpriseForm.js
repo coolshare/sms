@@ -68,7 +68,7 @@ class _EnterpriseForm extends Form {
 const EnterpriseForm = connect(
 		  store => {
 			    var provider = store.OrchestrationReducer.provider;
-			    var id = store.OrchestrationReducer.selectedEnterprise
+			    var id = store.OrchestrationReducer.selectedEnterpriseId
 			    if (id===null) {
 			    	enterprise:{}
 			    } else {

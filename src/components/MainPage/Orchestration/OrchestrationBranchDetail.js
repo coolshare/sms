@@ -8,12 +8,13 @@ class _OrchestrationBranchDetail extends React.Component {
 
 	 render() {
 		var self = this;	
-		let id = this.props.selectedBranch;
+		let id = this.props.selectedBranchId;
 		if (!id) {
 			return null;
 		}
-		var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "provider").enterpriseMap[cm.getStoreValue("OrchestrationReducer", "selectedEnterprise")];
+		var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "provider").enterpriseMap[cm.getStoreValue("OrchestrationReducer", "selectedEnterpriseId")];
 		var selectedBranch = selectedEnterprise.branchMap[id];
+			
 		return (
 		    <div>
 		    	<BranchForm branch={selectedBranch.data} title="Branch Info"/>
@@ -24,7 +25,7 @@ class _OrchestrationBranchDetail extends React.Component {
 const OrchestrationBranchDetail = connect(
 		  store => {
 			    return {
-			    	selectedBranch: store.OrchestrationReducer.selectedBranch
+			    	selectedBranchId: store.OrchestrationReducer.selectedBranchId
 			    };
 			  }
 			)(_OrchestrationBranchDetail);

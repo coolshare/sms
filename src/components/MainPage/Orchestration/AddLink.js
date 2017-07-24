@@ -38,7 +38,7 @@ class _AddLink extends React.Component {
 	render() {
 		var self = this;
 		var provider = cm.getStoreValue("OrchestrationReducer", "provider");
-		var id = cm.getStoreValue("OrchestrationReducer", "selectedEnterprise");
+		var id = cm.getStoreValue("OrchestrationReducer", "selectedEnterpriseId");
 		var enterprise = provider.enterpriseMap[id]
 		
 		this.src = enterprise.branchMap[this.props.currentLink[0]]
