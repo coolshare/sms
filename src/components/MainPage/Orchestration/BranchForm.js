@@ -11,7 +11,7 @@ class _BranchForm extends Form {
 	handleOK = (e) => {
 		e.preventDefault();
 		var data = this.collectFields(e);
-		cm.dispatch({"type":"/BranchService/create", "params":[data],"options":{"callback":(data2)=>{
+		cm.dispatch({"type":"/BranchService/create", "params":[data],"options":{"response":(data2)=>{
 			cm.dispatch({"type":"ClosePopup"})
 			cm.dispatch({"type":"addBranch", "data":new Branch(data2, 20, 100, 100, 35, 0, "#E1E1E1", -8, -8, 16, 16)})
 

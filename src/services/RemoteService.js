@@ -6,8 +6,8 @@ import ExceptionService from './ExceptionService'
 export class _RemoteService extends Service {
 	
 	constructor(name, key, APIs) {
-		super(name, ["get", "getThroughProxy", "getSequencially", "getMulti",
-			"create", "edit", "remove"].concat(APIs));
+		super(name, ["get", "getAll", "getThroughProxy", "getSequencially", "getMulti",
+			"create", "edit", "remove"].concat(APIs||[]));
 		this.key = key;
 	}
 	getThroughProxy = (url, options, key, result, requests, len) => {
@@ -42,25 +42,25 @@ export class _RemoteService extends Service {
 				  if (result.multiType==="multi") {					  
 					  if (--result.countDown==0) {
 						  cm.dispatch({"type":"getMultiDone", "key":result.type, "result":result})
-						  if (options.callback) {
-			    			  options.callback(result);
+						  if (options.response) {
+			    			  options.response(result);
 			    		  }
 					  }
 				  } else if (result.multiType==="seq") {
 					  self._getEach(result, requests, options);
 			    	  if (len===0) {
-			    		  if (options.callback) {
-			    			  options.callback(result);
+			    		  if (options.response) {
+			    			  options.response(result);
 			    		  }
 			    	  }  
 				  }
 				   
 		      } else {
-	    		  if (options.actionType!=undefined||options.stateField!==undefined) {
-					  cm.dispatch({"type":"RemoteService", "options":{"action":{"type":options.actionType, "stateField":options.stateField}, "data":res.data}});
+	    		  if (options.forwardType!=undefined) {
+					  cm.dispatch({"type":"__Forward__", "aciton":{"type": options.forwardType, "data":res.data}});
 				  }
-				  if (options.callback) {
-					  options.callback(res.data);
+				  if (options.response) {
+					  options.response(res.data);
 				  }
 		      
 			  
@@ -104,8 +104,8 @@ export class _RemoteService extends Service {
 		          throw new Error("Bad response from server");
 		      }
 
-			  if (options.callback) {
-				  options.callback(res.data);
+			  if (options.response) {
+				  options.response(res.data);
 			  }
 			  
 			  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
@@ -115,16 +115,16 @@ export class _RemoteService extends Service {
 		    ExceptionService.handle(error);
 		  });
 	}
-	_put = (url, data, options) => {
+	_put = (url, id, data, options) => {
 		let self = this;
-		axios.put(url, data)
+		axios.put(url+id, data)
 		  .then(function (response) {
 			  if (response.status >= 400) {
 		          throw new Error("Bad response from server");
 		      }
 			  
-			  if (options.callback) {
-				  options.callback(res.data);
+			  if (options.response) {
+				  options.response(res.data);
 			  }
 			  
 			  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
@@ -135,14 +135,14 @@ export class _RemoteService extends Service {
 	}
 	_remove = (url, id, options) => {
 		let self = this;
-		axios.delete(url+id+"/")
+		axios.delete(url+id)
 		  .then(function (response) {
 			  if (response.status >= 400) {
 		          throw new Error("Bad response from server");
 		      }
 			  
-			  if (options.callback) {
-				  options.callback(res.data);
+			  if (options.response) {
+				  options.response(res.data);
 			  }
 
 			  
@@ -181,7 +181,7 @@ export class _RemoteService extends Service {
 			
 			url += cm.selectedEnterpriseId +"/"
 		}
-		this._put(url +this.key+ "/", action.params[0], options);	
+		this._put(url +this.key+ "/", action.params[0], action.params[1], options);	
 	}
 	remove = (action) => {
 		var options = action.options||{};
@@ -193,7 +193,14 @@ export class _RemoteService extends Service {
 		}
 		this._remove(url + this.key+ "/", action.params[0], options);			
 	}
-	
+	getAll = (action) => {
+		var options  = action.options||{};
+		var url = cm.baseUrl
+		if (this.hasOwnProperty("enterpriceId")) {			
+			url += cm.selectedEnterpriseId +"/"
+		}
+		this._get(url + this.key+"/", options);	
+	}
   }
 const RemoteService = new _RemoteService("RemoteService");
 export default RemoteService;

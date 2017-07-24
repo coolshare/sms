@@ -28,7 +28,7 @@ class Dispatcher extends React.Component {
 		  return;
 	  }
 	  if (this.props.setState!==undefined) {
-		  this.props.action._type = "setState";
+		  this.props.action._type = "__setState__";
 		  this.props.action._data = this.props.setState;
 	  }
 	  cm.dispatch(this.props.action);

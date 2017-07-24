@@ -8,9 +8,15 @@ export const logger = store => next => action => {
 }
 
 export const asyncDispatchMiddleware = store => next => action => {
+	  //Save current action
+	  cm.currentAction = action;
+	  
+	  //Logging
+	  console.log('dispatching', action)
 	  let syncActivityFinished = false;
 	  let actionQueue = [];
 
+	  //asyncDispatch
 	  function flushQueue() {
 	    actionQueue.forEach(a => store.dispatch(a)); 
 	    actionQueue = [];
@@ -27,25 +33,21 @@ export const asyncDispatchMiddleware = store => next => action => {
 	  const actionWithAsyncDispatch =
 	    Object.assign({}, action, { asyncDispatch });
 
-	  next(actionWithAsyncDispatch);
+	  if (action.type==="__FORWARD__") {
+		  action.asyncDispatch(action.action);
+	  }
+	  if (action.options && action.options.callback !== undefined) {
+	    	action.asyncDispatch({"type":action.type, "data":action});
+	  }
+	  if (action._type === "__setState__") {
+	    	let list = action._data.split(".");
+	    	action.asyncDispatch({"type":list[0], "data": action.data}); 		
+  	  }
+	  
+	  let result = next(actionWithAsyncDispatch);
 	  syncActivityFinished = true;
 	  flushQueue();
+	  console.log('next state', store.getState())
+	  return result;
 	};
 	
-export const callbackMiddleware = store => next => action => {
-	    if (action.options && action.options.type === "CALLBACK") {
-	    	action.options.action = action;
-	    	action.asyncDispatch({"type":"_CALLBACK_", "options": action.options});
-	    }
-	    if (action._type === "setState") {
-	    	let list = action._data.split(".");
-    		action.asyncDispatch({"type":list[0], "data": action.data});
-    		
-    	}
-	    return next(action);
-	}
-export const currentAction = store => next => action => {
-    	cm.currentAction = action;
-    	
-    return next(action);
-}

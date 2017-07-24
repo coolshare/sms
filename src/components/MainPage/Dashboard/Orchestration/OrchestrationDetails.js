@@ -10,9 +10,9 @@ import cm from '../../../../common/CommunicationManager'
 class _OrchestrationDetails extends React.Component{
 	
 	handleClick=() => {
-		cm.dispatch({"type":"/RemoteService/getThroughProxy", "data":{"url":"http://coolshare.com/markqian/AngularJS/Directives/RoutedTab/data/House.json"}, "callback":function(data) {
+		cm.dispatch({"type":"/RemoteService/getThroughProxy", "data":{"url":"http://coolshare.com/markqian/AngularJS/Directives/RoutedTab/data/House.json"}, "options":{"response":function(data) {
 			console.log(JSON.stringify(data))
-		}})
+		}}})
 	}
 	componentDidMount() {
 		var stateColorMap = ["#0F0", "#fff633", "#ff9933", "#ff4233"]

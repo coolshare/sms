@@ -44,7 +44,7 @@ class CommunicationManager {
 	init(store) {	
 		this.store = store;
 	}
-	dispatch(action, callback) {
+	dispatch(action) {
 		var actions;
 		if (action instanceof Array) {
 			actions = action;
@@ -54,12 +54,7 @@ class CommunicationManager {
 		for (var i=0; i<actions.length; i++) {
 			var a = actions[i];
 			this.currentAction = a;
-			a.options = a.options||{}
-			if (callback!==undefined) {
-				a.options.type = "CALLBACK";
-				a.options.callback = callback;
-			}
-			
+			a.options = a.options||{}			
 			this.store.dispatch(a);
 		}
 		

@@ -3,7 +3,7 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
 import ReducerManager from './components/ReducerManager'
-import {logger, currentAction, asyncDispatchMiddleware, callbackMiddleware} from './components/CommonMiddleware'
+import {asyncDispatchMiddleware} from './components/CommonMiddleware'
 
 import cm from './common/CommunicationManager'
 
@@ -14,7 +14,7 @@ const history = useRouterHistory(createHashHistory)({ queryKey: false });
 
 
 
-let store = createStore(ReducerManager, applyMiddleware(logger, currentAction, asyncDispatchMiddleware, callbackMiddleware));
+let store = createStore(ReducerManager, applyMiddleware(asyncDispatchMiddleware));
 cm.init(store);
 
 let sm = require("./common/ServiceManager").default

@@ -5,7 +5,12 @@ class ServiceManager {
 		this.services = [
 			require("../services/RemoteService").default,
 			require("../services/BranchService").default,
-			require("../services/EnterpriseService").default
+			require("../services/EnterpriseService").default,
+			require("../services/EnterpriseGroupService").default,
+			require("../services/EnterpriseLinkService").default,
+			require("../services/EnterpriseUserService").default,
+			require("../services/ProviderGroupService").default,
+			require("../services/ProviderUserService").default
 			];
 	}
 	
