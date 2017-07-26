@@ -27,6 +27,14 @@ const OrchestrationReducer = (state = {'isInit':false, 'selectedEnterprise':null
   	case 'setSelectedBranchId':
   		if (cm.selectedBranchId) {
   			cm.nodeMap[cm.selectedBranchId].updateSelected(false);
+  			if (cm.selectedBranchId===action.data) {
+  				cm.selectedBranchId = null;
+  				return Object.assign({}, state, {
+  		        	selectedBranchId: null,
+  		        	noDetails:action.noDetails,
+  		        	selectedBranch: null
+  		        })
+  			}
   		}
   		cm.selectedBranchId = action.data;
   		cm.selectedBranch = cm.nodeMap[cm.selectedBranchId]
@@ -54,11 +62,13 @@ const OrchestrationReducer = (state = {'isInit':false, 'selectedEnterprise':null
         	selectedEnterprise: cm.selectedEnterprise
         })
   	case 'setSelectedEnterpriseDirty':
+  		cm.selectedEnterprise.dirty = true;
   		var selectedEnterprise = Object.assign({}, cm.selectedEnterprise, {dirty:true});
         return Object.assign({}, state, {
         	selectedEnterprise: selectedEnterprise
         })
   	case 'setSelectedProviderDirty':
+  		state.provider.dirty = true;
   		var provider = Object.assign({}, state.provider, {
       	  dirty: true
         })

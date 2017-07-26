@@ -225,6 +225,8 @@ class _Orchestration extends React.Component {
 		}
 		selectedEnterprise.dirty = false;
 		cm.dispatch({"type":"/BranchService/getAll", "options":{"response":(data)=>{
+			selectedEnterprise.nodes = [];
+		
 			if (selectedEnterprise.internetForEnterprise===undefined) {
 	  			selectedEnterprise.internetForEnterprise = new Branch({"BranchId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);	
 	  			selectedEnterprise.nodes.push(selectedEnterprise.internetForEnterprise)
@@ -384,7 +386,7 @@ class _Orchestration extends React.Component {
 		if (nodes.length===0) {
 			return;
 		}
-		var dx = 200, dy = 200;	
+		var dx = 150, dy = 150;	
 		
 		var rings = [[15, 100, 0, 0],[20, 180, -70, -80],[30, 240, -40, -40],[40, 280, -80, -80],[50, 340, -110, -110]]
 		var j = 0;

@@ -117,6 +117,8 @@ export class _RemoteService extends Service {
 	}
 	_post = (url, data, options) => {
 		let self = this;
+		console.log("===="+url+"===>")
+		console.log(JSON.stringify(data))
 		var ttt = {
 				  url:url,
 				  type:"POST",			  
@@ -187,10 +189,14 @@ export class _RemoteService extends Service {
 		var options = action.options||{};
 		options.action = action;
 		var url = cm.baseUrl
+		if (this.key==="branch") {
+			url = "http://192.168.7.231:5000/mano/"
+		}
 		if (this.hasOwnProperty("enterpriceId")) {
 			
 			url += cm.selectedEnterpriseId +"/"
 		}
+		
 
 		this._post(url +this.key, action.params[0], options);	
 	}
