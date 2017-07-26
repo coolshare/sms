@@ -13,7 +13,6 @@ class _EnterpriseForm extends Form {
 		var data = this.collectFields(e);
 		cm.dispatch({"type":"/EnterpriseService/create", "params":[data],"options":{"response":(data2)=>{
 			cm.dispatch({"type":"ClosePopup"})
-			cm.dispatch({"type":"addEnterprise", "data":new Enterprise(data2, 20, 100, 100, 35, 0, "#E1E1E1", -8, -8, 16, 16)})
 
 		}}});
 		cm.dispatch({"type":"ClosePopup"})		

@@ -12,9 +12,10 @@ class _OrchestrationBranchDetail extends React.Component {
 		if (!id) {
 			return null;
 		}
-		var selectedEnterprise = cm.getStoreValue("OrchestrationReducer", "provider").enterpriseMap[cm.getStoreValue("OrchestrationReducer", "selectedEnterpriseId")];
-		var selectedBranch = selectedEnterprise.branchMap[id];
-			
+		var selectedBranch = cm.selectedEnterprise.branchMap[id];
+		if (selectedBranch===undefined) {
+			return null;
+		}
 		return (
 		    <div>
 		    	<BranchForm branch={selectedBranch.data} title="Branch Info"/>

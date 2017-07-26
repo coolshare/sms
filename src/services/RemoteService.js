@@ -2,6 +2,7 @@ import axios from 'axios'
 import Service from '../common/Service'
 import cm from '../common/CommunicationManager'
 import ExceptionService from './ExceptionService'
+import $ from 'jquery';
 
 export class _RemoteService extends Service {
 	
@@ -25,6 +26,7 @@ export class _RemoteService extends Service {
 			this.action = url;
 			url = this.action.data.url;
 		}
+		url += "?d="+new Date().valueOf();
 		return axios.get(url).then(res=>{
 			  if (res.status >= 400) {
 		          throw new Error("Bad response from server");
@@ -67,12 +69,12 @@ export class _RemoteService extends Service {
 				  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
 		      } 
 			  return res;
-		  }).catch(function (error) {
+		  })/*.catch(function (error) {
 			  if (options.error) {
 				  options.error(error)
 			  }
 			    console.log(error);
-		  });
+		  });*/
 	}
 	getSequencially = (type, requests, options) => {
 		let result = {"type":type, "dataMap":{}, "multiType":"seq"};
@@ -95,62 +97,72 @@ export class _RemoteService extends Service {
 			this._get(request.url, options, request.key, result, requests, requests.length);
 		}
 	}
-	
-	_post = (url, data, options) => {
+	_post2 = (url, data, options) => {
 		let self = this;
-		axios.post(url, data)
-		  .then(function (response) {
-			  if (response.status >= 400) {
-		          throw new Error("Bad response from server");
-		      }
-
+		$.post(url, JSON.stringify(data))
+		  .done(function( data ) {
 			  if (options.response) {
-				  options.response(res.data);
+				  options.response(data);
 			  }
 			  
-			  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
-
-		  })
-		  .catch(function (error) {
-		    ExceptionService.handle(error);
+			  cm.dispatch({"type":options.action.type+"/done", "data":data})
 		  });
+
+	}
+	_post = (url, data, options) => {
+		let self = this;
+		var ttt = {
+				  url:url,
+				  type:"POST",			  
+				  contentType:"application/json; charset=utf-8",
+				  data:JSON.stringify(data),
+				  dataType:"json",
+				  success: function(res){
+					  
+					  if (options.response) {
+						  options.response(res);
+					  }
+					  
+					  cm.dispatch({"type":options.action.type+"/done", "data":res})
+				  }}
+		$.ajax(ttt
+			)
+
 	}
 	_put = (url, id, data, options) => {
 		let self = this;
-		axios.put(url+id, data)
-		  .then(function (response) {
-			  if (response.status >= 400) {
-		          throw new Error("Bad response from server");
-		      }
-			  
-			  if (options.response) {
-				  options.response(res.data);
+		$.ajax({
+			  url:url+id,
+			  type:"PUT",
+			  data:data,
+			  contentType:"application/json; charset=utf-8",
+			  dataType:"json",
+			  success: function(res){
+				  if (options.response) {
+					  options.response(res);
+				  }
+				  
+				  cm.dispatch({"type":options.action.type+"/done", "data":res})
 			  }
-			  
-			  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
-		  })
-		  .catch(function (error) {
-		    ExceptionService.handle(error);
-		  });
+			})
 	}
 	_remove = (url, id, options) => {
 		let self = this;
-		axios.delete(url+id)
-		  .then(function (response) {
-			  if (response.status >= 400) {
-		          throw new Error("Bad response from server");
-		      }
-			  
-			  if (options.response) {
-				  options.response(res.data);
-			  }
+		$.ajax({
+			  url:url+id,
+			  type:"DELETE",
+			  contentType:"application/json; charset=utf-8",
+			  dataType:"json",
+			  success: function(res){
+				  debugger
+				  if (options.response) {
+					  options.response(res);
+				  }
 
-			  
-			  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
-		  })
-		  .catch(function (error) {
-		    ExceptionService.handle(error);
-		  });
+				  
+				  cm.dispatch({"type":options.action.type+"/done", "data":res})
+			  }
+			})
 	}
 	
 	get = (action) => {
@@ -171,6 +183,7 @@ export class _RemoteService extends Service {
 			
 			url += cm.selectedEnterpriseId +"/"
 		}
+
 		this._post(url +this.key, action.params[0], options);	
 	}
 	edit =(action) => {
@@ -195,6 +208,7 @@ export class _RemoteService extends Service {
 	}
 	getAll = (action) => {
 		var options  = action.options||{};
+		options.action = action;
 		var url = cm.baseUrl
 		if (this.hasOwnProperty("enterpriceId")) {			
 			url += cm.selectedEnterpriseId +"/"

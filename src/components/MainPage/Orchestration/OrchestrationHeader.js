@@ -34,14 +34,12 @@ class _OrchestrationHeader extends React.Component {
 		      onConfirm: () => {
 		    	  	if (this.props.selectedTab==="Provider") {
 		    	  		cm.dispatch({"type":"/EnterpriseService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedEnterpriseId")], "options":{"response":(data)=>{
-		    	  			cm.dispatch({"type":"removeEnterprise"})
-				  			cm.dispatch({"type":"setSelectedEnterpriseId"})
+				  			cm.dispatch({"type":"setSelectedTab", "data":this.props.selectedTab})
 		    	  		}}})
 			  			
 			  		} else if (this.props.selectedTab==="Enterprise") {
 			  			cm.dispatch({"type":"/BranchService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedBranchId")], "options":{"response":(data)=>{
-			  				cm.dispatch({"type":"removeBranch"})
-				  			cm.dispatch({"type":"setSelectedBranchId"})
+				  			cm.dispatch({"type":"setSelectedTab", "data":this.props.selectedTab})
 		    	  		}}})
 			  			
 			  		}

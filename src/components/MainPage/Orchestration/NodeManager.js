@@ -224,7 +224,7 @@ class DiagramNode extends Node{
 				let tn = findContainer(self.container.pendingLink.node2, self.node.ChildType);
 				console.log("x1="+self.container.pendingLink.node2.x1+" y1="+self.container.pendingLink.node2.y1)
 				
-				if (tn && self.container.pendingLink.node1.node.ChildType==tn.node.Type && self.container.linkMap[self.container.pendingLink.node1.id+"_"+tn.id]===undefined) {
+				if (tn && self.container.pendingLink.node1.node.ChildType==tn.node.Type && self.container.links[self.container.pendingLink.node1.id+"_"+tn.id]===undefined) {
 					console.log("tn==================>"+tn.Name)
 					tn.cursor = "drop";
 					tn.rectElement.style("cursor", "drop")
@@ -592,7 +592,7 @@ class Link {
 		this.id = options.id!==undefined?options.id:this.getId();
 		this.dx = options.dx===undefined?5:options.dx;
 		this.dy = node1.y1===node2.y1?0:options.dy===undefined?5:options.dy;	
-		this.container.linkMap[this.id] = this;
+		this.container.links[this.id] = this;
 		this.menu = ["Delete This Link"];
 		node1.childLinks.push(this);
 		node2.parentLinks.push(this);
@@ -918,7 +918,7 @@ class NodeManager {
 			let col = 0;
 			container.nodeMap = {};
 			container.elemNodeMap = {};
-			container.linkMap = {};
+			container.links = {};
 			var i=0;
 			for (var c in cloudeProviders) {
 				let cloudeProvider = cloudeProviders[c];
@@ -994,16 +994,16 @@ class NodeManager {
 			for (var n in container.nodeMap) {
 				container.nodeMap[n].create();
 			}
-			for (var n in container.linkMap) {
-				container.linkMap[n].create();
+			for (var n in container.links) {
+				container.links[n].create();
 			}
 			
 			d3.selectAll('line').on("mouseenter", ()=>{
 				let ss = d3.event.target.id.split("|")
-				container.linkMap[ss[0]].highlight(true)
+				container.links[ss[0]].highlight(true)
 			}).on("mouseout", ()=>{
 				let ss = d3.event.target.id.split("|")
-				container.linkMap[ss[0]].highlight(false)
+				container.links[ss[0]].highlight(false)
 			})
 			d3.select("#orchestTooltip").classed("hidden", true);
 		}
@@ -1107,10 +1107,10 @@ class NodeManager {
 		console.log("keys="+Object.keys(container.nodeMap).length)
 		d3.selectAll('line').on("mouseenter", ()=>{
 			let ss = d3.event.target.id.split("|")
-			container.linkMap[ss[0]].highlight(true)
+			container.links[ss[0]].highlight(true)
 		}).on("mouseout", ()=>{
 			let ss = d3.event.target.id.split("|")
-			container.linkMap[ss[0]].highlight(false)
+			container.links[ss[0]].highlight(false)
 		})
 	}
 }

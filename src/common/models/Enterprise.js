@@ -8,7 +8,7 @@ export default class Enterprise extends Node{
 		this.data = data;
 		this.branchMap = {};
 		this.nodes = [];
-		this.links = [];
+		this.linkMap = {};
 		this.dirty = true;
 	}
 	

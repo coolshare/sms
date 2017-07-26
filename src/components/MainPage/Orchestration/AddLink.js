@@ -18,16 +18,16 @@ class _AddLink extends React.Component {
 	handleOK = (e) => {
 		var self = this;
 		e.preventDefault();
-		var data = {};
+		//var data = {};
 		
-		for (var f in this.fields) {
-			data[f] = this.fields[f].value			
-		}
-		data.id = new Date().valueOf();
-		cm.dispatch({"type":"ClosePopup"})
-		setTimeout(function() {
-			cm.dispatch({"type":"addBranchLink", "data":{"source":self.src.id, "target":self.tar.id}})
-		}, 100)
+		//for (var f in this.fields) {
+		//	data[f] = this.fields[f].value			
+		//}
+		//data.id = new Date().valueOf();
+		cm.dispatch({"type":"/EnterpriseLinkService/create", "params":[self.src.id, self.tar.id], "options":{"response":(data)=>{
+			cm.dispatch({"type":"ClosePopup"})
+			//cm.dispatch({"type":"addBranchLink", "data":{"source":self.src.id, "target":self.tar.id}})
+		}}})
 		
 		
 	}
@@ -37,12 +37,9 @@ class _AddLink extends React.Component {
 	}
 	render() {
 		var self = this;
-		var provider = cm.getStoreValue("OrchestrationReducer", "provider");
-		var id = cm.getStoreValue("OrchestrationReducer", "selectedEnterpriseId");
-		var enterprise = provider.enterpriseMap[id]
-		
-		this.src = enterprise.branchMap[this.props.currentLink[0]]
-		this.tar = enterprise.branchMap[this.props.currentLink[1]]
+
+		this.src = cm.selectedEnterprise.branchMap[this.props.currentLink[0]]
+		this.tar = cm.selectedEnterprise.branchMap[this.props.currentLink[1]]
 	    return (
 				
 			<div style={{"minHeight":Utils.screenH+"px", "minWidth":"700px"}}>

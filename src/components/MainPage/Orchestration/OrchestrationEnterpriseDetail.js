@@ -7,12 +7,11 @@ class _OrchestrationEnterpriseDetail extends React.Component {
 
 	 render() {
 		var self = this;	
-		let id = this.props.selectedEnterpriseId;
-		if (!id) {
+
+		var selectedEnterprise = cm.selectedEnterprise;
+		if (selectedEnterprise===undefined) {
 			return null;
 		}
-		var selectedEnterprise = this.props.provider.enterpriseMap[id];
-		
 
 		return (
 			    <div>
@@ -24,8 +23,7 @@ class _OrchestrationEnterpriseDetail extends React.Component {
 const OrchestrationEnterpriseDetail = connect(
 		  store => {
 			    return {
-			    	selectedEnterpriseId: store.OrchestrationReducer.selectedEnterpriseId,
-			    	provider: store.OrchestrationReducer.provider
+			    	selectedEnterpriseId: store.OrchestrationReducer.selectedEnterpriseId
 			    };
 			  }
 			)(_OrchestrationEnterpriseDetail);
