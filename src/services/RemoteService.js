@@ -99,15 +99,21 @@ export class _RemoteService extends Service {
 	}
 	_post2 = (url, data, options) => {
 		let self = this;
-		$.post(url, JSON.stringify(data))
-		  .done(function( data ) {
+		return axios.post(url, {
+            headers: {
+                accept: 'application/json',
+                'accept-language': 'en_US',
+                'content-type': 'application/x-www-form-urlencoded'
+            }, body: data}).then(res=>{
+			  if (res.status >= 400) {
+		          throw new Error("Bad response from server");
+		      }
 			  if (options.response) {
-				  options.response(data);
+				  options.response(res.data);
 			  }
 			  
-			  cm.dispatch({"type":options.action.type+"/done", "data":data})
-		  });
-
+			  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
+            });
 	}
 	_post = (url, data, options) => {
 		let self = this;

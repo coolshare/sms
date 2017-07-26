@@ -20,7 +20,7 @@ const stateColors = ["green", "yellow", "orange", "pink", "red"]
 class _Orchestration extends React.Component {
 	constructor(props) {
 		super(props);
-
+		
 		this.state = {
 			detailX:3000
 		}
@@ -36,7 +36,6 @@ class _Orchestration extends React.Component {
 		this.linkMap = {};
 		this.Orchestration2Data = null;
 		this.initZoom = .5;
-		this.isInit = false;
 		this.zoomFactor = this.initZoom
 		this.collectNodes = {"Container":this.handleProvider, "Enterprise":this.handleEnterprise};
 		this.enterpriseX = 0;
@@ -56,7 +55,7 @@ class _Orchestration extends React.Component {
 		this.user = cm.getStoreValue("HeaderReducer", "user");
 		
 		cm.dispatch({"type":"updateMainContainerSize", "data":{"w":this.refs.orchestrationMain.clientWidth, "h":this.refs.orchestrationMain.clientHeight}})
-		cm.subscribe(["switchTopLink", "setSelectedTab","setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink"], (action)=>{
+		cm.subscribe(["setSelectedBranchId", "setSelectedEnterpriseId", "switchTopLink", "setSelectedTab","setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink"], (action)=>{
 			if (cm.getStoreValue("HeaderReducer", "currentLink")!=="Orchestration") {
 				return;
 			}
@@ -67,9 +66,12 @@ class _Orchestration extends React.Component {
 			filter = filter.trim()===""?undefined:filter.toLowerCase();
 			console.log("role="+cm.role)
 			if (self.user.role==="Provider") {
-				var tab = cm.getStoreValue("OrchestrationReducer", "selectedTab");
+				var tab = self.props.selectedTab;
+				if (action.type==="setSelectedTab") {
+					tab = action.data;
+				}
 				if (tab==="Provider") {
-					if (this.provider.dirty) {
+					if (self.provider.dirty) {
 						self.loadProvider(()=>{
 							self.buildProviderDiagram(filter, true)
 						});
@@ -80,7 +82,7 @@ class _Orchestration extends React.Component {
 					
 				} else if (tab==="Enterprise") {
 					if (self.props.selectedEnterpriseId!==null) {
-						var selectedEnterprise = provider.enterpriseMap[self.props.selectedEnterpriseId];
+						var selectedEnterprise = self.props.selectedEnterprise;
 						if (selectedEnterprise.dirty) {
 							self.loadEnterpriseBranch(()=>{
 								selectedEnterprise.dirty = false;
@@ -133,9 +135,13 @@ class _Orchestration extends React.Component {
 		if (this.user.role==="Enterprise") {
 			cm.dispatch({"type":"setSelectedEnterpriseId", "data":this.user.company.EnterpriseId})
 		}
+		if (!this.props.isInit) {
+			cm.dispatch({"type":"setSelectedTab", "data":this.user.role})
+			cm.dispatch({"type":"setIsInit"})
+		} else {
+			cm.dispatch({"type":"setSelectedTab", "data":this.props.selectedTab})
+		}
 		
-		cm.dispatch({"type":"setSelectedTab", "data":this.user.role})
-
 	}
 	
 	loadProvider = (callback) => {
@@ -252,11 +258,11 @@ class _Orchestration extends React.Component {
 	}
 	
 	componentWillUnmount() {
-		cm.unsubscribe(["setSelectedTab", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink"]);
+		cm.unsubscribe(["setSelectedBranchId", "setSelectedEnterpriseId", "setSelectedTab", "setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink"]);
 		cm.unsubscribe("setSelectedEnterpriseId");		
 		cm.unsubscribe("setSelectedBranchId");
 		cm.unsubscribe("hideNodeDetails");
-		cm.dispatch({"type":"setProvider", "data":new Provider()})
+		//cm.dispatch({"type":"setProvider", "data":new Provider()})
 	}
 	
 	animateDetails(isShow, forced) {
@@ -689,10 +695,14 @@ class _Orchestration extends React.Component {
 const Orchestration = connect(
 		  store => {
 			    return {
+			    	
+			    	isInit: store.OrchestrationReducer.isInit,
 			    	search: store.OrchestrationReducer.search,
 			    	selectedTab: store.OrchestrationReducer.selectedTab,
 			    	selectedEnterpriseId: store.OrchestrationReducer.selectedEnterpriseId,
+			    	selectedEnterprise: store.OrchestrationReducer.selectedEnterprise,
 			    	selectedBranchId: store.OrchestrationReducer.selectedBranchId,
+			    	selectedBranch: store.OrchestrationReducer.selectedBranch,
 			    	provider: store.OrchestrationReducer.provider,
 			    	mainContainerSize: store.MainContainerReducer.mainContainerSize
 			    };

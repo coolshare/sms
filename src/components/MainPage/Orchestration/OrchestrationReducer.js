@@ -2,12 +2,16 @@ import cm from '../../../common/CommunicationManager'
 import Utils from '../../../common/Utils'
 import Provider from '../../../common/models/Provider'
 
-const OrchestrationReducer = (state = {'selectedEnterprise':null, 'enterpriseList':[],'currentLink':null, 'search':'', 'selectedBranchId':null, 'selectedEnterpriseId':null, 'provider':new Provider(),'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
+const OrchestrationReducer = (state = {'isInit':false, 'selectedEnterprise':null, 'enterpriseList':[],'currentLink':null, 'search':'', 'selectedBranchId':null, 'selectedEnterpriseId':null, 'provider':new Provider(),'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
   switch (action.type) {
-  	case 'setEnterpriseList':
+  	case 'setIsInit':
       return Object.assign({}, state, {
-    	  enterpriseList: action.data
+    	  isInit: true
       })
+  	case 'setEnterpriseList':
+        return Object.assign({}, state, {
+      	  enterpriseList: action.data
+        })
   	case 'setSearch':
       return Object.assign({}, state, {
     	  search: action.data
@@ -25,11 +29,12 @@ const OrchestrationReducer = (state = {'selectedEnterprise':null, 'enterpriseLis
   			cm.nodeMap[cm.selectedBranchId].updateSelected(false);
   		}
   		cm.selectedBranchId = action.data;
-  		
-  		cm.nodeMap[cm.selectedBranchId].updateSelected(true);
+  		cm.selectedBranch = cm.nodeMap[cm.selectedBranchId]
+  		cm.selectedBranch.updateSelected(true);
         return Object.assign({}, state, {
         	selectedBranchId: action.data,
-        	noDetails:action.noDetails
+        	noDetails:action.noDetails,
+        	selectedBranch: cm.selectedBranch
         })
   	case 'setSelectedEnterpriseId':
   		console.log("cm.selectedEnterpriseId="+cm.selectedEnterpriseId)
@@ -47,6 +52,18 @@ const OrchestrationReducer = (state = {'selectedEnterprise':null, 'enterpriseLis
         	selectedEnterpriseId: action.data,
         	noDetails:action.noDetails,
         	selectedEnterprise: cm.selectedEnterprise
+        })
+  	case 'setSelectedEnterpriseDirty':
+  		var selectedEnterprise = Object.assign({}, cm.selectedEnterprise, {dirty:true});
+        return Object.assign({}, state, {
+        	selectedEnterprise: selectedEnterprise
+        })
+  	case 'setSelectedProviderDirty':
+  		var provider = Object.assign({}, state.provider, {
+      	  dirty: true
+        })
+  		return Object.assign({}, state, {
+      	  provider: provider
         })
   	case 'saveCurrentLink':
         return Object.assign({}, state, {

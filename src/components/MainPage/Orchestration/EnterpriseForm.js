@@ -12,6 +12,7 @@ class _EnterpriseForm extends Form {
 		e.preventDefault();
 		var data = this.collectFields(e);
 		cm.dispatch({"type":"/EnterpriseService/create", "params":[data],"options":{"response":(data2)=>{
+			cm.dispatch({"type":"setSelectedProviderDirty"});
 			cm.dispatch({"type":"ClosePopup"})
 
 		}}});
