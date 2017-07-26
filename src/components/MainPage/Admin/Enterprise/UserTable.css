@@ -1,0 +1,13 @@
+.table, td {
+    border: 1px solid black;
+	height: 50px;
+	align-self: center;
+}
+.tableHeader{
+	color: rgb(27,131,177);
+	text-align: center;
+}
+.tableScreen{
+    height: 300px;
+    overflow: auto;
+}

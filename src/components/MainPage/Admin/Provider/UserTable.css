@@ -1,0 +1,19 @@
+.table-bordered{
+	border : 5px solid black;
+	border-collapse : collapse;
+	width : 100%;
+}
+.tableScreen{
+    height: 300px;
+    overflow: auto;
+}
+tr:nth-child(even) {
+	border-top : 1px solid blue;
+}
+.evenRow{
+	background-color: #dffaff;
+}
+.oddRow{
+	background-color: #f0feff;
+}
+

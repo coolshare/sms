@@ -1,0 +1,16 @@
+.infoDivision{
+	padding-top: 5px;
+	height:200px;
+	background-color:#F1F1F1;
+	width:100%;
+	background: #0f4768;	
+}
+.infoHeader{
+	height:35px;
+	color : white;
+}
+.properties{
+	background-color:#59ABD2;
+	color:#ffffff;
+	margin-left : 10%;
+}
