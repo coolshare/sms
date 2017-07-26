@@ -132,7 +132,9 @@ export class _RemoteService extends Service {
 					  cm.dispatch({"type":options.action.type+"/done", "data":res})
 				  }}
 		$.ajax(ttt
-			)
+			).fail(function(response) {
+			    alert('Error: ' + response.responseText);
+			});
 
 	}
 	_put = (url, id, data, options) => {
