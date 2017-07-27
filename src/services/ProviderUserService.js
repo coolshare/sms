@@ -4,8 +4,7 @@ import {_RemoteService} from './RemoteService'
 class _ProviderUserService extends _RemoteService {
 	
 	constructor(name, key) {
-		super(name, key);
-		this.enterpriceId = null;		
+		super(name, key);	
 	}
 }
 const ProviderUserService = new _ProviderUserService("ProviderUserService", "user");

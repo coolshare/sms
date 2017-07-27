@@ -456,18 +456,24 @@ class _Orchestration extends React.Component {
 		      })
 		      .on("mouseup", (d)=>{
 					self.handleMouseUp(d);
-					//self.setState({"detailX":self.props.mainContainerSize.w+self.detailsW});
-					//if (!self.involveNode) {	
-						if (cm.selectedTab==="Provider") {
-							cm.dispatch({"type":"setSelectedEnterpriseId", "data":undefined})
-						} else if (cm.selectedTab==="Enterprise") {
-							cm.dispatch({"type":"setSelectedBranchId", "data":undefined})
-						}
-						
-						self.animateDetails(false)
-					//}
+	
+					if (cm.selectedTab==="Provider") {
+						cm.dispatch({"type":"setSelectedEnterpriseId", "data":undefined})
+					} else if (cm.selectedTab==="Enterprise") {
+						cm.dispatch({"type":"setSelectedBranchId", "data":undefined})
+					}
+					
+					self.animateDetails(false)
 					self.involveNode = false;
 				})
+			  .on("click", (d)=>{
+				  if (cm.overLink) {
+					  cm.dispatch({"type":"setSelectedLink", "data":cm.overLink})		
+				  }
+			  })
+			  
+			  
+			  
 		self.update(tab, nodes, linkMap, filter);
 	}
 	
@@ -490,21 +496,30 @@ class _Orchestration extends React.Component {
 							}		
 						})(link))
 						
-			  if (tab==="Enterprise") {
+			  if (tab==="Enterprise" && link.source.label!=="") {
 				  link.line.style("cursor", "pointer")			 
 				  	.on("click", ((me)=>{
 						return (d) => {													
-							cm.dispatch({"type":"setSelectedLink", "data":me})							
+							cm.dispatch({"type":"setSelectedLink", "data":me})
+							d3.event.stopPropagation();
 						}		
 					})(link))
 					.on("mouseover", ((me)=>{
 						return (d) => {													
-							me.line.attr("stroke-width", "3px")					
+							me.line.attr("stroke-width", "4px")	
+							cm.overLink = me
 						}		
 					})(link))
 					.on("mouseout", ((me)=>{
-						return (d) => {													
-							me.line.attr("stroke-width", "1px")					
+						return (d) => {	
+							setTimeout(()=>{
+								
+								if (cm.overLink==me) {
+									cm.overLink = undefined;
+								}
+								me.line.attr("stroke-width", "1px")	
+							}, 1000)						
+											
 						}		
 					})(link))
 			  }		
