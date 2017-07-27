@@ -24,7 +24,7 @@ class _AddLink extends React.Component {
 		//	data[f] = this.fields[f].value			
 		//}
 		//data.id = new Date().valueOf();
-		cm.dispatch({"type":"/EnterpriseLinkService/create", "params":[self.src.id, self.tar.id], "options":{"response":(data)=>{
+		cm.dispatch({"type":"/BranchLinkService/create", "params":[self.src.id, self.tar.id], "options":{"response":(data)=>{
 			cm.dispatch({"type":"setSelectedEnterpriseDirty"});
 			cm.dispatch({"type":"ClosePopup"})
 			//cm.dispatch({"type":"addBranchLink", "data":{"source":self.src.id, "target":self.tar.id}})

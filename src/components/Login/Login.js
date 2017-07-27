@@ -44,9 +44,8 @@ class  _Login extends React.Component{
 	* @return {ReactElement} markup
 	*/
 	render(){
-		if (this.props.enterpriseList===undefined) {
-			return null;
-		}
+		
+	console.log("cm.enterpriseList="+cm.enterpriseList)
 		var enterpriseList = this.props.enterpriseList.map((enterprise, idx)=>{
 			return (<option key={idx} value={enterprise.BusinessName+"|"+enterprise.EnterpriseId}>{enterprise.BusinessName}</option>)
 		})
@@ -75,7 +74,7 @@ class  _Login extends React.Component{
 						            	</select>
 						             (just for testing)</label></div>:null}
 					            </div>
-			    				<button onClick={this.handleLogin.bind(this)} style={{"marginTop":"20px", "marginLeft":"400px"}}>Log In</button>
+			    				<button disabled={cm.enterpriseList===undefined} onClick={this.handleLogin.bind(this)} style={{"marginTop":"20px", "marginLeft":"400px", "color":cm.enterpriseList===undefined?"#999":"#000"}}>Log In</button>
 			    				<div style={{"marginLeft":"20px"}}><a href="#">Forgot password</a></div>
 			    		</form>
 	    			</div>

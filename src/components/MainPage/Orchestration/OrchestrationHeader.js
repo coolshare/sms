@@ -38,9 +38,17 @@ class _OrchestrationHeader extends React.Component {
 		    	  		}}})
 			  			
 			  		} else if (this.props.selectedTab==="Enterprise") {
-			  			cm.dispatch({"type":"/BranchService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedBranchId")], "options":{"response":(data)=>{
-				  			cm.dispatch([{"type":"setSelectedBranchId", "data":undefined}, {"type":"setSelectedEnterpriseDirty"},{"type":"refreshOrchestration"}])
-		    	  		}}})
+			  			if (cm.selectedBranch) {
+			  				cm.dispatch({"type":"/BranchService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedBranchId")], "options":{"response":(data)=>{
+					  			cm.dispatch([{"type":"setSelectedBranchId", "data":undefined}, {"type":"setSelectedEnterpriseDirty"},{"type":"refreshOrchestration"}])
+			    	  		}}})
+			  			} else if (cm.selectedLink) {
+			  				//var link = cm.selectedLink
+			  				cm.dispatch({"type":"/BranchLinkService/remove", "params":[cm.selectedLink.source.id, cm.selectedLink.target.id], "options":{"response":(data)=>{
+					  			cm.dispatch([{"type":"setSelectedBranchId", "data":undefined}, {"type":"setSelectedEnterpriseDirty"},{"type":"refreshOrchestration"}])
+			    	  		}}})
+			  			}
+			  			
 			  			
 			  		}
 		    	  	cm.dispatch({"type":"hideNodeDetails"})
@@ -62,7 +70,14 @@ class _OrchestrationHeader extends React.Component {
 		if (selectedTab==="Provider") {
 			buttonName = ["Add Enterprise", "Remove Enterprise"]
 		} else {
-			buttonName = ["Add Branch", "Remove Branch"]
+			if (cm.selectedBranch) {
+				buttonName = ["Add Branch", "Remove Branch"]
+			} else if (cm.selectedLink) {
+				buttonName = ["Add Branch", "Remove Link"]
+			} else {
+				buttonName = ["Add Branch", "Remove"]
+			}
+			
 		}
 		
 		return (
@@ -72,7 +87,7 @@ class _OrchestrationHeader extends React.Component {
 		    		{this.props.selectedEnterpriseId===undefined?<span className="disabled" style={{"marginRight":"20px"}}>Enterprise</span>:<span className={selectedTab==="Enterprise"?"selectedTab":"unselectedTab"} style={{"marginRight":"20px"}} onClick={this.handleEnterprise.bind(this)}>Enterprise</span>}
 		    		<span style={{"float":"right", "fontSize":"70%", "marginRight":"20px", "textDecoration":"underline"}}>
 		    			<span className="headLink" style={{"marginRight":"20px"}} onClick={this.handleAdd.bind(this)}>{buttonName[0]}</span>
-		    			{this.props.selectedTab==="Provider" && this.props.selectedEnterpriseId!==undefined || this.props.selectedTab==="Enterprise" && this.props.selectedBranchId!==null?<span className="headLink" onClick={this.handleRemove.bind(this)}>{buttonName[1]}</span>:<span className="disabled" >{buttonName[1]}</span>}
+		    			{this.props.selectedTab==="Provider" && this.props.selectedEnterpriseId!==undefined || this.props.selectedTab==="Enterprise" && (this.props.selectedBranchId || cm.selectedLink)?<span className="headLink" onClick={this.handleRemove.bind(this)}>{buttonName[1]}</span>:<span className="disabled" >{buttonName[1]}</span>}
 		    		</span>
 			    </div>
 		    );
@@ -88,7 +103,8 @@ const OrchestrationHeader = connect(
 			    	selectedTab: store.OrchestrationReducer.selectedTab,
 			    	selectedBranchId: store.OrchestrationReducer.selectedBranchId,
 			    	selectedEnterpriseId: store.OrchestrationReducer.selectedEnterpriseId,
-			    	user: store.HeaderReducer.user
+			    	user: store.HeaderReducer.user,
+			    	selectedLink: store.OrchestrationReducer.selectedLink
 			    };
 			  }
 			)(_OrchestrationHeader);

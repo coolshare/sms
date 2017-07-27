@@ -114,7 +114,9 @@ class _Orchestration extends React.Component {
 			//this.loadEnterpriseBranch(()=>{
 			//	self.buildEnterpriseDiagram(undefined, undefined, true)
 			//})
-			
+			if (cm.selectedEnterpriseId===undefined) {
+				this.animateDetails(false)
+			}
 			
 		});
 		cm.subscribe("setSelectedBranchId", (action)=>{
@@ -122,6 +124,9 @@ class _Orchestration extends React.Component {
 			self.isDBClick = false;
 			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
 				this.animateDetails(true)
+			}
+			if (cm.selectedBranchId===undefined) {
+				this.animateDetails(false)
 			}
 		});
 		
@@ -249,7 +254,7 @@ class _Orchestration extends React.Component {
 				cm.nodeMap[b.id] = b;
 				selectedEnterprise.linkMap[selectedEnterprise.internetForEnterprise.id+"_"+b.id] = {"source":selectedEnterprise.internetForEnterprise, "target":b};
 			}
-			cm.dispatch({"type":"/EnterpriseLinkService/getAll", "options":{"response":(data)=>{
+			cm.dispatch({"type":"/BranchLinkService/getAll", "options":{"response":(data)=>{
 				
 				
 				for (var i=0; i<data.length;i++) {
@@ -367,7 +372,7 @@ class _Orchestration extends React.Component {
 		
 		
 	}
-	
+
 	buildEnterpriseDiagram(id, filter, forceReload) {
 		id = id||this.props.selectedEnterpriseId;
 		var enterprise = cm.provider.enterpriseMap[id] || cm.provider.enterpriseMap[cm.selectedEnterpriseId]
@@ -452,17 +457,23 @@ class _Orchestration extends React.Component {
 		      .on("mouseup", (d)=>{
 					self.handleMouseUp(d);
 					//self.setState({"detailX":self.props.mainContainerSize.w+self.detailsW});
-					//if (!self.involveNode) {						
+					//if (!self.involveNode) {	
+						if (cm.selectedTab==="Provider") {
+							cm.dispatch({"type":"setSelectedEnterpriseId", "data":undefined})
+						} else if (cm.selectedTab==="Enterprise") {
+							cm.dispatch({"type":"setSelectedBranchId", "data":undefined})
+						}
+						
 						self.animateDetails(false)
 					//}
 					self.involveNode = false;
 				})
-		self.update(nodes, linkMap, filter);
+		self.update(tab, nodes, linkMap, filter);
 	}
 	
 	
 
-	update(nodes, linkMap, filter) {
+	update(tab, nodes, linkMap, filter) {
 		  var self = this;
 		  
 		  var filteredMap = {};
@@ -473,7 +484,30 @@ class _Orchestration extends React.Component {
 			  }
 			  var g = link.g = self.svg.append("g").attr("class", "link")
 			  link.line = g.append("line").data([link]).attr("x1", link.source.xx).attr("y1", link.source.yy).attr("x2",
-						link.target.xx).attr("y2", link.target.yy)
+						link.target.xx).attr("y2", link.target.yy).attr("stroke", ((me)=>{
+							return (d) => {						
+								return cm.selectedLink===me?"#00F":"#D1D1D1"
+							}		
+						})(link))
+						
+			  if (tab==="Enterprise") {
+				  link.line.style("cursor", "pointer")			 
+				  	.on("click", ((me)=>{
+						return (d) => {													
+							cm.dispatch({"type":"setSelectedLink", "data":me})							
+						}		
+					})(link))
+					.on("mouseover", ((me)=>{
+						return (d) => {													
+							me.line.attr("stroke-width", "3px")					
+						}		
+					})(link))
+					.on("mouseout", ((me)=>{
+						return (d) => {													
+							me.line.attr("stroke-width", "1px")					
+						}		
+					})(link))
+			  }		
 		  }
 		  
 		  for (var i=0; i<nodes.length; i++) {
@@ -617,7 +651,7 @@ class _Orchestration extends React.Component {
 	
 	handleMouseUp = (d) => {
 		
-		
+		d3.event.stopPropagation();
 		d3.event.preventDefault();
 	
 		if (this.props.selectedTab!=="Enterprise") {

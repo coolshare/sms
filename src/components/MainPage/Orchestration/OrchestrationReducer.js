@@ -29,7 +29,22 @@ const OrchestrationReducer = (state = {'isInit':false, 'enterpriseList':[],'curr
         return Object.assign({}, state, {
       	  selectedTab: cm.selectedTab
         })
-  	case 'setSelectedBranchId':
+  	case 'setSelectedLink':
+  		if (cm.selectedLink) {
+  			cm.selectedLink.line.attr("stroke", "#D1D1D1").attr("stroke-width", "1px")	
+  		}
+  		if (action.data===cm.selectedLink) {
+  			cm.selectedLink = undefined;
+		} else {
+			cm.selectedLink = action.data
+		}	
+  		if (cm.selectedLink) {
+  			cm.selectedLink.line.attr("stroke", "#00F").attr("stroke-width", "2px")	
+  		}
+        return Object.assign({}, state, {
+        	selectedLink: cm.selectedLink
+        })
+    case 'setSelectedBranchId':
   		if (cm.selectedBranchId) {
   			cm.nodeMap[cm.selectedBranchId].updateSelected(false); 			
   		}
@@ -44,6 +59,7 @@ const OrchestrationReducer = (state = {'isInit':false, 'enterpriseList':[],'curr
   		
   		if (cm.selectedBranch) {
   			cm.selectedBranch.updateSelected(true);
+  			action.asyncDispatch({"type":"setSelectedLink", "data":undefined});
   		}
   		
         return Object.assign({}, state, {
@@ -51,11 +67,8 @@ const OrchestrationReducer = (state = {'isInit':false, 'enterpriseList':[],'curr
         	noDetails:noDetails
         })
   	case 'setSelectedEnterpriseId':
-  		console.log("cm.selectedEnterpriseId="+cm.selectedEnterpriseId)
-  		console.log("action.data="+action.data)
-  		var pre = cm.nodeMap[cm.selectedEnterpriseId];
-  		if (pre) {	
-  			pre.updateSelected(false);
+  		if (cm.selectedEnterprise) {	
+  			cm.selectedEnterprise.updateSelected(false);
   		}
   		var noDetails = action.noDetails
   		if (cm.selectedEnterpriseId===action.data) {
@@ -68,6 +81,7 @@ const OrchestrationReducer = (state = {'isInit':false, 'enterpriseList':[],'curr
   		
   		if (cm.selectedEnterprise) {
   			cm.selectedEnterprise.updateSelected(true);
+  			
   		}
   		console.log("cm.selectedEnterpriseId="+cm.selectedEnterpriseId)
         return Object.assign({}, state, {

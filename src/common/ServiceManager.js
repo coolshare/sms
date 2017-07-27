@@ -7,7 +7,7 @@ class ServiceManager {
 			require("../services/BranchService").default,
 			require("../services/EnterpriseService").default,
 			require("../services/EnterpriseGroupService").default,
-			require("../services/EnterpriseLinkService").default,
+			require("../services/BranchLinkService").default,
 			require("../services/EnterpriseUserService").default,
 			require("../services/ProviderGroupService").default,
 			require("../services/ProviderUserService").default
