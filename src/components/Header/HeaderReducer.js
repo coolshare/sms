@@ -4,17 +4,20 @@ import { browserHistory } from 'react-router';
 const HeaderReducer = (state = {'currentLink':'Orchestration', 'user':{}, 'path':[]}, action) => {
   switch (action.type) {
   	case 'switchTopLink':
+  	  cm.currentLink = action.id
       return Object.assign({}, state, {
-    	  currentLink: action.id
+    	  currentLink: cm.currentLink
       })
   
     case 'setUser':
+    	cm.user = action.data;
     	return Object.assign({}, state, {
-    		user: action.data
+    		user: cm.user
         })
     case 'setPath':
+      cm.path = action.path
       return Object.assign({}, state, {
-    	  path: action.path
+    	  path: cm.path
       })
     case 'pushPath':
     	var p = Object.assign([], state.path);
