@@ -16,6 +16,7 @@ class  _Login extends React.Component{
 	}
 	
 	componentDidMount() {
+		
 		cm.dispatch({"type":"/EnterpriseService/getAll", "options":{"response":(data)=>{
 			cm.dispatch({"type":"setEnterpriseList", "data":data})
 		}}})
@@ -24,7 +25,7 @@ class  _Login extends React.Component{
 		if (this.state.role==="Provider") {
 			cm.dispatch([{"type":"pushPath", "action":cm.routeData["Orchestration"]}, {"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value, "role":this.state.role, "company":{}}}]);
 		} else {
-			var list = this.company.value.split("|");
+			var list = this.refs.company.value.split("|");
 			cm.dispatch([{"type":"pushPath", "action":cm.routeData["Orchestration"]}, {"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value, "role":this.state.role, "company":{"EnterpriseId":list[1], "BusinessName":list[0]}}}]);
 		}
 		
@@ -71,7 +72,7 @@ class  _Login extends React.Component{
 						            <div><label><input name="role" type="radio" onChange={(e) => this.setRole(e)}  checked={this.state.role==="Provider"} value="Provider" ref="provider" />As a provider admin</label><label style={{"marginLeft":"18px"}}><input type="radio" checked={this.state.role==="Enterprise"} name="role" value="Enterprise" ref="enterprise" onChange={(e) => this.setRole(e)} />As a enterprise admin</label></div>
 						            {this.state.role==="Enterprise"?<div style={{"marginTop":"10px"}}>
 						            <label>Company Name:
-						            	<select type="text" onChange={this.handleCompany} ref = {(input) => { this.company = input; }}>
+						            	<select type="text" onChange={this.handleCompany.bind(this)} ref = "company">
 						            		{enterpriseList}	
 						            	</select>
 						             (just for testing)</label></div>:null}

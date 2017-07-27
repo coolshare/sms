@@ -2,116 +2,101 @@ import cm from '../../../common/CommunicationManager'
 import Utils from '../../../common/Utils'
 import Provider from '../../../common/models/Provider'
 
-const OrchestrationReducer = (state = {'isInit':false, 'selectedEnterprise':null, 'enterpriseList':[],'currentLink':null, 'search':'', 'selectedBranchId':null, 'selectedEnterpriseId':null, 'provider':new Provider(),'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
+const OrchestrationReducer = (state = {'isInit':false, 'enterpriseList':[],'currentLink':null, 'search':'', 'selectedBranchId':undefined, 'selectedEnterpriseId':undefined, 'provider':new Provider(),'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
   switch (action.type) {
   	case 'setIsInit':
+  	  cm.isInit = true
       return Object.assign({}, state, {
-    	  isInit: true
+    	  isInit: cm.isInit
       })
   	case 'setEnterpriseList':
+  		cm.enterpriseList = action.data
         return Object.assign({}, state, {
-      	  enterpriseList: action.data
+      	  enterpriseList: cm.enterpriseList
         })
   	case 'setSearch':
+  	  cm.search = action.data
       return Object.assign({}, state, {
-    	  search: action.data
+    	  search: cm.search
       })
     case 'setProvider':
+      cm.provider = action.data;
       return Object.assign({}, state, {
-    	  provider: action.data
+    	  provider: cm.provider
       })
   	case 'setSelectedTab':
+  		cm.selectedTab = action.data
         return Object.assign({}, state, {
-      	  selectedTab: action.data
+      	  selectedTab: cm.selectedTab
         })
   	case 'setSelectedBranchId':
   		if (cm.selectedBranchId) {
-  			cm.nodeMap[cm.selectedBranchId].updateSelected(false);
-  			if (cm.selectedBranchId===action.data) {
-  				cm.selectedBranchId = null;
-  				return Object.assign({}, state, {
-  		        	selectedBranchId: null,
-  		        	noDetails:action.noDetails,
-  		        	selectedBranch: null
-  		        })
-  			}
+  			cm.nodeMap[cm.selectedBranchId].updateSelected(false); 			
   		}
-  		cm.selectedBranchId = action.data;
-  		cm.selectedBranch = cm.nodeMap[cm.selectedBranchId]
-  		cm.selectedBranch.updateSelected(true);
+  		var noDetails = action.noDetails
+  		if (cm.selectedBranchId===action.data) {
+  			cm.selectedBranchId = cm.selectedBranch = undefined;
+  			noDetails = true
+  		} else {
+  			cm.selectedBranchId = action.data;
+  	  		cm.selectedBranch = cm.nodeMap[cm.selectedBranchId]
+  		}
+  		
+  		if (cm.selectedBranch) {
+  			cm.selectedBranch.updateSelected(true);
+  		}
+  		
         return Object.assign({}, state, {
-        	selectedBranchId: action.data,
-        	noDetails:action.noDetails,
-        	selectedBranch: cm.selectedBranch
+        	selectedBranchId: cm.selectedBranchId,
+        	noDetails:noDetails
         })
   	case 'setSelectedEnterpriseId':
   		console.log("cm.selectedEnterpriseId="+cm.selectedEnterpriseId)
+  		console.log("action.data="+action.data)
   		var pre = cm.nodeMap[cm.selectedEnterpriseId];
   		if (pre) {	
   			pre.updateSelected(false);
   		}
-  		cm.selectedEnterpriseId = action.data;
-  		cm.selectedEnterprise = cm.nodeMap[cm.selectedEnterpriseId]
+  		var noDetails = action.noDetails
+  		if (cm.selectedEnterpriseId===action.data) {
+  			cm.selectedEnterpriseId = cm.selectedEnterprise = undefined;
+  			noDetails = true
+  		} else {
+  			cm.selectedEnterpriseId = action.data;
+  	  		cm.selectedEnterprise = cm.nodeMap[cm.selectedEnterpriseId]
+  		}
+  		
   		if (cm.selectedEnterprise) {
   			cm.selectedEnterprise.updateSelected(true);
   		}
-  		
+  		console.log("cm.selectedEnterpriseId="+cm.selectedEnterpriseId)
         return Object.assign({}, state, {
-        	selectedEnterpriseId: action.data,
-        	noDetails:action.noDetails,
-        	selectedEnterprise: cm.selectedEnterprise
+        	selectedEnterpriseId: cm.selectedEnterpriseId,
+        	noDetails:noDetails
         })
   	case 'setSelectedEnterpriseDirty':
   		cm.selectedEnterprise.dirty = true;
-  		var selectedEnterprise = Object.assign({}, cm.selectedEnterprise, {dirty:true});
+  		cm.selectedEnterprise = Object.assign({}, state.selectedEnterprise, {dirty:true});
         return Object.assign({}, state, {
-        	selectedEnterprise: selectedEnterprise
+        	selectedEnterprise: cm.selectedEnterprise
         })
-  	case 'setSelectedProviderDirty':
+  	case 'setProviderDirty':
   		state.provider.dirty = true;
-  		var provider = Object.assign({}, state.provider, {
+  		cm.provider = Object.assign({}, state.provider, {
       	  dirty: true
         })
   		return Object.assign({}, state, {
-      	  provider: provider
+      	  provider: cm.provider
         })
   	case 'saveCurrentLink':
+  		cm.currentLink = [action.source, action.target]
         return Object.assign({}, state, {
-        	currentLink: [action.source, action.target]
+        	currentLink: cm.currentLink
         })
     default:
       return state
   }
-  function findNodes(orchestrationData, pNodeOnly) {
-	  
-  	let pNode = null;
-  	for (let i=0; i<orchestrationData.Clusters.length; i++) {
-  		pNode = Utils.findNode(action.data.node1.id, orchestrationData.Clusters[i]);
-  		if (pNode!==null) {
-  			break;
-  		}
-  	}
-  	if (pNodeOnly) {
-  		if (pNode===null) {
-  			console.log("Node is missing when ...")
-  			return null;
-  		}
-  		return [pNode, null]
-  	}
-  	let cNode = null;
-  	
-  	for (let i=0; i<orchestrationData.Clusters.length; i++) {
-  		cNode = Utils.findNode(action.data.node2.id, orchestrationData.Clusters[i]);
-  		if (cNode!==null) {
-  			break;
-  		}
-  	}
-  	if (pNode===null || cNode===null) {
-		console.log("Node is missing when addLink")
-		return null;
-	}
-  	return [pNode, cNode]
-  }
+ 
   
 }
 

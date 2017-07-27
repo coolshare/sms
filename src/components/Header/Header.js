@@ -12,7 +12,7 @@ class _Header extends React.Component{
 	handleLink = (id, e)=> {
 		e.preventDefault();
 		browserHistory.push('/'+id);
-		cm.store.dispatch({'type':'switchTopLink', 'id':id});
+		cm.dispatch([{'type':'switchTopLink', 'id':id},{"type":"refreshOrchestration"}]);
 		
 	}
 	componentDidMount() {
@@ -23,10 +23,10 @@ class _Header extends React.Component{
 				path = p;
 			}
 		}
-		cm.store.dispatch({'type':'setPath', 'path':path});
+		cm.dispatch({'type':'setPath', 'path':path});
 	}
 	handleLogout() {
-		cm.store.dispatch({'type':'clearBrowserHistory'});
+		cm.dispatch({'type':'clearBrowserHistory'});
 	}
 	
 	reconstructPath() {

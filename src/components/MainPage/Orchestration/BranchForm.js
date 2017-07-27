@@ -13,8 +13,7 @@ class _BranchForm extends Form {
 		var data = this.collectFields(e);
 		cm.dispatch({"type":"/BranchService/create", "params":[data],"options":{"response":(data2)=>{
 			
-			cm.dispatch({"type":"setSelectedEnterpriseDirty"});
-			cm.dispatch({"type":"ClosePopup"})
+			cm.dispatch([{"type":"setSelectedEnterpriseDirty"},{"type":"refreshOrchestration"}, {"type":"ClosePopup"}])
 
 		}}});
 		
@@ -70,7 +69,7 @@ const BranchForm = connect(
 			    var id = store.OrchestrationReducer.selectedEnterpriseId;
 			    var enterprise = provider.enterpriseMap[id];
 			    id = store.OrchestrationReducer.selectedBranchId
-			    if (id===null) {
+			    if (enterprise.branchMap[id]===undefined) {
 			    	return {
 				    	branch: {}
 				    };

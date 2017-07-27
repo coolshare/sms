@@ -12,11 +12,10 @@ class _EnterpriseForm extends Form {
 		e.preventDefault();
 		var data = this.collectFields(e);
 		cm.dispatch({"type":"/EnterpriseService/create", "params":[data],"options":{"response":(data2)=>{
-			cm.dispatch({"type":"setSelectedProviderDirty"});
-			cm.dispatch({"type":"ClosePopup"})
+			cm.dispatch([{"type":"setProviderDirty"},{"type":"refreshOrchestration"},{"type":"ClosePopup"}])
 
 		}}});
-		cm.dispatch({"type":"ClosePopup"})		
+		//cm.dispatch({"type":"ClosePopup"})		
 		
 	}
 	
@@ -69,7 +68,7 @@ const EnterpriseForm = connect(
 		  store => {
 			    var provider = store.OrchestrationReducer.provider;
 			    var id = store.OrchestrationReducer.selectedEnterpriseId
-			    if (id===null) {
+			    if (provider.enterpriseMap[id]===undefined) {
 			    	enterprise:{}
 			    } else {
 			    	return {

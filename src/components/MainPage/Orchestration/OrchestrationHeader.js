@@ -9,11 +9,11 @@ import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
 	
 class _OrchestrationHeader extends React.Component {
 	handleProvider() {
-		cm.dispatch({"type":"setSelectedTab", "data":"Provider"})
+		cm.dispatch([{"type":"setSelectedTab", "data":"Provider"},{"type":"refreshOrchestration"}])
 
 	}
 	handleEnterprise() {
-		cm.dispatch({"type":"setSelectedTab", "data":"Enterprise"})
+		cm.dispatch([{"type":"setSelectedTab", "data":"Enterprise"},{"type":"refreshOrchestration"}])
 
 	}
 	
@@ -34,12 +34,12 @@ class _OrchestrationHeader extends React.Component {
 		      onConfirm: () => {
 		    	  	if (this.props.selectedTab==="Provider") {
 		    	  		cm.dispatch({"type":"/EnterpriseService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedEnterpriseId")], "options":{"response":(data)=>{
-				  			cm.dispatch({"type":"setSelectedTab", "data":this.props.selectedTab})
+				  			cm.dispatch([{"type":"setSelectedEnterpriseId", "data":undefined}, {"type":"setProviderDirty"}, {"type":"refreshOrchestration"}])
 		    	  		}}})
 			  			
 			  		} else if (this.props.selectedTab==="Enterprise") {
 			  			cm.dispatch({"type":"/BranchService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedBranchId")], "options":{"response":(data)=>{
-				  			cm.dispatch({"type":"setSelectedTab", "data":this.props.selectedTab})
+				  			cm.dispatch([{"type":"setSelectedBranchId", "data":undefined}, {"type":"setSelectedEnterpriseDirty"},{"type":"refreshOrchestration"}])
 		    	  		}}})
 			  			
 			  		}
@@ -52,7 +52,7 @@ class _OrchestrationHeader extends React.Component {
 	}
 	handleChange = (e) => {
 		
-		cm.dispatch({"type":"setSearch", "data":e.target.value})
+		cm.dispatch([{"type":"setSearch", "data":e.target.value},{"type":"refreshOrchestration"}])
 
 	}
 	  render() {
@@ -69,10 +69,10 @@ class _OrchestrationHeader extends React.Component {
 		    	<div style={{"margin":"8px"}}>
 		    		<input placeholder="Search" ref={(input)=>this.searchField = input} onChange={(e)=>this.handleChange(e)} style={{"marginRight":"20px"}}/>
 		    		{this.props.user.role==="Provider"?<span className={selectedTab==="Provider"?"selectedTab":"unselectedTab"} style={{"marginRight":"20px"}} onClick={this.handleProvider.bind(this)}>Provider</span>:null}
-		    		{this.props.selectedEnterpriseId===null?<span className="disabled" style={{"marginRight":"20px"}}>Enterprise</span>:<span className={selectedTab==="Enterprise"?"selectedTab":"unselectedTab"} style={{"marginRight":"20px"}} onClick={this.handleEnterprise.bind(this)}>Enterprise</span>}
+		    		{this.props.selectedEnterpriseId===undefined?<span className="disabled" style={{"marginRight":"20px"}}>Enterprise</span>:<span className={selectedTab==="Enterprise"?"selectedTab":"unselectedTab"} style={{"marginRight":"20px"}} onClick={this.handleEnterprise.bind(this)}>Enterprise</span>}
 		    		<span style={{"float":"right", "fontSize":"70%", "marginRight":"20px", "textDecoration":"underline"}}>
 		    			<span className="headLink" style={{"marginRight":"20px"}} onClick={this.handleAdd.bind(this)}>{buttonName[0]}</span>
-		    			{this.props.selectedTab==="Provider" && this.props.selectedEnterpriseId!==null || this.props.selectedTab==="Enterprise" && this.props.selectedBranchId!==null?<span className="headLink" onClick={this.handleRemove.bind(this)}>{buttonName[1]}</span>:<span className="disabled" >{buttonName[1]}</span>}
+		    			{this.props.selectedTab==="Provider" && this.props.selectedEnterpriseId!==undefined || this.props.selectedTab==="Enterprise" && this.props.selectedBranchId!==null?<span className="headLink" onClick={this.handleRemove.bind(this)}>{buttonName[1]}</span>:<span className="disabled" >{buttonName[1]}</span>}
 		    		</span>
 			    </div>
 		    );

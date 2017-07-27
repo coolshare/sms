@@ -164,7 +164,7 @@ export class _RemoteService extends Service {
 			  contentType:"application/json; charset=utf-8",
 			  dataType:"json",
 			  success: function(res){
-				  debugger
+				  
 				  if (options.response) {
 					  options.response(res);
 				  }

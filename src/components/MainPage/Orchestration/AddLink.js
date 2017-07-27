@@ -38,9 +38,10 @@ class _AddLink extends React.Component {
 	}
 	render() {
 		var self = this;
-
+		
+		cm.selectedEnterprise = cm.provider.enterpriseMap[cm.selectedEnterpriseId]
 		this.src = cm.selectedEnterprise.branchMap[this.props.currentLink[0]]
-		this.tar = cm.selectedEnterprise.branchMap[this.props.currentLink[1]]
+		this.tar = cm.	selectedEnterprise.branchMap[this.props.currentLink[1]]
 	    return (
 				
 			<div style={{"minHeight":Utils.screenH+"px", "minWidth":"700px"}}>
