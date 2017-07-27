@@ -17,9 +17,7 @@ class  _Login extends React.Component{
 	
 	componentDidMount() {
 		
-		cm.dispatch({"type":"/EnterpriseService/getAll", "options":{"response":(data)=>{
-			cm.dispatch({"type":"setEnterpriseList", "data":data})
-		}}})
+		
 	}
 	handleLogin= () => {
 		if (this.state.role==="Provider") {

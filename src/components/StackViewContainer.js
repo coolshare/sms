@@ -22,7 +22,10 @@ import { browserHistory } from 'react-router';
 				let id = cc[1]+"_"+Utils.getId()
 				for (let i=0; i<this.idList.length; i++) {
 					let cc = document.getElementById(this.idList[i]);
-					cc.style.display = "none"
+					if (cc) {
+						cc.style.display = "none"
+					}
+					
 				}
 				this.idList.push(id);
 				var comList = [...this.state.componentList];

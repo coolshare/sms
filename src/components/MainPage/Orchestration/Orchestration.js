@@ -93,11 +93,11 @@ class _Orchestration extends React.Component {
 					}				
 				}
 			} else if (self.user.role==="Enterprise") {
-
-				if (cm.provider.enterpriseMap[self.user.company.EnterpriseId]===undefined) {
+				cm.selectedEnterprise  = cm.provider.enterpriseMap[self.user.company.EnterpriseId]
+				if (cm.provider.enterpriseMap[self.user.company.EnterpriseId]===undefined || cm.selectedEnterprise.dirty) {
 					self.loadEnterPrise();
 				} else {
-					self.buildEnterpriseDiagram(cm.getStoreValue("OrchestrationReducer", "selectedEnterpriseId"), filter)
+					self.buildEnterpriseDiagram(cm.getStoreValue("OrchestrationReducer", "selectedEnterpriseId"), filter, true)
 				}
 				
 			}
@@ -177,7 +177,12 @@ class _Orchestration extends React.Component {
 		var provider = cm.provider = cm.getStoreValue("OrchestrationReducer","provider")
 		
 		cm.selectedEnterpriseId = this.user.company.EnterpriseId
-		if (provider.enterpriseMap[cm.selectedEnterpriseId]!==undefined || self.loadingEnterprise) {
+		//var ddd = cm.selectedEnterprise = cm.provider.enterpriseMap[cm.selectedEnterpriseId];
+		if (cm.selectedEnterprise!==undefined) {
+			console.log("ttt="+cm.selectedEnterprise!==undefined && !cm.selectedEnterprise.dirty)
+		}
+		
+		if (cm.selectedEnterprise!==undefined && !cm.selectedEnterprise.dirty || self.loadingEnterprise) {
 			return;
 		}
 		self.loadingEnterprise = true;
@@ -197,8 +202,9 @@ class _Orchestration extends React.Component {
 	  		
 	  		//if (enterprise.dirty) {
 	  			self.loadEnterpriseBranch(()=>{
-	  				cm.dispatch({"type":"setProvider", "data":cm.provider})
-					cm.dispatch({"type":"setSelectedTab", "data":self.user.role})
+	  				cm.dispatch([{"type":"setProvider", "data":cm.provider}, {"type":"setSelectedTab", "data":self.user.role},
+	  					{"type":"refreshOrchestration"}])
+	  				self.loadingEnterprise = false;
 	  			})
 	  		//} else {
 	  		//	cm.dispatch({"type":"setProvider", "data":cm.provider})
@@ -215,7 +221,7 @@ class _Orchestration extends React.Component {
 	console.log("enter loadEnterpriseBranch")
 		var self = this;
 	
-		cm.selectedEnterpriseId = cm.getStoreValue("OrchestrationReducer","selectedEnterpriseId")
+		//cm.selectedEnterpriseId = cm.getStoreValue("OrchestrationReducer","selectedEnterpriseId")
 		if (cm.selectedEnterpriseId==undefined) {
 			return;
 		}
@@ -364,7 +370,7 @@ class _Orchestration extends React.Component {
 	
 	buildEnterpriseDiagram(id, filter, forceReload) {
 		id = id||this.props.selectedEnterpriseId;
-		var enterprise = cm.provider.enterpriseMap[id] 
+		var enterprise = cm.provider.enterpriseMap[id] || cm.provider.enterpriseMap[cm.selectedEnterpriseId]
 		this.drawDiagram("Enterprise", enterprise.nodes, enterprise.linkMap, filter, forceReload);
 	}
 	
