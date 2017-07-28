@@ -59,7 +59,7 @@ export class _RemoteService extends Service {
 				   
 		      } else {
 	    		  if (options.forwardType!=undefined) {
-					  cm.dispatch({"type":"__Forward__", "aciton":{"type": options.forwardType, "data":res.data}});
+					  cm.dispatch({"type":"__FORWARD__", "action":{"type": options.forwardType, "data":res.data}});
 				  }
 				  if (options.response) {
 					  options.response(res.data);

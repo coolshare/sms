@@ -33,18 +33,22 @@ export const asyncDispatchMiddleware = store => next => action => {
 	  const actionWithAsyncDispatch =
 	    Object.assign({}, action, { asyncDispatch });
 
-	  if (action.type==="__FORWARD__") {
-		  action.asyncDispatch(action.action);
-	  }
-	  if (action.options && action.options.callback !== undefined) {
-	    	action.asyncDispatch({"type":action.type, "data":action});
-	  }
-	  if (action._type === "__setState__") {
-	    	let list = action._data.split(".");
-	    	action.asyncDispatch({"type":list[0], "data": action.data}); 		
-  	  }
+	  
 	  
 	  let result = next(actionWithAsyncDispatch);
+	  
+	  if (result.type==="__FORWARD__") {
+		  result.asyncDispatch(action.action);
+	  }
+	  if (result.options && action.options.callback !== undefined) {
+		  result.asyncDispatch({"type":result.type, "data":action});
+	  }
+	  if (result._type === "__setState__") {
+	    	let list = action._data.split(".");
+	    	result.asyncDispatch({"type":list[0], "data": result.data}); 		
+  	  }
+	  
+	  
 	  syncActivityFinished = true;
 	  flushQueue();
 	  console.log('next state', store.getState())

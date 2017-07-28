@@ -40,6 +40,7 @@ class _AddLink extends React.Component {
 		var self = this;
 		
 		cm.selectedEnterprise = cm.provider.enterpriseMap[cm.selectedEnterpriseId]
+		var dd = cm.selectedEnterprise
 		this.src = cm.selectedEnterprise.branchMap[this.props.currentLink[0]]
 		this.tar = cm.	selectedEnterprise.branchMap[this.props.currentLink[1]]
 	    return (

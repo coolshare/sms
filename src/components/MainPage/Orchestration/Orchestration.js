@@ -233,6 +233,7 @@ class _Orchestration extends React.Component {
 		var provider = cm.getStoreValue("OrchestrationReducer","provider")
 		
 		var selectedEnterprise = cm.selectedEnterprise = provider.enterpriseMap[cm.selectedEnterpriseId]
+		var dd = cm.selectedEnterprise
 		if (selectedEnterprise==undefined || !selectedEnterprise.dirty) {
 			return;
 		}

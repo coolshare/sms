@@ -10,6 +10,7 @@ const OrchestrationReducer = (state = {'isInit':false, 'enterpriseList':[],'curr
     	  isInit: cm.isInit
       })
   	case 'setEnterpriseList':
+  		console.log("<<====== received all enterprise")
   		cm.enterpriseList = action.data
         return Object.assign({}, state, {
       	  enterpriseList: cm.enterpriseList
@@ -67,7 +68,8 @@ const OrchestrationReducer = (state = {'isInit':false, 'enterpriseList':[],'curr
         	noDetails:noDetails
         })
   	case 'setSelectedEnterpriseId':
-  		if (cm.selectedEnterprise) {	
+  		if (cm.selectedEnterprise) {
+  			var dd = cm.selectedEnterprise
   			cm.selectedEnterprise.updateSelected(false);
   		}
   		var noDetails = action.noDetails
@@ -77,6 +79,7 @@ const OrchestrationReducer = (state = {'isInit':false, 'enterpriseList':[],'curr
   		} else {
   			cm.selectedEnterpriseId = action.data;
   	  		cm.selectedEnterprise = cm.nodeMap[cm.selectedEnterpriseId]
+  	  	var dd = cm.selectedEnterprise
   		}
   		
   		if (cm.selectedEnterprise) {
@@ -89,8 +92,11 @@ const OrchestrationReducer = (state = {'isInit':false, 'enterpriseList':[],'curr
         	noDetails:noDetails
         })
   	case 'setSelectedEnterpriseDirty':
+  		var  mm = cm.selectedEnterprise.updateSelected
   		cm.selectedEnterprise.dirty = true;
-  		cm.selectedEnterprise = Object.assign({}, state.selectedEnterprise, {dirty:true});
+  		cm.selectedEnterprise = Object.assign({}, cm.selectedEnterprise);
+  		cm.selectedEnterprise.updateSelected = mm
+
         return Object.assign({}, state, {
         	selectedEnterprise: cm.selectedEnterprise
         })
