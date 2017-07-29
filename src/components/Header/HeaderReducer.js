@@ -6,7 +6,8 @@ const HeaderReducer = (state = {'currentLink':'Orchestration', 'user':{}, 'path'
   	case 'switchTopLink':
   	  cm.currentLink = action.id
       return Object.assign({}, state, {
-    	  currentLink: cm.currentLink
+    	  currentLink: cm.currentLink,
+    	  path:[cm.routeData[cm.currentLink]]
       })
   
     case 'setUser':

@@ -11,7 +11,6 @@ import Branch from '../../../common/models/Branch'
 import {PopupCloseBox} from '../../../common/PopupComponents'
 import Utils from '../../../common/Utils'
 import {InternetNode, HostNode, PodNode} from './DiagramElements'
-import Header from '../../../components/Header/Header'
 import Provider from '../../../common/models/Provider'
 
 
@@ -348,8 +347,8 @@ class _Orchestration extends React.Component {
 		if (d.type==="Enterprise" && d.label.length>0) {
 			cm.dispatch([{"type":"setSelectedEnterpriseId", "data":d.id},
 				{"type":"setSelectedTab", "data":"Enterprise"},
-				{"type":"refreshOrchestration"}])
-			
+				{"type":"refreshOrchestration"},{"type":"pushPath", "action":cm.routeData["Enterprise"]}])
+				
 			
 		}
 	}
@@ -734,22 +733,19 @@ class _Orchestration extends React.Component {
 		//console.log("X="+self.state.detailX)
 		
 	    return (
-	    	<div>
-	    		<Header/>
-		    	<div style={{"minHeight":this.props.mainContainerSize.h+"px"}} ref="orchestrationMain">
-		    		{cm.isStackEmpty()?null:<div className="PopupHeader"><PopupCloseBox/></div>}
-		    		<div style={{"width":"100vw"}}>
-			    		<OrchestrationHeader/>
-			    		<div id="svg"/>
-				    	
-					</div>
-					<div ref="detailPane" style={{"position":"absolute","left":self.state.detailX, "top":"130px", "width":self.detailsW+"px", "height":this.props.mainContainerSize.h+"px", "border": "1px solid black"}}>
-						{this.props.selectedTab==="Provider"?<OrchestrationEnterpriseDetail selectedEnterpriseId={self.props.selectedEnterpriseId}  title="Enterprise Info"/>:
-						this.props.selectedTab==="Enterprise"?		
-						<OrchestrationBranchDetail selectedBranchId={self.props.selectedBranchId} title="Branch Info"/>:null}
-					</div>
-					<OrchestrationFloatMenu/>	
+	    	<div style={{"minHeight":this.props.mainContainerSize.h+"px"}} ref="orchestrationMain">
+	    		{cm.isStackEmpty()?null:<div className="PopupHeader"><PopupCloseBox/></div>}
+	    		<div style={{"width":"100vw"}}>
+		    		<OrchestrationHeader/>
+		    		<div id="svg"/>
+			    	
 				</div>
+				<div ref="detailPane" style={{"position":"absolute","left":self.state.detailX, "top":"130px", "width":self.detailsW+"px", "height":this.props.mainContainerSize.h+"px", "border": "1px solid black"}}>
+					{this.props.selectedTab==="Provider"?<OrchestrationEnterpriseDetail selectedEnterpriseId={self.props.selectedEnterpriseId}  title="Enterprise Info"/>:
+					this.props.selectedTab==="Enterprise"?		
+					<OrchestrationBranchDetail selectedBranchId={self.props.selectedBranchId} title="Branch Info"/>:null}
+				</div>
+				<OrchestrationFloatMenu/>	
 			</div>
 	    )
 	}

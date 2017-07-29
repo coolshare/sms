@@ -31,7 +31,6 @@ class _Admin extends React.Component{
 		
 		return (
 			<div id = "root">
-				<Header/>
 				<Grid style = {{"width" : "100%", "height": "100%"}}>
 					{/*role==="Provider"?*/}
 						<Row>

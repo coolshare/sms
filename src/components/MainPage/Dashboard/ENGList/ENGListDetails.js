@@ -26,9 +26,8 @@ class _ENGListDetails extends React.Component{
 	render(){
 		return (
 			<div>	
-				<Header/>
 				<div>
-				<Dispatcher action={{"type":"/RemoteService/getThroughProxy", "data":{"url":"http://coolshare.com/markqian/AngularJS/Directives/RoutedTab/data/House.json"}}}><span style={{"cursor":"pointer"}}>ENGListDetails</span></Dispatcher>
+					<Dispatcher action={{"type":"/RemoteService/getThroughProxy", "data":{"url":"http://coolshare.com/markqian/AngularJS/Directives/RoutedTab/data/House.json"}}}><span style={{"cursor":"pointer"}}>ENGListDetails</span></Dispatcher>
 				</div>
 				<div><span onClick={this.handleClick}>Test</span></div>
       		</div>

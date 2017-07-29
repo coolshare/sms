@@ -19,7 +19,6 @@ export class _RemoteService extends Service {
 		this._get("http://73.71.159.185:8888?url="+url, options, key, result, requests, len)
 	};
 	_get = (url, options, result, requests, len) => {
-		
 		options = options||{};
 		let self = this;
 		if (url.data) {
@@ -58,15 +57,7 @@ export class _RemoteService extends Service {
 				  }
 				   
 		      } else {
-	    		  if (options.forwardType!=undefined) {
-					  cm.dispatch({"type":"__FORWARD__", "action":{"type": options.forwardType, "data":res.data}});
-				  }
-				  if (options.response) {
-					  options.response(res.data);
-				  }
-		      
-			  
-				  cm.dispatch({"type":options.action.type+"/done", "data":res.data})
+		    	  self._noticeDone(options, res.data);
 		      } 
 			  return res;
 		  })/*.catch(function (error) {
@@ -126,12 +117,7 @@ export class _RemoteService extends Service {
 				  data:JSON.stringify(data),
 				  dataType:"json",
 				  success: function(res){
-					  
-					  if (options.response) {
-						  options.response(res);
-					  }
-					  
-					  cm.dispatch({"type":options.action.type+"/done", "data":res})
+					  self._noticeDone(options, res);
 				  }}
 		$.ajax(ttt
 			).fail(function(response) {
@@ -148,11 +134,7 @@ export class _RemoteService extends Service {
 			  contentType:"application/json; charset=utf-8",
 			  dataType:"json",
 			  success: function(res){
-				  if (options.response) {
-					  options.response(res);
-				  }
-				  
-				  cm.dispatch({"type":options.action.type+"/done", "data":res})
+				  self._noticeDone(options, res);
 			  }
 			})
 	}
@@ -164,17 +146,21 @@ export class _RemoteService extends Service {
 			  contentType:"application/json; charset=utf-8",
 			  dataType:"json",
 			  success: function(res){
-				  
-				  if (options.response) {
-					  options.response(res);
-				  }
-
-				  
-				  cm.dispatch({"type":options.action.type+"/done", "data":res})
+				  self._noticeDone(options, res);
 			  }
 			})
 	}
 	
+	_noticeDone = (options, res) => {
+		if (options.forwardType!=undefined) {
+			  cm.dispatch({"type":"__FORWARD__", "action":{"type": options.forwardType, "data":res}});
+		  }
+		if (options.response) {
+			  options.response(res);
+		}
+		cm.dispatch({"type":options.action.type+"/done", "data":res})
+		cm.setProgress(false)
+	}
 	get = (action) => {
 		var options = action.options||{};
 		options.action = action;
@@ -229,6 +215,7 @@ export class _RemoteService extends Service {
 		}
 		this._get(url + this.key+"/", options);	
 	}
+	
   }
 const RemoteService = new _RemoteService("RemoteService");
 export default RemoteService;

@@ -15,10 +15,7 @@ class _ResouceUsageDetails extends React.Component{
 	render(){
 		return (
 			<div>	
-				<Header/>
-				<div>
 				ResouceUsageDetails
-				</div>
       		</div>
 		)
 	}

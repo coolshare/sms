@@ -31,7 +31,7 @@ render(
 					let r = cm.routeData[key]
 					return (<Route key={idx} path={r.path} component={r.component} />)
 				})
-			}			
+			}	
 		</Route>
 	</Router>
   </Provider>,

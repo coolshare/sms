@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import {connect} from 'react-redux'
 import cm from '../common/CommunicationManager'
-import Header from './Header/Header'
 import Utils from '../common/Utils'
 import { browserHistory } from 'react-router';
 /**

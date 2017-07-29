@@ -2,7 +2,7 @@ import { browserHistory } from 'react-router';
 import {gm} from '../common/Common'
 import Login from '../components/Login/Login'
 import TopContainer from '../components/TopContainer'
-import MainRouteContainer from '../components/MainRouteContainer'
+import DashboardContainer from '../components/MainPage/Dashboard/DashboardContainer'
 import StackViewContainer from '../components/StackViewContainer'
 import OrchestrationDetails from '../components/MainPage/Dashboard/Orchestration/OrchestrationDetails'
 import ENGListDetails from '../components/MainPage/Dashboard/ENGList/ENGListDetails'
@@ -17,15 +17,16 @@ import Admin from '../components/MainPage/Admin/Admin'
 
 const routeData = {
 		"Login":{"label":"Login", "component":Login, "icon":"", "path":"Login"},
-		"Home":{"label":"Home", "component":MainRouteContainer, "icon":"", "path":"Home"},
+		"Home":{"label":"Home", "component":Orchestration, "icon":"", "path":"Home"},
 		"TopContainer":{"label":"TopContainer", "component":TopContainer, "icon":"", "path":"Home"},	
-		"MainRouteContainer":{"label":"MainRouteContainer", "component":MainRouteContainer, "icon":"", "path":"MainRouteContainer"},	
+		"Dashboard":{"label":"Dashboard", "component":DashboardContainer, "icon":"", "path":"Dashboard"},	
 		"StackViewContainer":{"label":"StackViewContainer", "component":StackViewContainer, "icon":"", "path":"StackViewContainer"},
 		"OrchestrationDetails":{"label":"OrchestrationDetails", "component":OrchestrationDetails, "path":"OrchestrationDetails"},
 		"ENGListDetails":{"label":"ENGListDetails", "component":ENGListDetails, "path":"ENGListDetails"},
 		"ENGAlertsDetails":{"label":"ENGAlertsDetails", "component":ENGAlertsDetails, "icon":"", "path":"ENGAlertsDetails"},
 		"ResouceUsageDetails":{"label":"ResouceUsageDetails", "component":ResouceUsageDetails, "icon":"", "path":"ResouceUsageDetails"},
 		"Orchestration":{"label":"Orchestration", "component":Orchestration, "icon":"", "path":"Orchestration"},
+		"Enterprise":{"label":"Enterprise", "component":Orchestration, "icon":"", "path":"Enterprise"},
 		"AddEnterprise":{"label":"AddEnterprise", "component":AddEnterprise, "icon":"", "path":"AddEnterprise"},
 		"AddBranch":{"label":"AddBranch", "component":AddBranch, "icon":"", "path":"AddBranch"},
 		"AddLink":{"label":"AddLink", "component":AddLink, "icon":"", "path":"AddLink"},
@@ -171,6 +172,11 @@ class CommunicationManager {
 	}
 	setStoreValue(key, subKey, value) {
 		this.store.getState()[key][subKey] = value;
+	}
+	
+	setProgress = (show) => {
+		
+		this.progress1.style.display = this.progress2.style.display = show?"block":"none"
 	}
 }
 

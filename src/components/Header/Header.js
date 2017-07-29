@@ -76,10 +76,10 @@ class _Header extends React.Component{
 
 		return (
 			
-			<div id="header"   style={{'height':'70px', 'margin':'5px','border':'1px solid #e1e1e1', "backgroundColor":"#1b83b1", "color":"#AAA"}}>
+			<div id="header"   style={{'height':'70px','border':'1px solid #e1e1e1', "backgroundColor":"#1b83b1", "color":"#AAA"}}>
 				<div style={{"width":"20%", "height":"50px", "float":"left"}}><span style={{"marginLeft":"20px", "fontSize":"200%", "color":"#FFF"}}>netElastic</span></div>
 				<div style={{"width":"60%", "height":"50px", "float":"left", 'paddingTop':'20px'}}>
-		      		<span><a href="#" style={{"textCecoration": "none"}} onClick={(evt) => this.handleLink("MainRouteContainer", evt)} className={this.props.currentLink=="MainRouteContainer"?"selectedTopLink":"unselectedTopLink"}>Dashboard</a></span>
+		      		<span><a href="#" style={{"textCecoration": "none"}} onClick={(evt) => this.handleLink("Dashboard", evt)} className={this.props.currentLink=="MainRouteContainer"?"selectedTopLink":"unselectedTopLink"}>Dashboard</a></span>
 		      		<span style={{"marginLeft":"40px"}}><a href="#" style={{"textDecoration": "none"}} onClick={(evt) => this.handleLink("Orchestration", evt)} className={this.props.currentLink=="Orchestration"?"selectedTopLink":"unselectedTopLink"}>Orchestration</a></span>
 		      		<span style={{"marginLeft":"40px"}}><a href="#" style={{"textDecoration": "none"}} onClick={(evt) => this.handleLink("Admin", evt)} className={this.props.currentLink=="Admin"?"selectedTopLink":"unselectedTopLink"}>Adminstration</a></span>
 		      	</div>

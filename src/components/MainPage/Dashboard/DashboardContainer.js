@@ -103,8 +103,8 @@ class _DashboardContainer extends React.Component{
 		})
 		return (
 				<div id="dropContainer" ref="dropContainer" onDragOver={(e)=>this.dragOver(e)} onDrop={this.drop} style={{"width":this.props.mainContainerSize.w, "height":this.props.mainContainerSize.h}}>
-				<div style={{"height":"90%"}}>{elems}</div>
-				{maxElem===null && <div id="minContainer" style={{"width":"100%", "height":"10%"}}>{minElems}</div>}
+					<div style={{"height":"90%"}}>{elems}</div>
+					{maxElem===null && <div id="minContainer" style={{"width":"100%", "height":"10%"}}>{minElems}</div>}
 				</div>
 		)
 	

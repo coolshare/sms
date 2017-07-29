@@ -1,11 +1,7 @@
 import cm from '../common/CommunicationManager'
 
-const CommonReducer = (state = {'appLoaded':false}, action) => {
+const CommonReducer = (state = {'progress':false}, action) => {
   switch (action.type) {
-  	case 'AppLoaded':
-  		return Object.assign({}, state, {
-  			appLoaded: true
-        })
   	case 'getMultiDone':
   		return state;  	
     default:

@@ -18,6 +18,7 @@ export default class Service {
 			let mn = self.APIs[i];
 			console.log("subscribe:"+"/"+self.name+"/"+mn)
 			cm.subscribe("/"+self.name+"/"+mn, function(action) {
+				cm.setProgress(true)
 				self[mn].apply(self, [action]);
 			});
 		}

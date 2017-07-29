@@ -16,10 +16,7 @@ class _ENGAlertsDetails extends React.Component{
 	render(){
 		return (
 			<div>	
-				<Header/>
-				<div>
 				ENGAlertsDetails
-				</div>
       		</div>
 		)
 	}
