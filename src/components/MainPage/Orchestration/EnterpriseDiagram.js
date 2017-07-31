@@ -102,26 +102,44 @@ class _EnterpriseDiagram extends React.Component {
 		
 		//cm.selectedEnterpriseId = this.user.company.EnterpriseId
 		//var ddd = cm.selectedEnterprise = cm.provider.enterpriseMap[cm.selectedEnterpriseId];
-		if (cm.selectedEnterprise!==undefined) {
-			console.log("ttt="+cm.selectedEnterprise!==undefined && !cm.selectedEnterprise.dirty)
+		cm.selectedEnterprise = provider.enterpriseMap[cm.selectedEnterpriseId]
+		if (cm.selectedEnterprise===undefined) {
+			cm.dispatch({"type":"/EnterpriseService/get", "params":[cm.selectedEnterpriseId], "options":{"response":(data)=>{
+				var enterprise = new Enterprise( data, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
+				cm.provider.nodes.push(enterprise);
+				cm.provider.enterpriseMap[enterprise.id] = enterprise;
+				cm.nodeMap[enterprise.id] = enterprise;
+				
+		  		if (cm.provider.internetForProvider===undefined) {
+		  			cm.provider.internetForProvider = new Enterprise({"EnterpriseId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);		
+		  			cm.provider.nodes.push(cm.provider.internetForProvider)
+		  			cm.provider.enterpriseMap[cm.provider.internetForProvider.id] = cm.provider.internetForProvider;
+		  		}
+		  		cm.provider.linkMap[cm.provider.internetForProvider.id+"_"+enterprise.id] = {"source":cm.provider.internetForProvider, "target":enterprise}
+		  		
+		  		if (enterprise.dirty) {
+		  			self.loadEnterpriseBranch(()=>{
+		  				cm.dispatch([{"type":"setProvider", "data":cm.provider}, {"type":"setSelectedTab", "data":"Enterprise"},
+		  					{"type":"refreshEnterpriseDiagram"}])
+		  				self.loadingEnterprise = false;
+		  				cm.dispatch({"type":"setSelectedEnterpriseDirty"})
+		  			})
+		  		} 
+			}, "error":(error)=> {			
+				console.log("Error:"+error)
+			}}});
+		} else {
+			if (cm.selectedEnterprise.dirty) {
+	  			self.loadEnterpriseBranch(()=>{
+	  				cm.dispatch([{"type":"setProvider", "data":cm.provider}, {"type":"setSelectedTab", "data":"Enterprise"},
+	  					{"type":"refreshEnterpriseDiagram"}])
+	  				self.loadingEnterprise = false;
+	  				cm.dispatch({"type":"setSelectedEnterpriseDirty"})
+	  			})
+	  		} else {
+	  			cm.dispatch([{"type":"refreshEnterpriseDiagram"}])					
+	  		}
 		}
-		
-		if (cm.selectedEnterprise!==undefined && !cm.selectedEnterprise.dirty || self.loadingEnterprise) {
-			return;
-		}
-		self.loadingEnterprise = true;
-
-		self.loadEnterpriseBranch(()=>{
-			
-		
-			cm.dispatch([{"type":"setProvider", "data":cm.provider}, {"type":"setSelectedTab", "data":"Enterprise"},
-				{"type":"refreshEnterpriseDiagram"}])
-			self.loadingEnterprise = false;
-			cm.dispatch({"type":"setSelectedEnterpriseDirty"})
-		})
-
-			
-		
 	}
 	
 	loadEnterpriseBranch = (callback) => {

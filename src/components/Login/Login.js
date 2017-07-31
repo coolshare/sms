@@ -26,7 +26,8 @@ class  _Login extends React.Component{
 		} else {
 			var list = this.refs.company.value.split("|");
 			cm.pushPath(cm.routeData["EnterpriseDiagram"]); 
-			cm.dispatch([{"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value, "role":this.state.role, "company":{"EnterpriseId":list[1], "BusinessName":list[0]}}}]);
+			cm.dispatch([{"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value, "role":this.state.role, "company":{"EnterpriseId":list[1], "BusinessName":list[0]}}},
+				{"type":"setSelectedEnterpriseId", "data":list[1]}]);
 		}
 		
 		

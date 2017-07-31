@@ -56,6 +56,12 @@ class _Header extends React.Component{
     * @return {ReactElement} markup
     */
 	render(){
+		
+		if (cm.user===undefined) {
+			cm.dispatch({'type':'clearBrowserHistory'});
+			return null
+			
+		}
 		let pathElem = this.props.path.map((p, idx)=> {
 			let dd = "";
 			if (idx>0) {
