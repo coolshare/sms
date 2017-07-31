@@ -26,6 +26,54 @@ export class _RemoteService extends Service {
 			url = this.action.data.url;
 		}
 		url += "?d="+new Date().valueOf();
+		$.ajax({
+			  url:url,
+			  type:"GET",
+			  contentType:"application/json; charset=utf-8",
+			  dataType:"json",
+			  success: function(res){
+				  if (result!==undefined) {
+					  let kk = key.split("/");
+					  if (kk.length===1) {
+						  result.dataMap[key] = res;			    	  
+					  } else if (kk.length===2) {
+						  if (result.dataMap[kk[0]]===undefined) {
+							  result.dataMap[kk[0]] = {}
+						  }
+						  result.dataMap[kk[0]][kk[1]] = res;		
+					  }
+					  if (result.multiType==="multi") {					  
+						  if (--result.countDown==0) {
+							  cm.dispatch({"type":"getMultiDone", "key":result.type, "result":result})
+							  if (options.response) {
+				    			  options.response(result);
+				    		  }
+						  }
+					  } else if (result.multiType==="seq") {
+						  self._getEach(result, requests, options);
+				    	  if (len===0) {
+				    		  if (options.response) {
+				    			  options.response(result);
+				    		  }
+				    	  }  
+					  }
+					   
+			      } else {
+			    	  self._noticeDone(options, res);
+			      } 
+			  }
+			})
+			
+		
+	}
+	_get2 = (url, options, result, requests, len) => {
+		options = options||{};
+		let self = this;
+		if (url.data) {
+			this.action = url;
+			url = this.action.data.url;
+		}
+		url += "?d="+new Date().valueOf();
 		return axios.get(url).then(res=>{
 			  if (res.status >= 400) {
 		          throw new Error("Bad response from server");

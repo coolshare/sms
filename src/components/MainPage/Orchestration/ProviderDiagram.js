@@ -16,7 +16,7 @@ import Provider from '../../../common/models/Provider'
 
 const stateColors = ["green", "yellow", "orange", "pink", "red"]
 
-class _Orchestration extends React.Component {
+class _ProviderDiagram extends React.Component {
 	constructor(props) {
 		super(props);
 		
@@ -54,8 +54,8 @@ class _Orchestration extends React.Component {
 		this.user = cm.getStoreValue("HeaderReducer", "user");
 		
 		cm.dispatch({"type":"updateMainContainerSize", "data":{"w":this.refs.orchestrationMain.clientWidth, "h":this.refs.orchestrationMain.clientHeight}})
-		cm.subscribe(["refreshOrchestration"], (action)=>{
-			if (cm.getStoreValue("HeaderReducer", "currentLink")!=="Orchestration") {
+		cm.subscribe(["refreshProviderDiagram"], (action)=>{
+			if (cm.getStoreValue("HeaderReducer", "currentLink")!=="ProviderDiagram") {
 				return;
 			}
 		
@@ -64,43 +64,35 @@ class _Orchestration extends React.Component {
 			var filter = cm.getStoreValue("OrchestrationReducer", "search");
 			filter = filter.trim()===""?undefined:filter.toLowerCase();
 			console.log("role="+cm.role)
-			if (self.user.role==="Provider") {
-				var tab = cm.selectedTab;
-				if (tab==="Provider") {
-					if (cm.provider.dirty) {
-						self.loadProvider(()=>{
-							self.buildProviderDiagram(filter, true)
-						});
-					} else {
+			var tab = cm.selectedTab;
+			if (tab==="Provider") {
+				if (cm.provider.dirty) {
+					self.loadProvider(()=>{
 						self.buildProviderDiagram(filter, true)
-					}
-					
-					
-				} else if (tab==="Enterprise") {
-					if (cm.selectedEnterpriseId!==undefined) {
-						var selectedEnterprise = cm.provider.enterpriseMap[cm.selectedEnterpriseId];
-						if (selectedEnterprise.dirty) {
-							self.loadEnterpriseBranch(()=>{
-								selectedEnterprise.dirty = false;
-								self.buildEnterpriseDiagram(undefined, filter, true)
-							})
-						} else {
-							self.buildEnterpriseDiagram(undefined, filter, true)
-						}
-					
-						
-					}				
-				}
-			} else if (self.user.role==="Enterprise") {
-				cm.selectedEnterprise  = cm.provider.enterpriseMap[self.user.company.EnterpriseId]
-				if (cm.provider.enterpriseMap[self.user.company.EnterpriseId]===undefined || cm.selectedEnterprise.dirty) {
-					self.loadEnterPrise();
+					});
 				} else {
-					self.buildEnterpriseDiagram(cm.getStoreValue("OrchestrationReducer", "selectedEnterpriseId"), filter, true)
+					self.buildProviderDiagram(filter, true)
 				}
 				
-			}
-			
+				
+			} else if (tab==="Enterprise") {
+				cm.dispatch([{"type":"pushPath", "action":cm.routeData["EnterpriseDiagram"]}]);
+				cm.dispatch([{"type":"refreshEnterpriseDiagram"}]);
+			/*
+				if (cm.selectedEnterpriseId!==undefined) {
+					var selectedEnterprise = cm.provider.enterpriseMap[cm.selectedEnterpriseId];
+					if (selectedEnterprise.dirty) {
+						self.loadEnterpriseBranch(()=>{
+							selectedEnterprise.dirty = false;
+							self.buildEnterpriseDiagram(undefined, filter, true)
+						})
+					} else {
+						self.buildEnterpriseDiagram(undefined, filter, true)
+					}
+				
+					
+				}*/				
+			}	
 		})
 		
 		cm.subscribe("setSelectedEnterpriseId", (action)=>{
@@ -118,28 +110,16 @@ class _Orchestration extends React.Component {
 			}
 			
 		});
-		cm.subscribe("setSelectedBranchId", (action)=>{
-			var selectedBranchId = cm.getStoreValue("OrchestrationReducer", "selectedBranchId");
-			self.isDBClick = false;
-			if (!cm.getStoreValue("OrchestrationReducer", "noDetails")) {
-				this.animateDetails(true)
-			}
-			if (cm.selectedBranchId===undefined) {
-				this.animateDetails(false)
-			}
-		});
+		
 		
 		cm.subscribe("hideNodeDetails", (action)=>{
 			this.animateDetails(false)
 		});
 		
-		if (this.user.role==="Enterprise") {
-			cm.dispatch({"type":"setSelectedEnterpriseId", "data":this.user.company.EnterpriseId})
-		}
-		if (!this.props.isInit) {
-			cm.dispatch([{"type":"setSelectedTab", "data":this.user.role}, {"type":"setIsInit"}, {"type":"refreshOrchestration"}])
+		if (!this.props.isProviderInit) {
+			cm.dispatch([{"type":"setSelectedTab", "data":this.user.role}, {"type":"setIsInit"}, {"type":"refreshProviderDiagram"}])
 		} else {
-			cm.dispatch([{"type":"setSelectedTab", "data":this.props.selectedTab}, {"type":"refreshOrchestration"}])
+			cm.dispatch([{"type":"setSelectedTab", "data":this.props.selectedTab}, {"type":"refreshProviderDiagram"}])
 		}
 		
 	}
@@ -174,110 +154,11 @@ class _Orchestration extends React.Component {
 			//cm.dispatch({"type":"setSelectedTab", "data":self.user.role})
 		}}});
 	}
-	loadEnterPrise = () => {
-		console.log("enter loadEnterPrise")
 	
-		var self = this;
-		var provider = cm.provider = cm.getStoreValue("OrchestrationReducer","provider")
-		
-		cm.selectedEnterpriseId = this.user.company.EnterpriseId
-		//var ddd = cm.selectedEnterprise = cm.provider.enterpriseMap[cm.selectedEnterpriseId];
-		if (cm.selectedEnterprise!==undefined) {
-			console.log("ttt="+cm.selectedEnterprise!==undefined && !cm.selectedEnterprise.dirty)
-		}
-		
-		if (cm.selectedEnterprise!==undefined && !cm.selectedEnterprise.dirty || self.loadingEnterprise) {
-			return;
-		}
-		self.loadingEnterprise = true;
-		
-		cm.dispatch({"type":"/EnterpriseService/get", "params":[self.user.company.EnterpriseId], "options":{"response":(data)=>{
-			var enterprise = new Enterprise( data, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
-			cm.provider.nodes.push(enterprise);
-			cm.provider.enterpriseMap[enterprise.id] = enterprise;
-			cm.nodeMap[enterprise.id] = enterprise;
-			
-	  		if (cm.provider.internetForProvider===undefined) {
-	  			cm.provider.internetForProvider = new Enterprise({"EnterpriseId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);		
-	  			cm.provider.nodes.push(cm.provider.internetForProvider)
-	  			cm.provider.enterpriseMap[cm.provider.internetForProvider.id] = cm.provider.internetForProvider;
-	  		}
-	  		cm.provider.linkMap[cm.provider.internetForProvider.id+"_"+enterprise.id] = {"source":cm.provider.internetForProvider, "target":enterprise}
-	  		
-	  		//if (enterprise.dirty) {
-	  			self.loadEnterpriseBranch(()=>{
-	  				cm.dispatch([{"type":"setProvider", "data":cm.provider}, {"type":"setSelectedTab", "data":self.user.role},
-	  					{"type":"refreshOrchestration"}])
-	  				self.loadingEnterprise = false;
-	  			})
-	  		//} else {
-	  		//	cm.dispatch({"type":"setProvider", "data":cm.provider})
-			//	cm.dispatch({"type":"setSelectedTab", "data":self.user.role})
-	  		//}
-			
-		}, "error":(error)=> {			
-			console.log("Error:"+error)
-		}}});
-	}
-	
-	loadEnterpriseBranch = (callback) => {
-		
-	console.log("enter loadEnterpriseBranch")
-		var self = this;
-	
-		//cm.selectedEnterpriseId = cm.getStoreValue("OrchestrationReducer","selectedEnterpriseId")
-		if (cm.selectedEnterpriseId==undefined) {
-			return;
-		}
-		var provider = cm.getStoreValue("OrchestrationReducer","provider")
-		
-		var selectedEnterprise = cm.selectedEnterprise = provider.enterpriseMap[cm.selectedEnterpriseId]
-		var dd = cm.selectedEnterprise
-		if (selectedEnterprise==undefined || !selectedEnterprise.dirty) {
-			return;
-		}
-		selectedEnterprise.dirty = false;
-		cm.dispatch({"type":"/BranchService/getAll", "options":{"response":(data)=>{
-			selectedEnterprise.nodes = [];
-			selectedEnterprise.linkMap = {};
-			selectedEnterprise.branchMap = {}
-			if (selectedEnterprise.internetForEnterprise===undefined) {
-	  			selectedEnterprise.internetForEnterprise = new Branch({"BranchId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);	
-	  			
-	  		}
-			selectedEnterprise.nodes.push(selectedEnterprise.internetForEnterprise)
-			
-			for (var i=0; i<data.length;i++) {
-				var b = new Branch(data[i], 20, 100, 100, 35, Math.floor(Math.random()*5), this.innerColor, -8, -8, 16, 16)
-				selectedEnterprise.nodes.push(b);
-				selectedEnterprise.branchMap[b.id] = b;
-				cm.nodeMap[b.id] = b;
-				selectedEnterprise.linkMap[selectedEnterprise.internetForEnterprise.id+"_"+b.id] = {"source":selectedEnterprise.internetForEnterprise, "target":b};
-			}
-			cm.dispatch({"type":"/BranchLinkService/getAll", "options":{"response":(data)=>{
-				
-				
-				for (var i=0; i<data.length;i++) {
-					var link = data[i]
-					var src = selectedEnterprise.branchMap[link.SourceId];
-					var tar = selectedEnterprise.branchMap[link.TargetId];
-					if (src===undefined || tar===undefined) {
-						console.log("Error: missing src/tar"+link.SourceId+"/"+link.TargetId)
-						continue;
-					}
-					selectedEnterprise.linkMap[link.SourceId+"_"+link.TargetId] = {"source":src, "target":tar};
-				}
-				if (callback) {
-					callback();
-				}
-			}}});
-		}}});
-	}
 	
 	componentWillUnmount() {
-		cm.unsubscribe(["refreshOrchestration", "setSelectedBranchId", "setSelectedEnterpriseId", "switchTopLink", "setSelectedTab","setProvider", "addEnterpriseLink", "addBranchLink", "setSearch", "switchTopLink"]);
+		cm.unsubscribe(["refreshProviderDiagram"]);
 		cm.unsubscribe("setSelectedEnterpriseId");		
-		cm.unsubscribe("setSelectedBranchId");
 		cm.unsubscribe("hideNodeDetails");
 		//cm.dispatch({"type":"setProvider", "data":new Provider()})
 	}
@@ -333,10 +214,10 @@ class _Orchestration extends React.Component {
 		var self = this;
 		this.noDrag = true;
 		this.isDBClick = true;
-		setTimeout(()=>{
+		//setTimeout(()=>{
 			self.setState({"detailX":self.props.mainContainerSize.w +50})
 			self.detailShowState = false
-		}, 0)
+		//}, 0)
 		if (self.scTimer) {
 			clearTimeout(self.scTimer)
 		}
@@ -346,8 +227,8 @@ class _Orchestration extends React.Component {
 		}
 		if (d.type==="Enterprise" && d.label.length>0) {
 			cm.dispatch([{"type":"setSelectedEnterpriseId", "data":d.id},
-				{"type":"setSelectedTab", "data":"Enterprise"},
-				{"type":"refreshOrchestration"},{"type":"pushPath", "action":cm.routeData["Enterprise"]}])
+				{"type":"setSelectedTab", "data":"Enterprise"}])
+			cm.pushPath(cm.routeData["EnterpriseDiagram"])
 				
 			
 		}
@@ -373,12 +254,6 @@ class _Orchestration extends React.Component {
 		
 	}
 
-	buildEnterpriseDiagram(id, filter, forceReload) {
-		id = id||this.props.selectedEnterpriseId;
-		var enterprise = cm.provider.enterpriseMap[id] || cm.provider.enterpriseMap[cm.selectedEnterpriseId]
-		this.drawDiagram("Enterprise", enterprise.nodes, enterprise.linkMap, filter, forceReload);
-	}
-	
 	buildProviderDiagram(filter, forceReload) {
 
 		this.drawDiagram("Provider", cm.provider.nodes, cm.provider.linkMap, filter, forceReload);
@@ -750,11 +625,11 @@ class _Orchestration extends React.Component {
 	    )
 	}
 }
-const Orchestration = connect(
+const ProviderDiagram = connect(
 		  store => {
 			    return {
 			    	
-			    	isInit: store.OrchestrationReducer.isInit,
+			    	isProviderInit: store.OrchestrationReducer.isProviderInit,
 			    	search: store.OrchestrationReducer.search,
 			    	selectedTab: store.OrchestrationReducer.selectedTab,
 			    	selectedEnterpriseId: store.OrchestrationReducer.selectedEnterpriseId,
@@ -763,5 +638,5 @@ const Orchestration = connect(
 			    	mainContainerSize: store.MainContainerReducer.mainContainerSize
 			    };
 			  }
-			)(_Orchestration);
-export default Orchestration
+			)(_ProviderDiagram);
+export default ProviderDiagram

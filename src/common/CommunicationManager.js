@@ -9,7 +9,8 @@ import ENGListDetails from '../components/MainPage/Dashboard/ENGList/ENGListDeta
 import ENGAlertsDetails from '../components/MainPage/Dashboard/ENGAlerts/ENGAlertsDetails'
 import ResouceUsageDetails from '../components/MainPage/Dashboard/ResouceUsage/ResouceUsageDetails'
 //import Orchestration from '../components/MainPage/Orchestration/Orchestration2'
-import Orchestration from '../components/MainPage/Orchestration/Orchestration'
+import ProviderDiagram from '../components/MainPage/Orchestration/ProviderDiagram'
+import EnterpriseDiagram from '../components/MainPage/Orchestration/EnterpriseDiagram'
 import AddEnterprise from '../components/MainPage/Orchestration/AddEnterprise'
 import AddBranch from '../components/MainPage/Orchestration/AddBranch'
 import AddLink from '../components/MainPage/Orchestration/AddLink'
@@ -17,7 +18,6 @@ import Admin from '../components/MainPage/Admin/Admin'
 
 const routeData = {
 		"Login":{"label":"Login", "component":Login, "icon":"", "path":"Login"},
-		"Home":{"label":"Home", "component":Orchestration, "icon":"", "path":"Home"},
 		"TopContainer":{"label":"TopContainer", "component":TopContainer, "icon":"", "path":"Home"},	
 		"Dashboard":{"label":"Dashboard", "component":DashboardContainer, "icon":"", "path":"Dashboard"},	
 		"StackViewContainer":{"label":"StackViewContainer", "component":StackViewContainer, "icon":"", "path":"StackViewContainer"},
@@ -25,8 +25,8 @@ const routeData = {
 		"ENGListDetails":{"label":"ENGListDetails", "component":ENGListDetails, "path":"ENGListDetails"},
 		"ENGAlertsDetails":{"label":"ENGAlertsDetails", "component":ENGAlertsDetails, "icon":"", "path":"ENGAlertsDetails"},
 		"ResouceUsageDetails":{"label":"ResouceUsageDetails", "component":ResouceUsageDetails, "icon":"", "path":"ResouceUsageDetails"},
-		"Orchestration":{"label":"Orchestration", "component":Orchestration, "icon":"", "path":"Orchestration"},
-		"Enterprise":{"label":"Enterprise", "component":Orchestration, "icon":"", "path":"Enterprise"},
+		"ProviderDiagram":{"label":"ProviderDiagram", "component":ProviderDiagram, "icon":"", "path":"ProviderDiagram"},
+		"EnterpriseDiagram":{"label":"EnterpriseDiagram", "component":EnterpriseDiagram, "icon":"", "path":"EnterpriseDiagram"},
 		"AddEnterprise":{"label":"AddEnterprise", "component":AddEnterprise, "icon":"", "path":"AddEnterprise"},
 		"AddBranch":{"label":"AddBranch", "component":AddBranch, "icon":"", "path":"AddBranch"},
 		"AddLink":{"label":"AddLink", "component":AddLink, "icon":"", "path":"AddLink"},
@@ -60,6 +60,7 @@ class CommunicationManager {
 		}
 		
 	}
+
 	subscribe(type, listener, owner) {
 		var self = this;
 		var types;
@@ -177,6 +178,13 @@ class CommunicationManager {
 	setProgress = (show) => {
 		
 		this.progress1.style.display = this.progress2.style.display = show?"block":"none"
+	}
+	browserHistory = (url) => {
+		browserHistory.push(url)
+	}
+	pushPath = (path) => {
+		browserHistory.push(path.path)
+		this.dispatch({"type":"pushPath", "data":path})
 	}
 }
 

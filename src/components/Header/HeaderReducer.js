@@ -1,7 +1,7 @@
 import cm from '../../common/CommunicationManager'
 import { browserHistory } from 'react-router';
 
-const HeaderReducer = (state = {'currentLink':'Orchestration', 'user':{}, 'path':[]}, action) => {
+const HeaderReducer = (state = {'currentLink':'ProviderDiagram', 'user':{}, 'path':[]}, action) => {
   switch (action.type) {
   	case 'switchTopLink':
   	  cm.currentLink = action.id
@@ -22,15 +22,15 @@ const HeaderReducer = (state = {'currentLink':'Orchestration', 'user':{}, 'path'
       })
     case 'pushPath':
     	var p = Object.assign([], state.path);
-    	p.push(action.action)
-    	action.asyncDispatch({'type':'pushBrowserHistory', 'url':action.action.path}); 
+    	p.push(action.data)
+    	//action.asyncDispatch({'type':'pushBrowserHistory', 'url':action.action.path}); 
         return Object.assign({}, state, {
       	  path: p
         })
     case 'popPath':
     	var p = Object.assign([], state.path);
     	p.pop()
-    	action.asyncDispatch({'type':'pophBrowserHistory'}); 
+    	//action.asyncDispatch({'type':'pophBrowserHistory'}); 
         return Object.assign({}, state, {
       	  path: p
         })

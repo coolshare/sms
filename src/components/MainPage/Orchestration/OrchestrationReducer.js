@@ -2,14 +2,19 @@ import cm from '../../../common/CommunicationManager'
 import Utils from '../../../common/Utils'
 import Provider from '../../../common/models/Provider'
 
-const OrchestrationReducer = (state = {'isInit':false, 'enterpriseList':[],'currentLink':null, 'search':'', 'selectedBranchId':undefined, 'selectedEnterpriseId':undefined, 'provider':new Provider(),'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
+const OrchestrationReducer = (state = {'isEnterpriseInit':false, 'isProviderInit':false, 'enterpriseList':[],'currentLink':null, 'search':'', 'selectedBranchId':undefined, 'selectedEnterpriseId':undefined, 'provider':new Provider(),'selectedTab':'Provider','OrchestrationData':{}, 'data':null}, action) => {
   switch (action.type) {
-  	case 'setIsInit':
-  	  cm.isInit = true
+  	case 'setIsProviderInit':
+  	  cm.isProviderInit = true
       return Object.assign({}, state, {
-    	  isInit: cm.isInit
+    	  isProviderInit: cm.isProviderInit
       })
-  	case 'setEnterpriseList':
+  	case 'setIsEnterpriseInit':
+    	  cm.isProviderInit = true
+        return Object.assign({}, state, {
+      	  isEnterpriseInit: cm.isEnterpriseInit
+        })
+    case 'setEnterpriseList':
   		console.log("<<====== received all enterprise")
   		cm.enterpriseList = action.data
         return Object.assign({}, state, {

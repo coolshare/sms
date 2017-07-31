@@ -33,8 +33,6 @@ export const asyncDispatchMiddleware = store => next => action => {
 	  const actionWithAsyncDispatch =
 	    Object.assign({}, action, { asyncDispatch });
 
-	  
-	  
 	  let result = next(actionWithAsyncDispatch);
 	  
 	  if (result.type==="__FORWARD__") {
@@ -44,8 +42,8 @@ export const asyncDispatchMiddleware = store => next => action => {
 		  result.asyncDispatch({"type":result.type, "data":action});
 	  }
 	  if (result._type === "__setState__") {
-	    	let list = action._data.split(".");
-	    	result.asyncDispatch({"type":list[0], "data": result.data}); 		
+		  let list = action._data.split(".");
+		  result.asyncDispatch({"type":list[0], "data": result.data}); 		
   	  }
 	  
 	  

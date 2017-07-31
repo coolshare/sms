@@ -21,10 +21,12 @@ class  _Login extends React.Component{
 	}
 	handleLogin= () => {
 		if (this.state.role==="Provider") {
-			cm.dispatch([{"type":"pushPath", "action":cm.routeData["Orchestration"]}, {"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value, "role":this.state.role, "company":{}}}]);
+			cm.pushPath(cm.routeData["ProviderDiagram"]); 
+			cm.dispatch([{"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value, "role":this.state.role, "company":{}}}]);
 		} else {
 			var list = this.refs.company.value.split("|");
-			cm.dispatch([{"type":"pushPath", "action":cm.routeData["Orchestration"]}, {"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value, "role":this.state.role, "company":{"EnterpriseId":list[1], "BusinessName":list[0]}}}]);
+			cm.pushPath(cm.routeData["EnterpriseDiagram"]); 
+			cm.dispatch([{"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value, "role":this.state.role, "company":{"EnterpriseId":list[1], "BusinessName":list[0]}}}]);
 		}
 		
 		
