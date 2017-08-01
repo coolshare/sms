@@ -182,9 +182,31 @@ class CommunicationManager {
 	browserHistory = (url) => {
 		browserHistory.push(url)
 	}
-	pushPath = (path) => {
-		browserHistory.push(path.path)
-		this.dispatch({"type":"pushPath", "data":path})
+	
+	setPath = (p, action) => {
+		var path = this.getStoreValue("HeaderReducer", "path")
+		if (path.length>0 && path[path.length-1]===p) {
+			return;
+		}
+		var foundIndex = -1;
+		for (var i=0; i<path.length; i++) {
+			if (path[i]===p) {
+				foundIndex = i;
+				break;
+			}
+		}
+		if (foundIndex>-1) {
+			path.length = foundIndex+1;
+		} else {
+			path.push(p);
+		}
+		browserHistory.push(p.path)
+		if (action) {
+			action.asyncDispatch({"type":"setPath", "data":path})
+		} else {
+			this.dispatch({"type":"setPath", "data":path})
+		}
+		
 	}
 }
 

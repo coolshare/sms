@@ -1,32 +1,39 @@
 import cm from '../../common/CommunicationManager'
 import { browserHistory } from 'react-router';
 
-const HeaderReducer = (state = {'currentLink':'ProviderDiagram', 'user':{}, 'path':[]}, action) => {
+const HeaderReducer = (state = {'loginState':undefined, 'currentLink':'ProviderDiagram', 'user':{}, 'userList':undefined, 'path':[]}, action) => {
   switch (action.type) {
-  	case 'switchTopLink':
-  	  cm.currentLink = action.id
-      return Object.assign({}, state, {
-    	  currentLink: cm.currentLink,
-    	  path:[cm.routeData[cm.currentLink]]
-      })
+  	case 'setLoginState':
+  		cm.loginState = action.data;
+    	return Object.assign({}, state, {
+    		loginState: cm.loginState
+        })
   
-    case 'setUser':
+  	case 'switchTopLink':
+    	  cm.currentLink = action.id
+        return Object.assign({}, state, {
+      	  currentLink: cm.currentLink,
+      	  path:[cm.routeData[cm.currentLink]]
+        })
+    
+      case 'setUser':
     	cm.user = action.data;
     	return Object.assign({}, state, {
     		user: cm.user
         })
+      case 'setUserList':
+      	cm.userList = action.data;
+      	return Object.assign({}, state, {
+      		userList: cm.userList
+          })
     case 'setPath':
-      cm.path = action.path
+      cm.path = Object.assign([], action.data);
       return Object.assign({}, state, {
     	  path: cm.path
       })
     case 'pushPath':
-    	var p = Object.assign([], state.path);
-    	p.push(action.data)
-    	//action.asyncDispatch({'type':'pushBrowserHistory', 'url':action.action.path}); 
-        return Object.assign({}, state, {
-      	  path: p
-        })
+    	cm.setPath(action.data, action);
+    	return state;
     case 'popPath':
     	var p = Object.assign([], state.path);
     	p.pop()

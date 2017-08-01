@@ -73,12 +73,13 @@ const OrchestrationReducer = (state = {'isEnterpriseInit':false, 'isProviderInit
         	noDetails:noDetails
         })
   	case 'setSelectedEnterpriseId':
+  		var ddd = cm.selectedEnterprise;
   		if (cm.selectedEnterprise) {
   			var dd = cm.selectedEnterprise
   			cm.selectedEnterprise.updateSelected(false);
   		}
   		var noDetails = action.noDetails
-  		if (cm.selectedEnterpriseId===action.data) {
+  		if (cm.selectedEnterpriseId===action.data && !action.isDBClick) {
   			cm.selectedEnterpriseId = cm.selectedEnterprise = undefined;
   			noDetails = true
   		} else {

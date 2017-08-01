@@ -23,7 +23,7 @@ class _Header extends React.Component{
 				path = p;
 			}
 		}
-		cm.dispatch({'type':'setPath', 'path':path});
+		cm.dispatch({'type':'setPath', 'data':path});
 	}
 	handleLogout() {
 		cm.dispatch({'type':'clearBrowserHistory'});
@@ -57,7 +57,7 @@ class _Header extends React.Component{
     */
 	render(){
 		
-		if (cm.user===undefined) {
+		if (cm.user===undefined && this.props.loginState!=="failed") {
 			cm.dispatch({'type':'clearBrowserHistory'});
 			return null
 			
@@ -104,7 +104,8 @@ const Header = connect(
 			    return {
 			    	path:store.HeaderReducer.path,
 			    	user:store.HeaderReducer.user,
-			    	currentLink: store.HeaderReducer.currentLink
+			    	currentLink: store.HeaderReducer.currentLink,
+			    	loginState: store.HeaderReducer.loginState
 			    };
 			  }
 			)(_Header);

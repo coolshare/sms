@@ -2,16 +2,20 @@ import React from 'react';
 import cm from '../common/CommunicationManager'
 import Header from './Header/Header'
 import Spinner from 'react-spinkit'
-/**
-*
-*/
+
+const defaultUserList = [{"user":"provider", "password":"ne123", "role":"Provider", "company":{"EnterpriseId":"61", "BusinessName":"Netelastic"}},
+	{"user":"enterprise", "password":"ne123", "role":"Enterprise", "company":{"EnterpriseId":"61", "BusinessName":"Netelastic"}}]
+
+
 export default class TopContainer extends React.Component{
 	componentDidMount() {
 		
 		cm.progress1 = this.refs.progress1;
 		cm.progress2 = this.refs.progress2;
 		console.log("======>fetch all enterprise")
-		cm.dispatch([{"type":"updateMainContainerSize", "data":{"w":this.topContainer.clientWidth, "h":this.topContainer.clientHeight}}, {"type":"/EnterpriseService/getAll", "options":{"forwardType":"setEnterpriseList"}}])
+		
+		cm.dispatch({"type":"setUserList", "data":defaultUserList})
+		//cm.dispatch([{"type":"updateMainContainerSize", "data":{"w":this.topContainer.clientWidth, "h":this.topContainer.clientHeight}}, {"type":"/EnterpriseService/getAll", "options":{"forwardType":"setEnterpriseList"}}])
 	}
 	/**
     * render

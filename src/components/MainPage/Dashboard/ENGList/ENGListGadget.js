@@ -24,7 +24,7 @@ export default class ENGListGadget extends Gadget {
 		let action = cm.routeData["ENGListDetails"]
 		return (
 			<div id="ENGList" style={{"padding":"9px"}}>	
-			<Dispatcher action={{"type":"pushPath", "action":action}}>{action.label}</Dispatcher>
+			<Dispatcher action={{"type":"pushPath", "data":action}}>{action.label}</Dispatcher>
       		</div>
 		)
 	}

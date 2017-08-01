@@ -11,47 +11,56 @@ class  _Login extends React.Component{
 		super();
 	
 		this.state = {
-			role:"Provider"
+			message:""
+		}
+	}
+
+	handleLogin = () => {
+		var user = this.verifyLogin();
+		if (!user) {
+			this.setState({"message":"The user name / password enter does not match any user account. Please try again."});
+			cm.dispatch({"type":"setLoginState", "data":"failed"})
+			return;
+		}
+		if (user.role==="Provider") {
+			cm.setPath(cm.routeData["ProviderDiagram"]); 
+			cm.dispatch([{"type":"setUser", "data":user}]);
+		} else {
+			cm.setPath(cm.routeData["EnterpriseDiagram"]); 
+			cm.dispatch([{"type":"setUser", "data":user},
+				{"type":"setSelectedEnterpriseId", "data":user.company.id}]);
+		}
+		cm.dispatch({"type":"setLoginState", "data":"successful"})
+		
+	}
+	
+	verifyLogin = () => {
+		var userName = this.userName.value;
+		var pw = this.password.value;
+		var userList = cm.getStoreValue("HeaderReducer", "userList")
+		var res = undefined;
+		for (var i=0; i<userList.length; i++) {
+			var user = userList[i];
+			if (userName===user.user && pw===user.password) {
+				res = user;
+				break;
+			}
+		}
+		return res;
+	}
+	handleKeypress = (e) =>{
+		if(e.key == 'Enter'){
+			this.handleLogin()
 		}
 	}
 	
-	componentDidMount() {
-		
-		
-	}
-	handleLogin= () => {
-		if (this.state.role==="Provider") {
-			cm.pushPath(cm.routeData["ProviderDiagram"]); 
-			cm.dispatch([{"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value, "role":this.state.role, "company":{}}}]);
-		} else {
-			var list = this.refs.company.value.split("|");
-			cm.pushPath(cm.routeData["EnterpriseDiagram"]); 
-			cm.dispatch([{"type":"setUser", "data":{"user":this.userName.value, "password":this.password.value, "role":this.state.role, "company":{"EnterpriseId":list[1], "BusinessName":list[0]}}},
-				{"type":"setSelectedEnterpriseId", "data":list[1]}]);
-		}
-		
-		
-	}
-	setRole = (e) => {
-		this.setState(Object.assign({}, this.state, {
-			role: e.target.value
-        }))
-	}
-	handleCompany = () => {
-		this.setState(Object.assign({}, this.state, {
-			company: {"BusinessName":this.refs.company.value, "id":"123456"}
-        }))
-	}
 	/**
 	* render
 	* @return {ReactElement} markup
 	*/
 	render(){
 		
-	console.log("cm.enterpriseList="+cm.enterpriseList)
-		var enterpriseList = this.props.enterpriseList.map((enterprise, idx)=>{
-			return (<option key={idx} value={enterprise.BusinessName+"|"+enterprise.EnterpriseId}>{enterprise.BusinessName}</option>)
-		})
+	//console.log("cm.enterpriseList="+cm.enterpriseList)
 		
 		return (
 			<div style={{"height":"100vh"}} className="grad LoginContainer">
@@ -61,25 +70,19 @@ class  _Login extends React.Component{
 					<div className="LoginDiv">
 						<div className="LoginHeader"><center><h3>User Login</h3></center>
 						</div>
-						<form className="LoginForm" >
+						
 					            <div className="field"  style={{'margin':'20px','width':'450px', 'paddingTop':'40px'}}>
-			    					<input name="email" type="text" tabIndex="1" placeholder="Email Address" style={{"width":"400px"}} ref = {(input) => { this.userName = input; }} />
+			    					<input name="email" onKeyPress={(e)=>this.handleKeypress(e)}  type="text" tabIndex="1" placeholder="User Name" style={{"width":"400px"}} ref = {(input) => { this.userName = input; }} />
 					            </div>
 					            <div className="field"   style={{'margin':'20px','width':'450px'}}>
-			    					<input name="password" type="password" tabIndex="2" placeholder="Password" style={{"width":"400px"}} ref = {(input) => { this.password = input; }} />
+			    					<input name="password" onKeyPress={(e)=>this.handleKeypress(e)} type="password" tabIndex="2" placeholder="Password" style={{"width":"400px"}} ref = {(input) => { this.password = input; }} />
 					            </div>
-			    				<div style={{"height":"90px"}}>
-						            <div><label><input name="role" type="radio" onChange={(e) => this.setRole(e)}  checked={this.state.role==="Provider"} value="Provider" ref="provider" />As a provider admin</label><label style={{"marginLeft":"18px"}}><input type="radio" checked={this.state.role==="Enterprise"} name="role" value="Enterprise" ref="enterprise" onChange={(e) => this.setRole(e)} />As a enterprise admin</label></div>
-						            {this.state.role==="Enterprise"?<div style={{"marginTop":"10px"}}>
-						            <label>Company Name:
-						            	<select type="text" onChange={this.handleCompany.bind(this)} ref = "company">
-						            		{enterpriseList}	
-						            	</select>
-						             (just for testing)</label></div>:null}
+			    				<div ref="message" style={{"height":"90px", "width":"300px"}}>{this.state.message}
+						            
 					            </div>
-			    				<button disabled={cm.enterpriseList===undefined} onClick={this.handleLogin.bind(this)} style={{"marginTop":"20px", "marginLeft":"400px", "color":cm.enterpriseList===undefined?"#999":"#000"}}>Log In</button>
+			    				<button disabled={this.props.userList===undefined} onClick={this.handleLogin.bind(this)} style={{"marginTop":"20px", "marginLeft":"400px", "color":this.props.userList===undefined?"#999":"#000"}}>Log In</button>
 			    				<div style={{"marginLeft":"20px"}}><a href="#">Forgot password</a></div>
-			    		</form>
+
 	    			</div>
     			</center>
 			</div>
@@ -89,7 +92,7 @@ class  _Login extends React.Component{
 const Login = connect(
 		  store => {
 			    return {
-			    	enterpriseList: store.OrchestrationReducer.enterpriseList
+			    	userList: store.HeaderReducer.userList
 			    };
 			  }
 			)(_Login);

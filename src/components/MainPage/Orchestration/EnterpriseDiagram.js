@@ -100,9 +100,10 @@ class _EnterpriseDiagram extends React.Component {
 		var self = this;
 		var provider = cm.provider = cm.getStoreValue("OrchestrationReducer","provider")
 		
-		//cm.selectedEnterpriseId = this.user.company.EnterpriseId
-		//var ddd = cm.selectedEnterprise = cm.provider.enterpriseMap[cm.selectedEnterpriseId];
+		cm.selectedEnterpriseId = cm.selectedEnterpriseId||this.user.company.EnterpriseId
+		var ddd = cm.selectedEnterpriseId;
 		cm.selectedEnterprise = provider.enterpriseMap[cm.selectedEnterpriseId]
+		var dd = cm.selectedEnterpriseId;
 		if (cm.selectedEnterprise===undefined) {
 			cm.dispatch({"type":"/EnterpriseService/get", "params":[cm.selectedEnterpriseId], "options":{"response":(data)=>{
 				var enterprise = new Enterprise( data, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);
@@ -111,7 +112,7 @@ class _EnterpriseDiagram extends React.Component {
 				cm.nodeMap[enterprise.id] = enterprise;
 				
 		  		if (cm.provider.internetForProvider===undefined) {
-		  			cm.provider.internetForProvider = new Enterprise({"EnterpriseId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);		
+		  			cm.provider.internetForProvider = new Enterprise({"EnterpriseId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/wan.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);		
 		  			cm.provider.nodes.push(cm.provider.internetForProvider)
 		  			cm.provider.enterpriseMap[cm.provider.internetForProvider.id] = cm.provider.internetForProvider;
 		  		}
@@ -164,7 +165,7 @@ class _EnterpriseDiagram extends React.Component {
 			selectedEnterprise.linkMap = {};
 			selectedEnterprise.branchMap = {}
 			if (selectedEnterprise.internetForEnterprise===undefined) {
-	  			selectedEnterprise.internetForEnterprise = new Branch({"BranchId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);	
+	  			selectedEnterprise.internetForEnterprise = new Branch({"BranchId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/wan.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);	
 	  			
 	  		}
 			selectedEnterprise.nodes.push(selectedEnterprise.internetForEnterprise)

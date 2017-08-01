@@ -25,7 +25,7 @@ export default class ResouceUsageGadget extends Gadget{
 		let action = cm.routeData["ResouceUsageDetails"]
 		return (
 			<div id="ResouceUsage" style={{"padding":"9px"}}>	
-				<Dispatcher action={{"type":"pushPath", "action":action}}>{action.label}</Dispatcher>
+				<Dispatcher action={{"type":"pushPath", "data":action}}>{action.label}</Dispatcher>
       		</div>
 		)
 	}

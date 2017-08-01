@@ -76,7 +76,7 @@ class _ProviderDiagram extends React.Component {
 				
 				
 			} else if (tab==="Enterprise") {
-				cm.dispatch([{"type":"pushPath", "action":cm.routeData["EnterpriseDiagram"]}]);
+				cm.setPath(cm.routeData["EnterpriseDiagram"]);
 				cm.dispatch([{"type":"refreshEnterpriseDiagram"}]);
 			/*
 				if (cm.selectedEnterpriseId!==undefined) {
@@ -132,7 +132,7 @@ class _ProviderDiagram extends React.Component {
 			cm.provider.enterpriseMap = {}
 			cm.provider.linkMap = {}
 			if (cm.provider.internetForProvider===undefined) {
-	  			cm.provider.internetForProvider = new Enterprise({"EnterpriseId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/internet.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);		
+	  			cm.provider.internetForProvider = new Enterprise({"EnterpriseId":new Date().valueOf()+Math.floor(Math.random()*999), "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/wan.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);		
 	  			
 	  		}
 			cm.provider.nodes.push(cm.provider.internetForProvider)
@@ -146,6 +146,7 @@ class _ProviderDiagram extends React.Component {
 				cm.nodeMap[e.id] = e;
 				cm.provider.linkMap[cm.provider.internetForProvider.id+"_"+e.id] = {"source":cm.provider.internetForProvider, "target":e};
 			}
+
 			if (callback) {
 				callback();
 			}
@@ -208,6 +209,8 @@ class _ProviderDiagram extends React.Component {
 	}
 	
 	handleNodeDBClick(d) {
+		
+	console.log("dc")
 		if (d.label==="") {
 			return;
 		}
@@ -226,14 +229,31 @@ class _ProviderDiagram extends React.Component {
 			clearTimeout(this.dragTimer);
 		}
 		if (d.type==="Enterprise" && d.label.length>0) {
-			cm.dispatch([{"type":"setSelectedEnterpriseId", "data":d.id},
+			cm.dispatch([{"type":"setSelectedEnterpriseId", "data":d.id, "isDBClick":self.isDBClick},
 				{"type":"setSelectedTab", "data":"Enterprise"}])
-			cm.pushPath(cm.routeData["EnterpriseDiagram"])
+			cm.setPath(cm.routeData["EnterpriseDiagram"])
 				
 			
 		}
 	}
-	handleNodeClick(d) {	
+	
+	handleNodeClick(d) {
+		var self = this;
+	
+		if (self.sclickTimer) {
+			clearTimeout(self.sclickTimer)
+		}
+		self.sclickTimer = setTimeout(()=>{
+			
+			if (self.isDBClick) {
+				return;
+			}
+			self.doNodeClick(d)		
+		}, 500)
+	}
+	doNodeClick(d) {
+		console.log("sc")
+	
 		if (d.label==="") {
 			return;
 		}
