@@ -72,10 +72,10 @@ class  _Login extends React.Component{
 						</div>
 						
 					            <div className="field"  style={{'margin':'20px','width':'450px', 'paddingTop':'40px'}}>
-			    					<input name="email" onKeyPress={(e)=>this.handleKeypress(e)}  type="text" tabIndex="1" placeholder="User Name" style={{"width":"400px"}} ref = {(input) => { this.userName = input; }} />
+			    					<input name="email" defaultValue="enterprise" onKeyPress={(e)=>this.handleKeypress(e)}  type="text" tabIndex="1" placeholder="User Name" style={{"width":"400px"}} ref = {(input) => { this.userName = input; }} />
 					            </div>
 					            <div className="field"   style={{'margin':'20px','width':'450px'}}>
-			    					<input name="password" onKeyPress={(e)=>this.handleKeypress(e)} type="password" tabIndex="2" placeholder="Password" style={{"width":"400px"}} ref = {(input) => { this.password = input; }} />
+			    					<input name="password" defaultValue="ne123" onKeyPress={(e)=>this.handleKeypress(e)} type="password" tabIndex="2" placeholder="Password" style={{"width":"400px"}} ref = {(input) => { this.password = input; }} />
 					            </div>
 			    				<div ref="message" style={{"height":"90px", "width":"300px"}}>{this.state.message}
 						            

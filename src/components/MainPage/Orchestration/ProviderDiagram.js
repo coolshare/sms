@@ -603,12 +603,7 @@ class _ProviderDiagram extends React.Component {
   		provider.linkMap[src.id+"_"+tar.id] = {"source":src, "target":tar}
   		//this.simulation.restart();
 	}
-	addBranchLink = () => {	
-		
-		cm.dispatch({"type":"saveCurrentLink", "source":this.dndSrc.id, "target":this.dndTar.id})
-		cm.popup(cm.routeData["AddLink"].component, "AddLink")
-		//cm.dispatch({"type":"addBranchLink", "data":{"source":this.dndSrc.id, "target":this.dndTar.id, "tab":this.props.selectedTab}})
-	}
+	
 	
 	startDrag = (d) => {
 		if (this.noDrag) {
