@@ -12,7 +12,7 @@ class _EnterpriseForm extends Form {
 		e.preventDefault();
 		var data = this.collectFields(e);
 		cm.dispatch({"type":"/EnterpriseService/create", "params":[data],"options":{"response":(data2)=>{
-			cm.dispatch([{"type":"setProviderDirty"},{"type":"refreshOrchestration"},{"type":"ClosePopup"}])
+			cm.dispatch([{"type":"setProviderDirty"},{"type":"refreshProviderDiagram"},{"type":"ClosePopup"}])
 
 		}}});
 		//cm.dispatch({"type":"ClosePopup"})		

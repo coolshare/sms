@@ -13,7 +13,7 @@ class _BranchForm extends Form {
 		var data = this.collectFields(e);
 		cm.dispatch({"type":"/BranchService/create", "params":[data],"options":{"response":(data2)=>{
 			
-			cm.dispatch([{"type":"setSelectedEnterpriseDirty"},{"type":"refreshOrchestration"}, {"type":"ClosePopup"}])
+			cm.dispatch([{"type":"setSelectedEnterpriseDirty"},{"type":"refreshEnterpriseDiagram"}, {"type":"ClosePopup"}])
 
 		}}});
 		

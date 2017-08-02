@@ -4,16 +4,16 @@ import cm from '../../../common/CommunicationManager'
 import {PopupCloseBox} from '../../../common/PopupComponents'
 import Utils from '../../../common/Utils'
 import Branch from '../../../common/models/Branch'
+import AddLinkBGP from './AddLinkBGP'
+import AddLinkOSPF from './AddLinkOSPF'
+import AddLinkStatic from './AddLinkStatic'
 
 class _AddLink extends React.Component {
 	constructor() {
 		super();
-		this.fields = {};
+		this.state = {type:"Static"}
 	}
 
-	componentDidMount() {
-		
-	}
 
 	handleOK = (e) => {
 		var self = this;
@@ -36,6 +36,11 @@ class _AddLink extends React.Component {
 		e.preventDefault();
 		cm.dispatch({"type":"ClosePopup"})
 	}
+	
+	handleTypeChange = () => {
+		this.setState({"type":this.refs.typeSelect.value})
+	}
+
 	render() {
 		var self = this;
 		
@@ -48,25 +53,15 @@ class _AddLink extends React.Component {
 			<div style={{"minHeight":Utils.screenH+"px", "minWidth":"700px"}}>
 	    		{cm.isStackEmpty()?null:<div className="PopupHeader"><PopupCloseBox/></div>}
 		    	<div>
-		    		<div style={{"height":"50px", "fontSize":"200%"}}>Add A Connection</div>
+		    		<div style={{"height":"50px", "fontSize":"150%"}}>Add A Connection between {this.src.label} and {this.tar.label}</div>
 		      		<form onSubmit={ (e) => this.handleOK(e) } ref="AddLinkForm">
-		      			<div ref="src" style={{"float":"left", "width":"45%", "marginRight":"20px", "border":"1px solid #000", "borderRadius":"10px", "padding":"20px"}}>
-		      				<h4>Source</h4>
-				      		<label className="field"  style={{'margin':'20px','width':'200px', 'paddingTop':'40px'}}>Branch Name:
-								<input name="BranchName1" readOnly value={self.src.data.BusinessName} ref={(input)=>{this.fields["BranchName1"] = input}}  type="text" tabIndex="1" placeholder="Branch Name" style={{"width":"200px"}} />
-				            </label>
-				            <label className="field"   style={{'margin':'20px','width':'200px'}}>Contact Name:
-								<input name="ContactName1" readOnly value={self.src.data.ContactName} ref={(input)=>{this.fields["ContactName1"] = input}} type="text" tabIndex="2" placeholder="Contact Name" style={{"width":"200px"}} />
-				            </label>
-						</div>
-						<div ref="tar" style={{"float":"left", "width":"45%", "border":"1px solid #000", "borderRadius":"10px", "padding":"20px"}}>
-		      				<h4>Target</h4>
-				      		<label className="field"  style={{'margin':'20px','width':'200px', 'paddingTop':'40px'}}>Branch Name:
-								<input name="BranchName2" readOnly value={self.tar.data.BusinessName} ref={(input)=>{this.fields["BranchName2"] = input}}  type="text" tabIndex="1" placeholder="Branch Name" style={{"width":"200px"}} />
-				            </label>
-				            <label className="field"   style={{'margin':'20px','width':'200px'}}>Contact Name:
-								<input name="ContactName2" readOnly value={self.tar.data.ContactName} ref={(input)=>{this.fields["ContactName2"] = input}} type="text" tabIndex="2" placeholder="Contact Name" style={{"width":"200px"}} />
-				            </label>
+		      			<div>
+		      				<select defaultValue={this.state.type} ref="typeSelect" onChange={this.handleTypeChange.bind(this)}>
+		      					<option value="BGP">BGP</option>
+		      					<option value="OSPF">OSPF</option>
+		      					<option value="Static">Static</option>
+		      				</select>
+		      				{this.state.type==="BGP"?<AddlinkBGP/>:this.state.type==="OSPF"?<AddLinkOSPF/>:this.state.type==="Static"?<AddLinkStatic/>:null}
 						</div>
 						<br style={{"clean":"both"}}/>
 						<div>

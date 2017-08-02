@@ -9,11 +9,11 @@ import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
 	
 class _OrchestrationHeader extends React.Component {
 	handleProvider() {
-		cm.dispatch([{"type":"setSelectedTab", "data":"Provider"},{"type":"refreshOrchestration"}])
+		cm.dispatch([{"type":"setSelectedTab", "data":"Provider"},{"type":"refreshProviderDiagram"}])
 
 	}
 	handleEnterprise() {
-		cm.dispatch([{"type":"setSelectedTab", "data":"Enterprise"},{"type":"refreshOrchestration"}])
+		cm.dispatch([{"type":"setSelectedTab", "data":"Enterprise"},{"type":"refreshEnterpriseDiagram"}])
 
 	}
 	
@@ -34,18 +34,18 @@ class _OrchestrationHeader extends React.Component {
 		      onConfirm: () => {
 		    	  	if (this.props.selectedTab==="Provider") {
 		    	  		cm.dispatch({"type":"/EnterpriseService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedEnterpriseId")], "options":{"response":(data)=>{
-				  			cm.dispatch([{"type":"setSelectedEnterpriseId", "data":undefined}, {"type":"setProviderDirty"}, {"type":"refreshOrchestration"}])
+				  			cm.dispatch([{"type":"setSelectedEnterpriseId", "data":undefined}, {"type":"setProviderDirty"}, {"type":"refreshProviderDiagram"}])
 		    	  		}}})
 			  			
 			  		} else if (this.props.selectedTab==="Enterprise") {
 			  			if (cm.selectedBranch) {
 			  				cm.dispatch({"type":"/BranchService/remove", "params":[cm.getStoreValue("OrchestrationReducer", "selectedBranchId")], "options":{"response":(data)=>{
-					  			cm.dispatch([{"type":"setSelectedBranchId", "data":undefined}, {"type":"setSelectedEnterpriseDirty"},{"type":"refreshOrchestration"}])
+					  			cm.dispatch([{"type":"setSelectedBranchId", "data":undefined}, {"type":"setSelectedEnterpriseDirty"},{"type":"refreshEnterpriseDiagram"}])
 			    	  		}}})
 			  			} else if (cm.selectedLink) {
 			  				//var link = cm.selectedLink
 			  				cm.dispatch({"type":"/BranchLinkService/remove", "params":[cm.selectedLink.source.id, cm.selectedLink.target.id], "options":{"response":(data)=>{
-					  			cm.dispatch([{"type":"setSelectedBranchId", "data":undefined}, {"type":"setSelectedEnterpriseDirty"},{"type":"refreshOrchestration"}])
+					  			cm.dispatch([{"type":"setSelectedBranchId", "data":undefined}, {"type":"setSelectedEnterpriseDirty"},{"type":"refreshEnterpriseDiagram"}])
 			    	  		}}})
 			  			}
 			  			
@@ -60,7 +60,7 @@ class _OrchestrationHeader extends React.Component {
 	}
 	handleChange = (e) => {
 		
-		cm.dispatch([{"type":"setSearch", "data":e.target.value},{"type":"refreshOrchestration"}])
+		cm.dispatch([{"type":"setSearch", "data":e.target.value},{"type":"refresh"+this.props.selectedTab+"Diagram"}])
 
 	}
 	  render() {

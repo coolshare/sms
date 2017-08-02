@@ -12,7 +12,7 @@ class _Header extends React.Component{
 	handleLink = (id, e)=> {
 		e.preventDefault();
 		browserHistory.push('/'+id);
-		cm.dispatch([{'type':'switchTopLink', 'id':id},{"type":"refreshOrchestration"}]);
+		cm.dispatch([{'type':'switchTopLink', 'id':id},{"type":"refresh"+this.props.selectedTab+"Diagram"}]);
 		
 	}
 	componentDidMount() {
@@ -105,7 +105,8 @@ const Header = connect(
 			    	path:store.HeaderReducer.path,
 			    	user:store.HeaderReducer.user,
 			    	currentLink: store.HeaderReducer.currentLink,
-			    	loginState: store.HeaderReducer.loginState
+			    	loginState: store.HeaderReducer.loginState,
+			    	selectedTab: store.OrchestrationReducer.selectedTab
 			    };
 			  }
 			)(_Header);

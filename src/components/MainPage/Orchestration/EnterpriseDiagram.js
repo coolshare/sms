@@ -165,17 +165,18 @@ class _EnterpriseDiagram extends React.Component {
 			selectedEnterprise.linkMap = {};
 			selectedEnterprise.branchMap = {}
 			if (selectedEnterprise.internetForEnterprise===undefined) {
-	  			selectedEnterprise.internetForEnterprise = new Branch({"BranchId":"_WAN_", "BusinessName":"", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/wan.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);	
+	  			selectedEnterprise.internetForEnterprise = new Branch({"BranchId":"_WAN_", "BusinessName":"WAN", "ContactName":"", "Phone":"", "Email":"", "AlertMethod":"", "Address":"", "Icon":"http://coolshare.com/temp/wan.png"}, 5, 50, 50 , 35, Math.floor(Math.random()*5), self.innerColor, -24, -24, 48, 48);	
 	  			
 	  		}
 			selectedEnterprise.nodes.push(selectedEnterprise.internetForEnterprise)
+			selectedEnterprise.branchMap[selectedEnterprise.internetForEnterprise.id] = selectedEnterprise.internetForEnterprise
 			
 			for (var i=0; i<data.length;i++) {
 				var b = new Branch(data[i], 20, 100, 100, 35, Math.floor(Math.random()*5), this.innerColor, -8, -8, 16, 16)
 				selectedEnterprise.nodes.push(b);
 				selectedEnterprise.branchMap[b.id] = b;
 				cm.nodeMap[b.id] = b;
-				selectedEnterprise.linkMap[selectedEnterprise.internetForEnterprise.id+"_"+b.id] = {"source":selectedEnterprise.internetForEnterprise, "target":b};
+				//selectedEnterprise.linkMap[selectedEnterprise.internetForEnterprise.id+"_"+b.id] = {"source":selectedEnterprise.internetForEnterprise, "target":b};
 			}
 			cm.dispatch({"type":"/BranchLinkService/getAll", "options":{"response":(data)=>{
 				
@@ -314,7 +315,7 @@ class _EnterpriseDiagram extends React.Component {
 			var n = nodes[i];
 			
 			if (filter!==undefined) {
-				  if (n.label.toLowerCase().indexOf(filter)<0 && n.label==="") {						  
+				  if (n.label.toLowerCase().indexOf(filter)<0 && n.id==="_WAN_") {						  
 					  self.filteredMap[n.id] = n;
 					  continue;
 				  }
@@ -393,7 +394,7 @@ class _EnterpriseDiagram extends React.Component {
 							}		
 						})(link))
 						
-			  if (tab==="Enterprise" && link.source.label==="") {
+			  if (tab==="Enterprise" && (link.source.id==="_WAN_" || link.target.id==="_WAN_")) {
 				  link.line.style("cursor", "pointer")			 
 				  	.on("click", ((me)=>{
 						return (d) => {													
@@ -552,11 +553,10 @@ class _EnterpriseDiagram extends React.Component {
 	
 	handleMouseOut(d) {
 		if (this.dragLine!==undefined) {
-			//d.c1.style("cursor","pointer")
-			//d.c2.style("cursor","pointer")
-			//d.image.style("cursor","pointer")
-			d3.select("body").style("cursor", "default");
-			console.log("setting cursor to pointer for "+d.id)
+			d.c1.style("cursor","pointer")
+			d.c2.style("cursor","pointer")
+			d.image.style("cursor","pointer")
+			console.log("setting cursor to pointer for "+d.label)
 		}
 	}
 	handleMouseOver(d) {
@@ -570,11 +570,11 @@ class _EnterpriseDiagram extends React.Component {
 			if (this.dndSrc.id!=="_WAN_") {
 				if (d.id!=="_WAN_") {
 					
-				console.log("setting cursor to no-drop for "+d.id)
-					//d.c1.style("cursor","no-drop")
-					//d.c2.style("cursor","no-drop")
-					//d.image.style("cursor","no-drop")
-					d3.select("body").style("cursor", "no-drop");
+				console.log("setting cursor to no-drop for "+d.label)
+					d.c1.style("cursor",function() {return "no-drop";})
+					//d.c2.style("cursor",function() {return "no-drop";})
+					//d.image.style("cursor",function() {return "no-drop";})
+					//d3.select("body").style("cursor", "no-drop");
 					return;
 				} 
 			}
